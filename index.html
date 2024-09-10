@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jacques+Francois+Shadow&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="titulo">
-        Calculadora de Nómina
-    </div>
-    <div>
+    <h1 class="titulo"> Calculadora de Nómina</h1>
+    <div class="estilo-de-tabla">
         <Table>
             <thead>
                 <tr>
@@ -23,6 +24,165 @@
                     <th class="encabezados">#</th>
                 </tr>
             </thead>
+            <Tbody>
+                <td>
+                    <input type="cajas">
+                </td>
+                <td>
+                    <input class="cajas" type="text">
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">5:30 Am</option>
+                        <option class="opciones">6:00 am</option>
+                        <option class="opciones">7:00 Am</option>
+                        <option class="opciones">8:00 Am</option>
+                        <option class="opciones">9:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                    </select>
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">6:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                        <option class="opciones">24:00 Pm</option>
+                    </select>
+                </td>
+                <td class="Valor">157.500</td>
+                <td class="Horas">8</td>
+                <td class="numero">1</td>
+
+            </Tbody>
+            <Tbody>
+                <td>
+                    <input type="cajas">
+                </td>
+                <td>
+                    <input class="cajas" type="text">
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">5:30 Am</option>
+                        <option class="opciones">6:00 am</option>
+                        <option class="opciones">7:00 Am</option>
+                        <option class="opciones">8:00 Am</option>
+                        <option class="opciones">9:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                    </select>
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">6:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                        <option class="opciones">24:00 Pm</option>
+                    </select>
+                </td>
+                <td class="Valor">157.500</td>
+                <td class="Horas">8</td>
+                <td class="numero">1</td>
+
+            </Tbody>
+            <Tbody>
+                <td>
+                    <input type="cajas">
+                </td>
+                <td>
+                    <input class="cajas" type="text">
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">5:30 Am</option>
+                        <option class="opciones">6:00 am</option>
+                        <option class="opciones">7:00 Am</option>
+                        <option class="opciones">8:00 Am</option>
+                        <option class="opciones">9:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                    </select>
+                </td>
+                <td class="list-1">
+                    <select id="seleccion" class="estilo" onchange="seleccion()">
+                        <option class="opciones">Selecciona un horario</option>
+                        <option class="opciones">Descanso</option>
+                        <option class="opciones">5:00 Am</option>
+                        <option class="opciones">6:00 Am</option>
+                        <option class="opciones">12:00 m</option>
+                        <option class="opciones">13:00 Pm</option>
+                        <option class="opciones">13:30 Pm</option>
+                        <option class="opciones">14:00 Pm</option>
+                        <option class="opciones">15:00 Pm</option>
+                        <option class="opciones">16:00 Pm</option>
+                        <option class="opciones">17:00 Pm</option>
+                        <option class="opciones">18:00 Pm</option>
+                        <option class="opciones">22:00 Pm</option>
+                        <option class="opciones">23:00 Pm</option>
+                        <option class="opciones">24:00 Pm</option>
+                    </select>
+                </td>
+                <td class="Valor">157.500</td>
+                <td class="Horas">8</td>
+                <td class="numero">1</td>
+
+            </Tbody>
             <Tbody>
                 <td>
                     <input type="cajas">
