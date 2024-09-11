@@ -1,11 +1,10 @@
-.estilo-de-tabla {
-    overflow: hidden;
-    width: fit-content;    
-    border: 2px solid ;
-    border-radius: 8px;
+.estilo-de-tabla  table {   
+    border: 1px solid ;
+    border-radius: 12px;
     color:black;
     background-color: black;
     box-shadow: -5px 5px 0px;
+    width: auto;
 }
 
 .titulo{
@@ -15,22 +14,21 @@
 }
 
 .estilo-de-tabla th,td{
-    padding: 10px 20px;
-    
+    padding: 0px 0px;
     background-color: white;
 }
 
 .estilo-de-tabla tbody tr {
-    border-bottom: 1px solid black;
+    
 }
 
 .cajas {
-    padding: em 1em;
+    padding:20px ;
     border: none;
-    background-color: transparent;
-    background-color: white;
-    letter-spacing: .5px;
-    
+    font-family: "Press Start 2P";
+    font-weight: 400;
+    text-align: center;
+    width: 150px;
 
 }
 
@@ -38,4 +36,29 @@
     font-family: "Press Start 2P", system-ui;
     font-weight: 400;
     font-style: normal;
+    width: 20px;
+    height: 50px;
+    text-align: center;
+}
+
+.opciones{
+    font-family: "Press Start 2P", system-ui;
+    text-align: center;
+    border: none;
+    font-weight:normal;
+}
+
+.Valor{
+    font-family: "Press Start 2P", system-ui;
+    text-align: center;
+    font-size: 15px;
+}
+.Horas {
+    font-family: "Press Start 2P", system-ui;
+    text-align: center;
+}
+
+.numero{
+    font-family: "Press Start 2P", system-ui;
+    text-align: center;
 }
