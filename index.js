@@ -16,17 +16,53 @@ const numero1= document.getElementById("numero11");
 const fechaa= document.getElementById("fecha1");
 //console.log(fechaa.value);
 const diaa= document.getElementById("dia1");
-console.log(diaa.value);
+//console.log(diaa.value);
 
 
 const boton = document.querySelector("button");
 
+const funcionprueba1 = () =>{
+    if (fechaa.value) {
+    let date = new Date(fechaa.value);
+    let fechaactual= date.getDay();
+    console.log(fechaactual)
+    let diaSemana;
+    switch(fechaactual){
+    case 6:
+        diaSemana = "Domingo";
+        break;
+    case 0:
+        diaSemana = "Lunes";
+        break;
+    case 1:
+        diaSemana = "Martes";
+        break;
+    case 2:
+        diaSemana= "Miercoles";
+        break
+    case 3:
+        diaSemana = "Jueves";
+        break;
+    case 4:
+        diaSemana= "Viernes";
+        break;
+    case 5:
+        diaSemana = "Sabado";      
+    }
+    diaa.innerText = diaSemana;
+    }else{
+        diaa.innerText="Sin Fecha";
+    }
+}
+
+
+fechaa.addEventListener("change", funcionprueba1)
+
 const funcionprueba = ()=>{
-    if (seleccion1.value==="6:00 Am" && seleccion2.value==="13:00 Pm" && fechaa.value==="2024-09-11") {
+    if (seleccion1.value==="6:00 Am" && seleccion2.value==="13:00 Pm") {
         valor1.innerText="85.000.02"
         horas1.innerText =7
         numero1.innerText=100
-        diaa.innerText="Miercoles"
     }else{
         valor1.innerText="0"
         horas1.innerText =0
@@ -35,10 +71,6 @@ const funcionprueba = ()=>{
         console.warn("ERRORRRRRRRRRR")
     }
 }
-
-
-
-
 
 boton.addEventListener("click", funcionprueba)
 
