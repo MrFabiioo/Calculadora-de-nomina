@@ -1,13 +1,4 @@
-//Extraccion de dias de los turnos 
-const dia_1= document.getElementById("dia_1");
-const dia_2= document.getElementById("dia_2");
-const dia_3= document.getElementById("dia_3");
-const dia_4= document.getElementById("dia_4");
-//Extraccion de fechas de los turnos 
-const fecha_1= document.getElementById("fecha_1");
-const fecha_2= document.getElementById("fecha_2");
-const fecha_3= document.getElementById("fecha_3");
-const fecha_4= document.getElementById("fecha_4");
+
 
 // Extraccion de horarios de los turnos
 const  hora_inicio_1= document.getElementById("hora_inicio_1");
@@ -39,78 +30,35 @@ const numero_2= document.getElementById("numero_2");
 const numero_3= document.getElementById("numero_3");
 const numero_4= document.getElementById("numero_4");
 
-
-
 const boton = document.querySelector("button");
 
-const CalcularDia = () =>{
-    if (fecha_1.value) {
-    let date_1 = new Date(fecha_1.value);
-    let fecha_actual_1= date_1.getDay();
-    //console.log(fecha_actual_1)
-    let dia_semana_1;
-    switch(fecha_actual_1){
-    case 6:
-        dia_semana_1 = "Domingo";
-        break;
-    case 0:
-        dia_semana_1 = "Lunes";
-        break;
-    case 1:
-        dia_semana_1 = "Martes";
-        break;
-    case 2:
-        dia_semana_1= "Miercoles";
-        break
-    case 3:
-        dia_semana_1 = "Jueves";
-        break;
-    case 4:
-        dia_semana_1= "Viernes";
-        break;
-    case 5:
-        dia_semana_1 = "Sabado";      
+const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+
+// Calcular dia de la semana
+const calcularDia = (fechaInput, resultadoDia) => {
+    if (fechaInput.value) {
+        let date = new Date(fechaInput.value);
+        let diaSemana = diasSemana[date.getDay()];
+        resultadoDia.innerText = diaSemana;
+    } else {
+        resultadoDia.innerText = " ";
     }
-    dia_1.innerText = dia_semana_1;
-    }else{
-        dia_1.innerText="Sin Fecha";
-    }
-    if (fecha_2.value) {
-        let date_2 = new Date(fecha_2.value);
-        let fecha_actual_2= date_2.getDay();
-       // console.log(fecha_actual_2)
-        let dia_semana_2;
-        switch(fecha_actual_2){
-        case 6:
-            dia_semana_2 = "Domingo";
-            break;
-        case 0:
-            dia_semana_2 = "Lunes";
-            break;
-        case 1:
-            dia_semana_2 = "Martes";
-            break;
-        case 2:
-            dia_semana_2= "Miercoles";
-            break
-        case 3:
-            dia_semana_2 = "Jueves";
-            break;
-        case 4:
-            dia_semana_2= "Viernes";
-            break;
-        case 5:
-            dia_semana_2 = "Sabado";      
-        }
-        dia_2.innerText = dia_semana_2;
-        }else{
-            dia_2.innerText=" ";
-        }
+};
+
+// Asignar a todos los inputs y resultados correspondientes
+const asignarCalculadorDia = (fechaId, diaId) => {
+    const fechaInput = document.getElementById(fechaId);
+    const resultadoDia = document.getElementById(diaId);
+
+    fechaInput.addEventListener('change', () => calcularDia(fechaInput, resultadoDia));
+};
+
+// Asignar a múltiples inputs y resultados
+for (let i = 1; i <= 4; i++) {
+    asignarCalculadorDia(`fecha_${i}`, `dia_${i}`);
+    console.log(i)
+    // añadir filas y columnas que se agregen a peticion del usuario
 }
-
-
-fecha_1.addEventListener("change", CalcularDia)
-fecha_2.addEventListener("change", CalcularDia)
 
 const CalcularNomina = ()=>{
     let contador_turnos =0;
