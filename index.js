@@ -37,7 +37,8 @@ const asignarCalculadorDia = (fechaId, diaId) => {
 
 const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7 },
-    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 }
+    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 },
+    "Descanso-Descanso": { valor: 0,horas:0}
     // Agrega aquí los demás turnos y sus valores
 };
 
@@ -60,8 +61,12 @@ const CalcularNomina = () => {
             if (turnos[key]) {
                 document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
+                if(horaInicio.value==="Descanso" && horaSalida.value==="Descanso"){
+                    document.getElementById(`numero_${i}`).innerText = 0;
+                }else{
                 contador_turnos += 1;
                 document.getElementById(`numero_${i}`).innerText = contador_turnos;
+                }
             }
         } else {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
