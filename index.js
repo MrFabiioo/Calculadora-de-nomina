@@ -3,6 +3,7 @@ const encabezado_tabla = document.getElementById("encabezado_tabla")
 const boton_calcular = document.getElementById("calcular");
 const boton_añadir = document.getElementById("añadir");
 const boton_quitar = document.getElementById("quitar");
+const tbody = document.getElementById("cuerpo_tabla");
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -57,7 +58,6 @@ const CalcularNomina = () => {
             
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
-                console.log(turnos[key])
                 document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
                 contador_turnos += 1;
@@ -73,77 +73,64 @@ const CalcularNomina = () => {
 let contador = 1; // Contador para generar IDs únicos dinámicos
 
 const AñadirFila = () => {
-    // Generar IDs únicos basados en el contador
-    let idFecha = `fecha_${contador}`;
-    let idDia = `dia_${contador}`;
-    let idHoraInicio = `hora_inicio_${contador}`;
-    let idHoraSalida = `hora_salida_${contador}`;
-    let idValor = `valor_${contador}`;
-    let idHoras = `horas_${contador}`;
-    let idNumero = `numero_${contador}`;
-    
-    encabezado_tabla.insertAdjacentHTML("afterend", `
-        <tbody>
-            <tr>
-                <td>
-                    <label id='${idDia}' class='cajas' type='text'></label>
-                </td>
-                <td>
-                    <input id='${idFecha}' class='cajas' type='date'>
-                </td>
-                <td class='list-1'>
-                    <select id='${idHoraInicio}' class='opciones'>
-                        <option class='opciones'>Selecciona un horario</option>
-                        <option class='opciones'>Descanso</option>
-                        <option class='opciones'>5:00 Am</option>
-                        <option class='opciones'>5:30 Am</option>
-                        <option class='opciones'>6:00 Am</option>
-                        <option class='opciones'>7:00 Am</option>
-                        <option class='opciones'>8:00 Am</option>
-                        <option class='opciones'>9:00 Am</option>
-                        <option class='opciones'>12:00 m</option>
-                        <option class='opciones'>13:00 Pm</option>
-                        <option class='opciones'>13:30 Pm</option>
-                        <option class='opciones'>14:00 Pm</option>
-                        <option class='opciones'>15:00 Pm</option>
-                        <option class='opciones'>16:00 Pm</option>
-                        <option class='opciones'>17:00 Pm</option>
-                        <option class='opciones'>18:00 Pm</option>
-                        <option class='opciones'>22:00 Pm</option>
-                        <option class='opciones'>23:00 Pm</option>
-                    </select>
-                </td>
-                <td class='list-1'>
-                    <select id='${idHoraSalida}' class='opciones'>
-                        <option class='opciones'>Selecciona un horario</option>
-                        <option class='opciones'>Descanso</option>
-                        <option class='opciones'>5:00 Am</option>
-                        <option class='opciones'>6:00 Am</option>
-                        <option class='opciones'>12:00 m</option>
-                        <option class='opciones'>13:00 Pm</option>
-                        <option class='opciones'>13:30 Pm</option>
-                        <option class='opciones'>14:00 Pm</option>
-                        <option class='opciones'>15:00 Pm</option>
-                        <option class='opciones'>16:00 Pm</option>
-                        <option class='opciones'>17:00 Pm</option>
-                        <option class='opciones'>18:00 Pm</option>
-                        <option class='opciones'>22:00 Pm</option>
-                        <option class='opciones'>23:00 Pm</option>
-                        <option class='opciones'>24:00 Pm</option>
-                    </select>
-                </td>
-                <td id='${idValor}' class='Valor'></td>
-                <td id='${idHoras}' class='Horas'></td>
-                <td id='${idNumero}' class='numero'></td>
-            </tr>
-        </tbody>
+    let totalFilas = tbody.querySelectorAll('tr').length + 1; // Cuenta las filas actuales y suma 1 para el nuevo índice
+    tbody.insertAdjacentHTML("beforeend", `
+        <tr>
+            <td>
+                <label id='dia_${totalFilas}' class='cajas' type='text'></label>
+            </td>
+            <td>
+                <input id='fecha_${totalFilas}' class='cajas' type='date'>
+            </td>
+            <td class='list-1'>
+                <select id='hora_inicio_${totalFilas}' class='opciones'>
+                    <option class='opciones'>Selecciona un horario</option>
+                    <option class='opciones'>Descanso</option>
+                    <option class='opciones'>5:00 Am</option>
+                    <option class='opciones'>6:00 Am</option>
+                    <option class='opciones'>7:00 Am</option>
+                    <option class='opciones'>8:00 Am</option>
+                    <option class='opciones'>9:00 Am</option>
+                    <option class='opciones'>12:00 m</option>
+                    <option class='opciones'>13:00 Pm</option>
+                    <option class='opciones'>14:00 Pm</option>
+                    <option class='opciones'>15:00 Pm</option>
+                    <option class='opciones'>16:00 Pm</option>
+                    <option class='opciones'>17:00 Pm</option>
+                    <option class='opciones'>18:00 Pm</option>
+                    <option class='opciones'>22:00 Pm</option>
+                    <option class='opciones'>23:00 Pm</option>
+                </select>
+            </td>
+            <td class='list-1'>
+                <select id='hora_salida_${totalFilas}' class='opciones'>
+                    <option class='opciones'>Selecciona un horario</option>
+                    <option class='opciones'>Descanso</option>
+                    <option class='opciones'>5:00 Am</option>
+                    <option class='opciones'>6:00 Am</option>
+                    <option class='opciones'>12:00 m</option>
+                    <option class='opciones'>13:00 Pm</option>
+                    <option class='opciones'>14:00 Pm</option>
+                    <option class='opciones'>15:00 Pm</option>
+                    <option class='opciones'>16:00 Pm</option>
+                    <option class='opciones'>17:00 Pm</option>
+                    <option class='opciones'>18:00 Pm</option>
+                    <option class='opciones'>22:00 Pm</option>
+                    <option class='opciones'>23:00 Pm</option>
+                    <option class='opciones'>24:00 Pm</option>
+                </select>
+            </td>
+            <td id='valor_${totalFilas}' class='Valor'></td>
+            <td id='horas_${totalFilas}' class='Horas'></td>
+            <td id='numero_${totalFilas}' class='numero'></td>
+        </tr>
     `);
 
-    // Asignar el cálculo del día a la nueva fila
-    asignarCalculadorDia(idFecha, idDia);
+        // Asignar el cálculo del día a la nueva fila
+        asignarCalculadorDia(`fecha_${totalFilas}`, `dia_${totalFilas}`);
 
-    contador++; // Incrementar el contador para la próxima fila
-}
+        contador++; // Incrementar el contador para la próxima fila
+};
 
 // Resto del código permanece igual
 
