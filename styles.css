@@ -1,15 +1,18 @@
+
+
 .estilo-de-tabla  table {   
-    border: 1px solid ;
-    border-radius: 12px;
+    border-radius: 5px;
     color:black;
     background-color: black;
-    box-shadow: -5px 5px 0px;
+    box-shadow: -3px 3px 0px;
+    width: 100%;
 }
 
 .titulo{
     font-family: "IBM Plex Mono", monospace;
     font-weight: 700;
     font-style: normal;
+    text-align: center;
 }
 
 .estilo-de-tabla th,td{
@@ -69,3 +72,32 @@
     color: black;
     background-color: white;
 } */
+
+.contenedor_padre_2 {
+    background-color: white;
+    border: 2px solid black;
+    margin-top: 12px;
+    /* Asegura que el ancho sea igual al del otro div */
+    width: 100%;
+    height: 150px;
+    border-radius: 5px;
+    box-shadow: -3px 3px 0px;
+}
+
+.contenedor_padre_1{
+    background-color: white;
+    margin-top: 12px;
+    width: 100%;
+    height: 100px;
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 12px;
+}
+
+.contenedor_hijo{
+    height: 100%;
+    width: 100%;
+    border: 2px solid black;
+    border-radius: 5px;
+    box-shadow: -3px 3px 0px;
+}

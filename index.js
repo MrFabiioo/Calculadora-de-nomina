@@ -137,9 +137,17 @@ const AñadirFila = () => {
         contador++; // Incrementar el contador para la próxima fila
 };
 
-// Resto del código permanece igual
+const QuitarFila = () => {
+    // Asegurarse de que haya filas en el tbody
+    let filas = tbody.querySelectorAll('tr');
+    if (filas.length > 0) {
+        // Eliminar la última fila si existe
+        tbody.removeChild(filas[filas.length - 1]);
+    }
+};
 
 
 boton_calcular.addEventListener("click", CalcularNomina);
-boton_añadir.addEventListener("click", AñadirFila)
+boton_añadir.addEventListener("click", AñadirFila);
+boton_quitar.addEventListener('click',QuitarFila);
 
