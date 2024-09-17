@@ -4,6 +4,7 @@ const boton_calcular = document.getElementById("calcular");
 const boton_añadir = document.getElementById("añadir");
 const boton_quitar = document.getElementById("quitar");
 const tbody = document.getElementById("cuerpo_tabla");
+const monstrador_contador= document.getElementById("mostrador_contador")
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -38,7 +39,7 @@ const asignarCalculadorDia = (fechaId, diaId) => {
 const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7 },
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 },
-    "Descanso-Descanso": { valor: 0,horas:0}
+    "Descanso-Descanso": { valor:"",horas:""}
     // Agrega aquí los demás turnos y sus valores
 };
 
@@ -62,7 +63,7 @@ const CalcularNomina = () => {
                 document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
                 if(horaInicio.value==="Descanso" && horaSalida.value==="Descanso"){
-                    document.getElementById(`numero_${i}`).innerText = 0;
+                    document.getElementById(`numero_${i}`).innerText = " ";
                 }else{
                 contador_turnos += 1;
                 document.getElementById(`numero_${i}`).innerText = contador_turnos;
@@ -135,6 +136,7 @@ const AñadirFila = () => {
         asignarCalculadorDia(`fecha_${totalFilas}`, `dia_${totalFilas}`);
 
         contador++; // Incrementar el contador para la próxima fila
+        monstrador_contador.innerText = tbody.children.length;
 };
 
 const QuitarFila = () => {
@@ -142,8 +144,9 @@ const QuitarFila = () => {
     let filas = tbody.querySelectorAll('tr');
     if (filas.length > 0) {
         // Eliminar la última fila si existe
-        tbody.removeChild(filas[filas.length - 1]);
+        tbody.removeChild(filas[filas.length - 1]);   
     }
+    monstrador_contador.innerText = tbody.children.length;
 };
 
 

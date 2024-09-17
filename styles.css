@@ -5,7 +5,7 @@
     color:black;
     background-color: black;
     box-shadow: -3px 3px 0px;
-    width: 100%;
+    width: 772px;
 }
 
 .titulo{
@@ -13,6 +13,7 @@
     font-weight: 700;
     font-style: normal;
     text-align: center;
+    width: 772px;
 }
 
 .estilo-de-tabla th,td{
@@ -78,7 +79,7 @@
     border: 2px solid black;
     margin-top: 18px;
     /* Asegura que el ancho sea igual al del otro div */
-    width: 100%;
+    width: 772px;
     height: 160px;
     border-radius: 5px;
     box-shadow: -3px 3px 0px;
@@ -91,7 +92,7 @@
 .contenedor_padre_1{
     background-color: white;
     margin-top: 12px;
-    width: 100%;
+    width: 772px;
     height: 100px;
     display: grid;
     grid-auto-flow: column;
@@ -142,8 +143,7 @@
 }
 
 .botton{
-    margin-top: 20px;
-    margin-right: 20px;
+    font-family: "IBM Plex Mono", monospace;
 }
 
 .contenedor_hijo_1{
