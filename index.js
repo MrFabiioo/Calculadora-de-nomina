@@ -4,7 +4,10 @@ const boton_calcular = document.getElementById("calcular");
 const boton_añadir = document.getElementById("añadir");
 const boton_quitar = document.getElementById("quitar");
 const tbody = document.getElementById("cuerpo_tabla");
-const monstrador_contador= document.getElementById("mostrador_contador")
+const mostrador_contador= document.getElementById("mostrador_contador");
+const deducciones_nomina= document.getElementById("deducciones_nomina");
+const tota_deducciones = document.getElementById('tota_deducciones');
+const salario_neto = document.getElementById('salario_neto');
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -39,13 +42,15 @@ const asignarCalculadorDia = (fechaId, diaId) => {
 const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7 },
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 },
-    "Descanso-Descanso": { valor:"",horas:""}
+    "Descanso-Descanso": { valor:0,horas:""}
     // Agrega aquí los demás turnos y sus valores
 };
 
+
+
 const CalcularNomina = () => {
     let contador_turnos = 0;
-
+    let suma=0;
     // Selecciona todas las filas dinámicamente
     let filas = document.querySelectorAll('tbody tr'); // Selecciona todas las filas dentro de <tbody>
 
@@ -58,9 +63,12 @@ const CalcularNomina = () => {
         if (horaInicio && horaSalida) { // Verifica que ambos elementos existan
             let key = `${horaInicio.value}-${horaSalida.value}`;
             
+            
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
                 document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
+                suma +=turnos[key].valor;
+                console.log(suma)
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
                 if(horaInicio.value==="Descanso" && horaSalida.value==="Descanso"){
                     document.getElementById(`numero_${i}`).innerText = " ";
@@ -68,13 +76,19 @@ const CalcularNomina = () => {
                 contador_turnos += 1;
                 document.getElementById(`numero_${i}`).innerText = contador_turnos;
                 }
+                let monto  = Number(deducciones_nomina.value).toLocaleString('es-ES',{style:'currency',currency:'COP'})
+                //console.log(monto);
+
+                tota_deducciones.innerText =monto;
             }
         } else {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
         }
+        salario_neto.innerText= Number(suma).toLocaleString('es-ES',{style:'currency',currency:'COP'});
     });
-};
 
+    return suma;
+};
 
 let contador = 1; // Contador para generar IDs únicos dinámicos
 
@@ -136,7 +150,7 @@ const AñadirFila = () => {
         asignarCalculadorDia(`fecha_${totalFilas}`, `dia_${totalFilas}`);
 
         contador++; // Incrementar el contador para la próxima fila
-        monstrador_contador.innerText = tbody.children.length;
+        mostrador_contador.innerText = tbody.children.length;
 };
 
 const QuitarFila = () => {
@@ -144,9 +158,11 @@ const QuitarFila = () => {
     let filas = tbody.querySelectorAll('tr');
     if (filas.length > 0) {
         // Eliminar la última fila si existe
-        tbody.removeChild(filas[filas.length - 1]);   
+        tbody.removeChild(filas[filas.length - 1]);
+        let totalSuma = CalcularNomina();
+        console.log(totalSuma);   
     }
-    monstrador_contador.innerText = tbody.children.length;
+    mostrador_contador.innerText = tbody.children.length;
 };
 
 
