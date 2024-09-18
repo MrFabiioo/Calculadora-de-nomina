@@ -8,6 +8,7 @@ const mostrador_contador= document.getElementById("mostrador_contador");
 const deducciones_nomina= document.getElementById("deducciones_nomina");
 const tota_deducciones = document.getElementById('tota_deducciones');
 const salario_neto = document.getElementById('salario_neto');
+const subsidio_transporte_label =document.getElementById('subsidio_transporte_label');
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -39,6 +40,34 @@ const asignarCalculadorDia = (fechaId, diaId) => {
 
 //-------------------------------------------------------------------------------------------------------//
 
+let subsidioYaAplicado = false;
+
+const calcularNominaConSubsidio = () => {
+    if (suma < 2600000 && !subsidioYaAplicado) {  // Se añade el subsidio solo si no se ha aplicado antes
+        let subsidio_transporte = 0;
+
+        if (tbody.children.length > 30) {
+            subsidio_transporte = 162000;
+            //suma += subsidio_transporte;
+            subsidio_transporte_label.innerText = Number(subsidio_transporte).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+        } else {
+            let dia_subsidio_transporte = 162000 / 30;
+            let subsidio_transporte_a_pagar = dia_subsidio_transporte * tbody.children.length;
+            //suma += subsidio_transporte_a_pagar;
+            subsidio_transporte_label.innerText = Number(subsidio_transporte_a_pagar).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+        }
+
+        subsidioYaAplicado = true;  // Marcamos que ya se ha aplicado el subsidio
+        //salario_neto.innerText = Number(suma).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+
+    } else if (suma > 2600000) {
+        subsidio_transporte_label.innerText = 0;
+        
+    }
+    return
+};
+
+
 const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7 },
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 },
@@ -68,7 +97,7 @@ const CalcularNomina = () => {
             if (turnos[key]) {
                 document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
                 suma +=turnos[key].valor;
-                console.log(suma)
+                //console.log(suma)
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
                 if(horaInicio.value==="Descanso" && horaSalida.value==="Descanso"){
                     document.getElementById(`numero_${i}`).innerText = " ";
@@ -84,7 +113,11 @@ const CalcularNomina = () => {
         } else {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
         }
-        salario_neto.innerText= Number(suma).toLocaleString('es-ES',{style:'currency',currency:'COP'});
+        console.log(calcularNominaConSubsidio(suma));
+        let total_subsidio = calcularNominaConSubsidio(suma);
+        suma+=total_subsidio
+        salario_neto.innerText = Number(suma).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+
     });
 
     return suma;
@@ -160,7 +193,7 @@ const QuitarFila = () => {
         // Eliminar la última fila si existe
         tbody.removeChild(filas[filas.length - 1]);
         let totalSuma = CalcularNomina();
-        console.log(totalSuma);   
+        //console.log(totalSuma);   
     }
     mostrador_contador.innerText = tbody.children.length;
 };
