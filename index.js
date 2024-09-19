@@ -77,10 +77,15 @@ const calcularNominaConSubsidio = (suma) => {
 
 
 const turnos = {
-    "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 113798.43, festivo: 151731.24 },
-    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 135730.35, festivo: 180973.80 },
     "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0 },
-    "14:00 Pm-22:00 Pm": { valor: 155524.14, horas: 8, domingo: 233286.21, festivo: 311048.28 }
+    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
+    "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
+    "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
+    "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
+    "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
+    "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
+    "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
+    "16:00 Pm-23:00 Pm": { valor: 83452.29, horas: 7, domingo: 140350.98, festivo: 140350.98},
 };
 
 
