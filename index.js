@@ -6,11 +6,20 @@ const boton_quitar = document.getElementById("quitar");
 const tbody = document.getElementById("cuerpo_tabla");
 const mostrador_contador= document.getElementById("mostrador_contador");
 const deducciones_nomina= document.getElementById("deducciones_nomina");
+const deducciones_emi_familiares = document.getElementById('deducciones_emi_familiares');
+const otras_deducciones = document.getElementById('otras_deducciones');
 const tota_deducciones = document.getElementById('tota_deducciones');
-const salario_neto = document.getElementById('salario_neto');
+const total_devengado = document.getElementById('total_devengado');
 const subsidio_transporte_label =document.getElementById('subsidio_transporte_label');
 const horas_label = document.getElementById('horas_label');
 const turnos_label = document.getElementById('turnos_label');
+const valor_salud_empleado_label =  document.getElementById('valor_salud_empleado_label');
+const valor_pension_empleado_label = document.getElementById('valor_pension_empleado_label');
+const total_empleado_label = document.getElementById('total_empleado_label');
+const valor_salud_empresa_label = document.getElementById('valor_salud_empresa_label');
+const valor_pension_empresa_label = document.getElementById('valor_pension_empresa_label');
+const total_empresa_label = document.getElementById('total_empresa_label');
+const neto_a_pagar =  document.getElementById('neto_a_pagar');
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -70,7 +79,8 @@ const calcularNominaConSubsidio = (suma) => {
 const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7 },
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8 },
-    "Descanso-Descanso": { valor:0,horas:0}
+    "Descanso-Descanso": { valor:0,horas:0},
+    '14:00 Pm-22:00 Pm':{valor:155524.14,horas:8}
     // Agrega aquí los demás turnos y sus valores
 };
 
@@ -78,9 +88,15 @@ const turnos = {
 
 const CalcularNomina = () => {
     subsidioYaAplicado = false; // Reiniciar la variable cada vez que se hace click
-    let suma_horas=0
-    let suma_turnos=0
+    let suma_horas=0;
+    let salud_empleado=0;
+    let salud_empresa =0;
+    let pension_empleado=0;
+    let pension_empresa =0;
     let contador_turnos = 0;
+    let total_salud_pension_empleado=0
+    let total_salud_pension_empresa=0
+    let salario_neto=0;
     let suma=0;
     // Selecciona todas las filas dinámicamente
     let filas = document.querySelectorAll('tbody tr'); // Selecciona todas las filas dentro de <tbody>
@@ -97,7 +113,7 @@ const CalcularNomina = () => {
             
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
-                document.getElementById(`valor_${i}`).innerText = turnos[key].valor;
+                document.getElementById(`valor_${i}`).innerText = Number(turnos[key].valor).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });;
                 suma +=turnos[key].valor;
                 //console.log(suma)
                 document.getElementById(`horas_${i}`).innerText = turnos[key].horas;
@@ -108,21 +124,40 @@ const CalcularNomina = () => {
                 contador_turnos += 1;
                 document.getElementById(`numero_${i}`).innerText = contador_turnos;
                 }
-                let monto  = Number(deducciones_nomina.value).toLocaleString('es-ES',{style:'currency',currency:'COP'})
-                //console.log(monto);
 
-                tota_deducciones.innerText =monto;
             }
         } else {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
         }
     });
+
     turnos_label.innerText=contador_turnos;
     horas_label.innerText=suma_horas;
     let total_subsidio = calcularNominaConSubsidio(suma);
    // console.log('Total subsidio: '+total_subsidio);
     suma+=total_subsidio
-    salario_neto.innerText = Number(suma).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    salud_empleado = 4*suma/100;
+    salud_empresa = 8.5*suma/100;
+    pension_empleado =4*suma/100;
+    pension_empresa =12*suma/100;
+    total_salud_pension_empleado=salud_empleado+pension_empleado;
+    total_salud_pension_empresa=salud_empresa+pension_empresa;
+
+    let monto  = Number(deducciones_nomina.value)+Number(deducciones_emi_familiares.value)+Number(otras_deducciones.value)+pension_empleado+salud_empleado;
+
+    tota_deducciones.innerText =Number(monto).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    total_empresa_label.innerText =Number(total_salud_pension_empresa).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    valor_pension_empresa_label.innerText=Number(pension_empresa).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    valor_salud_empresa_label.innerText = Number(salud_empresa).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    total_empleado_label.innerText =Number(total_salud_pension_empleado).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    valor_pension_empleado_label.innerText = Number(pension_empleado).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    valor_salud_empleado_label.innerText = Number(salud_empleado).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    //salario_neto.innerText = Number(suma).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    salario_neto = Number(suma-monto).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+    neto_a_pagar.innerText = salario_neto;
+    total_devengado.innerText=Number(suma).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
+
+
 
     return suma;
 };

@@ -5,7 +5,7 @@
     color:black;
     background-color: black;
     box-shadow: -3px 3px 0px;
-    width: 772px;
+    width: 831px;
 }
 
 .titulo{
@@ -79,7 +79,7 @@
     border: 2px solid black;
     margin-top: 18px;
     /* Asegura que el ancho sea igual al del otro div */
-    width: 772px;
+    width: 831px;
     height: 160px;
     border-radius: 5px;
     box-shadow: -3px 3px 0px;
@@ -92,7 +92,7 @@
 .contenedor_padre_1{
     background-color: white;
     margin-top: 12px;
-    width: 772px;
+    width: 831px;
     height: 100px;
     display: grid;
     grid-auto-flow: column;
@@ -196,6 +196,7 @@
     grid-template-columns: 90px 120px 120px ;
     grid-template-rows: 40px 40px 40px 40px;
     place-content: center;
+    padding-left: 60px;
     
 }
 .contenedor_salud_pension{
@@ -253,27 +254,33 @@
 .item-10{
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 }
 .item-11{
     grid-area: 3/2/4/3;
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 }
 .item-12{
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 }
 .item-13{
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 }
 .item-14{
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 
 }
 .item-15{
     grid-area: 4 / 3 / 5 / 4;
     border-bottom: 2px solid black;
     height: 30px;
+    font-size: small;
 }
