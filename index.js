@@ -127,13 +127,17 @@ const CalcularNomina = () => {
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
                 let valorTurno = turnos[key].valor; // Valor por defecto
+
+                if (esDomingo(fechaInput) && esFestivo(fechaInput)){
+                    valorTurno = turnos[key].festivo; // Valor para domingo y festivo
+                }
                 
                 // Verificar si es domingo o festivo
-                if (esDomingo(fechaInput)) {
+                else if (esDomingo(fechaInput)) {
                     valorTurno = turnos[key].domingo; // Valor para domingo
                 } else if (esFestivo(fechaInput)) {
                     valorTurno = turnos[key].festivo; // Valor para festivo
-                }
+                } 
 
                 // Mostrar el valor del turno en la tabla
                 document.getElementById(`valor_${i}`).innerText = Number(valorTurno).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
