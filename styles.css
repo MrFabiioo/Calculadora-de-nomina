@@ -1,4 +1,7 @@
-
+body{
+  display: grid;
+  place-content: center;  
+}
 
 .estilo-de-tabla  table {   
     border-radius: 5px;
@@ -142,8 +145,29 @@
     text-align: center;
 }
 
-.botton{
+.contenedor_botones{
+    display: grid;
+    grid-template-columns: 110px 110px 100px 110px 100px 100px 100px 100px;
+}
+
+.añadir{
     font-family: "IBM Plex Mono", monospace;
+    width: 60px;
+    height: 28px;
+    grid-template-columns: 20px 30px;
+}
+.quitar{
+    font-family: "IBM Plex Mono", monospace;
+    width: 60px;
+    height: 28px;
+    grid-area: 1 /8 /2 /9;
+    justify-self: end;
+}
+
+.calcular{
+    font-family: "IBM Plex Mono", monospace;
+    width: 200px;
+    margin-top: 20px;
 }
 
 .contenedor_hijo_1{
@@ -154,8 +178,6 @@
     display: grid;
     justify-items: center;
     margin-top: 6px;
-
-
 }
 
 .subtitulo{
@@ -283,4 +305,32 @@
     border-bottom: 2px solid black;
     height: 30px;
     font-size: small;
+}
+
+.btn {
+    margin-bottom: 10px;
+    font-family: "IBM Plex Mono", monospace;
+    border: 2px solid black;
+    color: black;
+    box-shadow: -3px 3px 0px;
+    padding: 14px 28px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: white; /* Color base del botón */
+    transition: transform 0.3s ease-in-out; /* Transición suave del efecto de pulsación */
+    display: grid;
+    place-content: center;
+  }
+  
+  .btn:hover {
+    background-color: rgb(207, 201, 201); /* Cambia el color al pasar el cursor sobre el botón */
+  }
+  
+  .btn:active {
+    transform: scale(0.9); /* Reduce ligeramente el tamaño del botón cuando se hace clic */
+  }
+
+.div_para_centrar_botton_calcular{
+    display: grid;
+    place-content: center;
 }

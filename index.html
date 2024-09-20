@@ -10,11 +10,16 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div>
+        <button class="btn cambio_tema">Cambio de tema</button>
+    </div>
     <h1 class="titulo"> Calculadora de Nómina</h1>
-    <button class="botton" id="añadir">➕
-        <label id="mostrador_contador" for=""></label>
-    </button>
-    <button class="botton" id="quitar">❌</button>
+    <div class="contenedor_botones" >
+        <button class="btn añadir" id="añadir">➕
+            <label id="mostrador_contador" for=""></label>
+        </button>
+        <button class="btn quitar" id="quitar">✖</button>
+    </div>
     <div class="estilo-de-tabla">
         <Table>
             <thead id="encabezado_tabla">
@@ -110,8 +115,10 @@
         
     </div>
     
+    <div class="div_para_centrar_botton_calcular" >
+        <button class="btn calcular" id="calcular">Calcular</button>
+    </div>
     
-    <button class="botton" id="calcular">Calcular</button>
 
     <script type="text/javascript" src="index.js"></script>
 </body>
