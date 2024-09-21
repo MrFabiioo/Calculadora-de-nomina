@@ -320,17 +320,26 @@ body{
     transition: transform 0.3s ease-in-out; /* Transición suave del efecto de pulsación */
     display: grid;
     place-content: center;
-  }
-  
-  .btn:hover {
+    }
+
+.btn:hover {
     background-color: rgb(207, 201, 201); /* Cambia el color al pasar el cursor sobre el botón */
-  }
-  
-  .btn:active {
+    }
+
+.btn:active {
     transform: scale(0.9); /* Reduce ligeramente el tamaño del botón cuando se hace clic */
-  }
+    }
 
 .div_para_centrar_botton_calcular{
+    display: grid;
+    place-content: center;
+}
+
+.dark-theme{
+    background-color: black;
+}
+
+.contenedor_cambio_tema{
     display: grid;
     place-content: center;
 }

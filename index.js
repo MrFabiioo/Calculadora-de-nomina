@@ -20,8 +20,13 @@ const valor_salud_empresa_label = document.getElementById('valor_salud_empresa_l
 const valor_pension_empresa_label = document.getElementById('valor_pension_empresa_label');
 const total_empresa_label = document.getElementById('total_empresa_label');
 const neto_a_pagar =  document.getElementById('neto_a_pagar');
+const btn_cambio_tema = document.getElementById('btn_cambio_tema')
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+
+btn_cambio_tema.addEventListener('click',()=>{
+    document.body.classList.toggle('dark-theme');
+})
 
 // Calcular dia de la semana
 const calcularDia = (fechaInput, resultadoDia) => {
@@ -79,16 +84,28 @@ const calcularNominaConSubsidio = (suma) => {
 const turnos = {
     "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0 },
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
+    "5:30 Am-13:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53},
+    "6:00 Am-12:00 m": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
     "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
     "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
     "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
     "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
+    "10:00 Am-16:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
+    "12:00 m-18:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
+    "13:00 Pm-19:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
+    "13:00 Pm-21:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
+    "13:30 Pm-21:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53},
     "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
+    "15:00 Pm-22:00 Pm": { valor: 79658.94, horas: 7, domingo: 136557.75, festivo: 136557.75},
     "15:00 Pm-23:00 Pm": { valor: 94290.24, horas: 8, domingo: 159317.35, festivo: 159317.35 },
+    "16:00 Pm-22:00 Pm": { valor: 68821.04, horas:6, domingo: 117591.43, festivo: 117591.43},
     "16:00 Pm-23:00 Pm": { valor: 83452.29, horas: 7, domingo: 140350.98, festivo: 140350.98},
     "16:00 Pm-24:00 Pm": { valor: 98083.58, horas: 8, domingo: 163110.56, festivo: 163110.56},
-    "22:00 Pm-6:00 Am": { valor: 117050.26, horas: 8, domingo: 133306.84, festivo: 182076.60},
+    "17:00 Pm-23:00 Pm": { valor: 72614.31, horas: 6, domingo: 121384.64, festivo: 121384.64},
+    "18:00 Pm-24:00 Pm": { valor: 76407.64, horas: 6, domingo: 125177.85, festivo: 125177.85},
+    "22:00 Pm-6:00 Am": { valor: 117050.26, horas: 8, domingo: 133306.84, festivo: 182076.60, normalFestivo:165820.02},
+    "23:00 Pm-5:00 Am": { valor: 87787.66, horas: 6, domingo: 95915.98, festivo: 136557.48, normalFestivo:128429.16}
 };
 
 
@@ -98,8 +115,22 @@ const esDomingo = (fecha) => {
     return diaSemana === 6; // 6 representa domingo
 };
 
+const normal_a_festivos = ["2024-12-24","2024-09-21","2024-09-28","2024-10-05","2024-10-12","2024-10-19","2024-10-26","2024-11-02","2024-11-09","2024-11-16","2024-11-23","2024-11-30","2024-12-07","2024-12-14","2024-12-21","2024-12-28"];
+
+const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25"]
+
+const esNormalAFestivo = (fecha)=>{
+    return normal_a_festivos.includes(fecha);
+};
+const esFestivoANormal = (fecha)=>{
+    return festivo_a_normal.includes(fecha);
+};
+
+const domingo_y_festivo= ["2024-10-13"];
+
+
 // Verifica si la fecha es festivo (puedes personalizar este arreglo con las fechas de festivos)
-const festivos = ["2024-01-01", "2024-12-25","2024-09-20","2024-09-29"]; // Ejemplo de fechas festivas
+const festivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10"]; // Ejemplo de fechas festivas
 const esFestivo = (fecha) => {
     return festivos.includes(fecha);
 };
@@ -131,13 +162,16 @@ const CalcularNomina = () => {
                 if (esDomingo(fechaInput) && esFestivo(fechaInput)){
                     valorTurno = turnos[key].festivo; // Valor para domingo y festivo
                 }
-                
                 // Verificar si es domingo o festivo
                 else if (esDomingo(fechaInput)) {
                     valorTurno = turnos[key].domingo; // Valor para domingo
-                } else if (esFestivo(fechaInput)) {
-                    valorTurno = turnos[key].festivo; // Valor para festivo
-                } 
+                } else if (esNormalAFestivo(fechaInput)) {
+                    valorTurno = turnos[key].normalFestivo; // Valor para festivo
+                    }else if (esFestivoANormal(fechaInput)) {
+                        valorTurno = turnos[key].domingo;
+                    } else if(esFestivo(fechaInput)) {
+                        valorTurno= turnos[key].festivo;
+                    }   
 
                 // Mostrar el valor del turno en la tabla
                 document.getElementById(`valor_${i}`).innerText = Number(valorTurno).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
