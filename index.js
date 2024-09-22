@@ -82,7 +82,7 @@ const calcularNominaConSubsidio = (suma) => {
 
 
 const turnos = {
-    "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0 },
+    "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0,normalFestivo:0},
     "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 , normalFestivo:90486.90},
     "5:30 Am-13:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53, normalFestivo:88600.23},
     "6:00 Am-12:00 m": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
