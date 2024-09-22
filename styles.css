@@ -135,7 +135,7 @@ body{
     margin-bottom: 6px;
     justify-self: start;
     align-self: end;
-    
+
 }
 
 .item-3{
@@ -324,6 +324,9 @@ body{
     display: grid;
     place-content: center;
     }
+.btn_añadir{
+    font-size:x-large;
+}
 
 .btn:hover {
     background-color: rgb(207, 201, 201); /* Cambia el color al pasar el cursor sobre el botón */
@@ -383,6 +386,46 @@ body.dark-theme{
     color: CanvasText;
     color-scheme: dark;
     border-color: white;
+}
+
+.dark-theme #calcular{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+
+.dark-theme #btn_cambio_tema{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+
+.dark-theme #añadir{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+
+}
+
+.dark-theme #quitar{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+
+}
+
+.dark-theme #ctn_salud_pension label{
+    color: CanvasText;
+    color-scheme: dark;
+    border-color:Canvas ;
+}
+
+.dark-theme #encabezado_salud_pension{
+    background-color: rgb(118, 118, 118);
 }
 .contenedor_cambio_tema{
     display: grid;
