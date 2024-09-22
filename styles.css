@@ -8,7 +8,7 @@ body{
     color:black;
     background-color: black;
     box-shadow: -3px 3px 0px;
-    width: 831px;
+    width: 900px;
 }
 
 .titulo{
@@ -16,7 +16,7 @@ body{
     font-weight: 700;
     font-style: normal;
     text-align: center;
-    width: 772px;
+    width: 900px;
 }
 
 .estilo-de-tabla th,td{
@@ -82,7 +82,7 @@ body{
     border: 2px solid black;
     margin-top: 18px;
     /* Asegura que el ancho sea igual al del otro div */
-    width: 831px;
+    width: 900px;
     height: 160px;
     border-radius: 5px;
     box-shadow: -3px 3px 0px;
@@ -95,7 +95,7 @@ body{
 .contenedor_padre_1{
     background-color: white;
     margin-top: 12px;
-    width: 831px;
+    width: 900px;
     height: 100px;
     display: grid;
     grid-auto-flow: column;
@@ -147,7 +147,7 @@ body{
 
 .contenedor_botones{
     display: grid;
-    grid-template-columns: 110px 110px 100px 110px 100px 100px 100px 100px;
+    grid-template-columns: 120px 120px 110px 110px 110px 110px 110px 110px;
 }
 
 .añadir{
@@ -218,7 +218,7 @@ body{
     grid-template-columns: 90px 120px 120px ;
     grid-template-rows: 40px 40px 40px 40px;
     place-content: center;
-    padding-left: 60px;
+    padding-left: 128px;
     
 }
 .contenedor_salud_pension{
