@@ -97,6 +97,7 @@ const turnos = {
     "13:00 Pm-21:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
     "13:30 Pm-21:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53},
     "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
+    "15:00 Pm-21:00 Pm": { valor: 65027.67, horas: 6, domingo: 113798.19, festivo: 113798.19},
     "15:00 Pm-22:00 Pm": { valor: 79658.94, horas: 7, domingo: 136557.75, festivo: 136557.75},
     "15:00 Pm-23:00 Pm": { valor: 94290.24, horas: 8, domingo: 159317.35, festivo: 159317.35 },
     "16:00 Pm-22:00 Pm": { valor: 68821.04, horas:6, domingo: 117591.43, festivo: 117591.43},
@@ -115,9 +116,9 @@ const esDomingo = (fecha) => {
     return diaSemana === 6; // 6 representa domingo
 };
 
-const normal_a_festivos = ["2024-12-24","2024-09-21","2024-09-28","2024-10-05","2024-10-12","2024-10-19","2024-10-26","2024-11-02","2024-11-09","2024-11-16","2024-11-23","2024-11-30","2024-12-07","2024-12-14","2024-12-21","2024-12-28"];
+const normal_a_festivos = ["2024-12-24","2024-09-21","2024-09-28","2024-10-05","2024-10-12","2024-10-19","2024-10-26","2024-11-02","2024-11-09","2024-11-16","2024-11-23","2024-11-30","2024-12-07","2024-12-14","2024-12-21","2024-12-28","2024-08-03","2024-08-10","2024-08-17","2024-08-24","2024-08-31"];
 
-const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25"]
+const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25","2024-08-7","2024-08-19"]
 
 const esNormalAFestivo = (fecha)=>{
     return normal_a_festivos.includes(fecha);
@@ -126,11 +127,11 @@ const esFestivoANormal = (fecha)=>{
     return festivo_a_normal.includes(fecha);
 };
 
-const domingo_y_festivo= ["2024-10-13"];
+const domingo_y_festivo= ["2024-10-13","2024-08-18"];
 
 
 // Verifica si la fecha es festivo (puedes personalizar este arreglo con las fechas de festivos)
-const festivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10"]; // Ejemplo de fechas festivas
+const festivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19"]; // Ejemplo de fechas festivas
 const esFestivo = (fecha) => {
     return festivos.includes(fecha);
 };
@@ -244,19 +245,25 @@ const AñadirFila = () => {
                     <option class='opciones'>Selecciona un horario</option>
                     <option class='opciones'>Descanso</option>
                     <option class='opciones'>5:00 Am</option>
+                    <option class='opciones'>5:30 Am</option>
                     <option class='opciones'>6:00 Am</option>
                     <option class='opciones'>7:00 Am</option>
                     <option class='opciones'>8:00 Am</option>
                     <option class='opciones'>9:00 Am</option>
+                    <option class='opciones'>10:00 Am</option>
                     <option class='opciones'>12:00 m</option>
                     <option class='opciones'>13:00 Pm</option>
+                    <option class='opciones'>13:30 Pm</option>
                     <option class='opciones'>14:00 Pm</option>
                     <option class='opciones'>15:00 Pm</option>
                     <option class='opciones'>16:00 Pm</option>
                     <option class='opciones'>17:00 Pm</option>
                     <option class='opciones'>18:00 Pm</option>
+                    <option class='opciones'>19:00 Pm</option>
+                    <option class='opciones'>21:00 Pm</option>
                     <option class='opciones'>22:00 Pm</option>
                     <option class='opciones'>23:00 Pm</option>
+                    <option class='opciones'>24:00 Pm</option>
                 </select>
             </td>
             <td class='list-1'>
@@ -264,14 +271,22 @@ const AñadirFila = () => {
                     <option class='opciones'>Selecciona un horario</option>
                     <option class='opciones'>Descanso</option>
                     <option class='opciones'>5:00 Am</option>
+                    <option class='opciones'>5:30 Am</option>
                     <option class='opciones'>6:00 Am</option>
+                    <option class='opciones'>7:00 Am</option>
+                    <option class='opciones'>8:00 Am</option>
+                    <option class='opciones'>9:00 Am</option>
+                    <option class='opciones'>10:00 Am</option>
                     <option class='opciones'>12:00 m</option>
                     <option class='opciones'>13:00 Pm</option>
+                    <option class='opciones'>13:30 Pm</option>
                     <option class='opciones'>14:00 Pm</option>
                     <option class='opciones'>15:00 Pm</option>
                     <option class='opciones'>16:00 Pm</option>
                     <option class='opciones'>17:00 Pm</option>
                     <option class='opciones'>18:00 Pm</option>
+                    <option class='opciones'>19:00 Pm</option>
+                    <option class='opciones'>21:00 Pm</option>
                     <option class='opciones'>22:00 Pm</option>
                     <option class='opciones'>23:00 Pm</option>
                     <option class='opciones'>24:00 Pm</option>
