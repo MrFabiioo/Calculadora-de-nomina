@@ -6,7 +6,7 @@ body{
 .estilo-de-tabla  table {   
     border-radius: 5px;
     color:black;
-    background-color: black;
+    border: 2px solid black;
     box-shadow: -3px 3px 0px;
     width: 900px;
 }
@@ -22,6 +22,7 @@ body{
 .estilo-de-tabla th,td{
     background-color: white;
     text-align: center;
+    border: 1px solid black;
 }
 
 
@@ -125,8 +126,6 @@ body{
     margin: 6px;
     font-weight: 700;
     justify-self: center;
-    
-
 }
 
 .item-2{
@@ -136,6 +135,7 @@ body{
     margin-bottom: 6px;
     justify-self: start;
     align-self: end;
+    
 }
 
 .item-3{
@@ -338,10 +338,52 @@ body{
     place-content: center;
 }
 
-.dark-theme{
-    background-color: black;
+body.dark-theme{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
 }
 
+.dark-theme #estilito tr td{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+
+.dark-theme #estilito table{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+.dark-theme #contenedor_deducciones{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+
+.dark-theme #contenedor_deducciones .contenedor_hijo{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+.dark-theme #contenedor_deducciones .contenedor_hijo img{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
+
+
+.dark-theme #estilito table thead tr th{
+    background-color: Canvas;
+    color: CanvasText;
+    color-scheme: dark;
+    border-color: white;
+}
 .contenedor_cambio_tema{
     display: grid;
     place-content: center;
