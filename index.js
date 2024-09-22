@@ -83,28 +83,28 @@ const calcularNominaConSubsidio = (suma) => {
 
 const turnos = {
     "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0 },
-    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
-    "5:30 Am-13:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53},
-    "6:00 Am-12:00 m": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
-    "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
-    "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
-    "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
-    "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
-    "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 },
-    "10:00 Am-16:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
-    "12:00 m-18:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
-    "13:00 Pm-19:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 },
-    "13:00 Pm-21:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 },
-    "13:30 Pm-21:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53},
-    "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 },
-    "15:00 Pm-21:00 Pm": { valor: 65027.67, horas: 6, domingo: 113798.19, festivo: 113798.19},
-    "15:00 Pm-22:00 Pm": { valor: 79658.94, horas: 7, domingo: 136557.75, festivo: 136557.75},
-    "15:00 Pm-23:00 Pm": { valor: 94290.24, horas: 8, domingo: 159317.35, festivo: 159317.35 },
-    "16:00 Pm-22:00 Pm": { valor: 68821.04, horas:6, domingo: 117591.43, festivo: 117591.43},
-    "16:00 Pm-23:00 Pm": { valor: 83452.29, horas: 7, domingo: 140350.98, festivo: 140350.98},
-    "16:00 Pm-24:00 Pm": { valor: 98083.58, horas: 8, domingo: 163110.56, festivo: 163110.56},
-    "17:00 Pm-23:00 Pm": { valor: 72614.31, horas: 6, domingo: 121384.64, festivo: 121384.64},
-    "18:00 Pm-24:00 Pm": { valor: 76407.64, horas: 6, domingo: 125177.85, festivo: 125177.85},
+    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 , normalFestivo:90486.90},
+    "5:30 Am-13:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53, normalFestivo:88600.23},
+    "6:00 Am-12:00 m": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
+    "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
+    "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
+    "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
+    "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
+    "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
+    "10:00 Am-16:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
+    "12:00 m-18:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
+    "13:00 Pm-19:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
+    "13:00 Pm-21:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
+    "13:30 Pm-21:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53, normalFestivo:88600.23},
+    "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 , normalFestivo:90486.90},
+    "15:00 Pm-21:00 Pm": { valor: 65027.67, horas: 6, domingo: 113798.19, festivo: 113798.19 , normalFestivo:65027.67},
+    "15:00 Pm-22:00 Pm": { valor: 79658.94, horas: 7, domingo: 136557.75, festivo: 136557.75, normalFestivo:79658.94},
+    "15:00 Pm-23:00 Pm": { valor: 94290.24, horas: 8, domingo: 159317.35, festivo: 159317.35 , normalFestivo:94290.24},
+    "16:00 Pm-22:00 Pm": { valor: 68821.04, horas:6, domingo: 117591.43, festivo: 117591.43, normalFestivo:68821.04},
+    "16:00 Pm-23:00 Pm": { valor: 83452.29, horas: 7, domingo: 140350.98, festivo: 140350.98, normalFestivo:83452.29},
+    "16:00 Pm-24:00 Pm": { valor: 98083.58, horas: 8, domingo: 163110.56, festivo: 163110.56, normalFestivo:98083.58},
+    "17:00 Pm-23:00 Pm": { valor: 72614.31, horas: 6, domingo: 121384.64, festivo: 121384.64, normalFestivo:72614.31},
+    "18:00 Pm-24:00 Pm": { valor: 76407.64, horas: 6, domingo: 125177.85, festivo: 125177.85, normalFestivo:76407.64},
     "22:00 Pm-6:00 Am": { valor: 117050.26, horas: 8, domingo: 133306.84, festivo: 182076.60, normalFestivo:165820.02},
     "23:00 Pm-5:00 Am": { valor: 87787.66, horas: 6, domingo: 95915.98, festivo: 136557.48, normalFestivo:128429.16}
 };
@@ -118,7 +118,7 @@ const esDomingo = (fecha) => {
 
 const normal_a_festivos = ["2024-12-24","2024-09-21","2024-09-28","2024-10-05","2024-10-12","2024-10-19","2024-10-26","2024-11-02","2024-11-09","2024-11-16","2024-11-23","2024-11-30","2024-12-07","2024-12-14","2024-12-21","2024-12-28","2024-08-03","2024-08-10","2024-08-17","2024-08-24","2024-08-31"];
 
-const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25","2024-08-7","2024-08-19"]
+const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25","2024-08-07","2024-08-19"]
 
 const esNormalAFestivo = (fecha)=>{
     return normal_a_festivos.includes(fecha);
