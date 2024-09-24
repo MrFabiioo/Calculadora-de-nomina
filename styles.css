@@ -424,15 +424,8 @@ body.dark-theme{
 .dark-theme #encabezado_salud_pension{
     background-color: rgb(118, 118, 118);
 }
-.contenedor_cambio_tema{
-
-}
 
 .cambio_tema{
     width: 10px;
     height: 20px;
-}
-
-.dark-theme #img_calculadora{
-    background-color: aliceblue;
 }
