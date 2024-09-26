@@ -194,9 +194,13 @@ const CalcularNomina = () => {
         let horaSalida = document.getElementById(`hora_salida_${i}`);
         let fechaInput = document.getElementById(`fecha_${i}`).value; // Obtener la fecha
         let incapacidad = document.getElementById(`incapacidad_${i}`)
+        let filarr = document.getElementById(`fila_${i}`)
         
         if (horaInicio && horaSalida) { // Verifica que ambos elementos existan
             let key = `${horaInicio.value}-${horaSalida.value}`;
+            if (horaInicio.value==="Descanso" && horaSalida.value==="Descanso") {
+                filarr.style.opacity = "0.4";
+            }
             
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
