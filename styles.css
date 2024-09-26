@@ -433,6 +433,10 @@ body.dark-theme{
     background-color: rgb(118, 118, 118);
 }
 
+.dark-theme #titulo{
+    border-color: white;
+}
+
 .cambio_tema{
     width: 10px;
     height: 20px;
