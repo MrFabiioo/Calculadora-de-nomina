@@ -189,10 +189,11 @@ const CalcularNomina = () => {
     let filas = document.querySelectorAll('tbody tr'); // Selecciona todas las filas dentro de <tbody>
     filas.forEach((fila, index) => {
         let i = index + 1;
-
+        
         let horaInicio = document.getElementById(`hora_inicio_${i}`);
         let horaSalida = document.getElementById(`hora_salida_${i}`);
         let fechaInput = document.getElementById(`fecha_${i}`).value; // Obtener la fecha
+        let incapacidad = document.getElementById(`incapacidad_${i}`)
         
         if (horaInicio && horaSalida) { // Verifica que ambos elementos existan
             let key = `${horaInicio.value}-${horaSalida.value}`;
@@ -200,19 +201,36 @@ const CalcularNomina = () => {
             // Verificar si el par de horarios está en el objeto 'turnos'
             if (turnos[key]) {
                 let valorTurno = turnos[key].valor; // Valor por defecto
-
+                if (incapacidad.checked==true) {
+                    valorTurno*=0.66;
+                }
                 if (esDomingo(fechaInput) && esFestivo(fechaInput)){
                     valorTurno = turnos[key].festivo; // Valor para domingo y festivo
+                    if (incapacidad.checked==true) {
+                        valorTurno*=0.66;
+                    }
                 }
                 // Verificar si es domingo o festivo
                 else if (esDomingo(fechaInput)) {
                     valorTurno = turnos[key].domingo; // Valor para domingo
+                    if (incapacidad.checked==true) {
+                        valorTurno*=0.66;
+                    }
                 } else if (esNormalAFestivo(fechaInput)) {
                     valorTurno = turnos[key].normalFestivo; // Valor para festivo
+                    if (incapacidad.checked==true) {
+                        valorTurno*=0.66;
+                    }
                     }else if (esFestivoANormal(fechaInput)) {
                         valorTurno = turnos[key].domingo;
+                        if (incapacidad.checked==true) {
+                            valorTurno*=0.66;
+                        }
                     } else if(esFestivo(fechaInput)) {
                         valorTurno= turnos[key].festivo;
+                        if (incapacidad.checked==true) {
+                            valorTurno*=0.66;
+                        }
                     }   
 
                 // Mostrar el valor del turno en la tabla
@@ -335,6 +353,10 @@ const AñadirFila = () => {
             <td id='valor_${totalFilas}' class='Valor'></td>
             <td id='horas_${totalFilas}' class='Horas'></td>
             <td id='numero_${totalFilas}' class='numero'></td>
+
+            <td>
+                <input id='incapacidad_${totalFilas}' type='checkbox' value='incapacidad'>
+            </td>
         </tr>
     `);
 
