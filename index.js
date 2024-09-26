@@ -28,23 +28,65 @@ btn_cambio_tema.addEventListener('click',()=>{
     document.body.classList.toggle('dark-theme');
 })
 
+const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19"]; // Ejemplo de fechas festivas
+const esFestivo = (fecha) => {
+    let fechaString;
+
+    // Verificar si fecha es una instancia de Date
+    if (fecha instanceof Date) {
+        fechaString = fecha.toISOString().split('T')[0]; // Convertir a 'YYYY-MM-DD'
+    } else {
+        // Si ya es una cadena (como 'YYYY-MM-DD')
+        fechaString = fecha; // Asumimos que es un string de fecha
+    }
+
+    // Verificar si la fecha está en el array de días festivos
+    return diasFestivos.includes(fechaString);
+};
+
+
 // Calcular dia de la semana
-const calcularDia = (fechaInput, resultadoDia) => {
+const calcularDia = (fechaInput, resultadoDia, fila) => {
     if (fechaInput.value) {
-        let date = new Date(fechaInput.value);
+        let date = new Date(fechaInput.value); // Convertir el valor del input a Date
         let diaSemana = diasSemana[date.getDay()];
         resultadoDia.innerText = diaSemana;
+
+        // Obtener la fecha en formato 'YYYY-MM-DD' para pasarla a esFestivo
+        let fechaFormateada = fechaInput.value; // Ya está en 'YYYY-MM-DD' porque viene del input
+
+        // Cambiar el background-color de la fila si es domingo o festivo
+        if (diaSemana === "Domingo" || esFestivo(fechaFormateada)) {
+            if (fila) {
+
+                fila.style.boxShadow = "10px 5px 10px 5px rgba(0, 0, 0, 0.7)";
+                fila.style.transform = "scale(1.04)"; // Aumenta ligeramente el tamaño
+                
+            } else {
+                console.error("No se pudo encontrar la fila para aplicar el color de fondo.");
+            }
+        } else {
+            if (fila) {
+                fila.style.boxShadow = "";
+                fila.style.transform = ""; 
+            }
+        }
     } else {
         resultadoDia.innerText = " ";
+        if (fila) fila.style.backgroundColor = ""; // Restablece el color si no hay fecha
     }
 };
 
+
+
+
 // Asignar a todos los inputs y resultados correspondientes
-const asignarCalculadorDia = (fechaId, diaId) => {
+const asignarCalculadorDia = (fechaId, diaId, filaId) => {
     const fechaInput = document.getElementById(fechaId);
     const resultadoDia = document.getElementById(diaId);
+    const fila = document.getElementById(filaId);  // Selecciona la fila
 
-    fechaInput.addEventListener('change', () => calcularDia(fechaInput, resultadoDia));
+    fechaInput.addEventListener('change', () => calcularDia(fechaInput, resultadoDia, fila));
 };
 
 // // Asignar a múltiples inputs y resultados
@@ -132,10 +174,7 @@ const domingo_y_festivo= ["2024-10-13","2024-08-18"];
 
 
 // Verifica si la fecha es festivo (puedes personalizar este arreglo con las fechas de festivos)
-const festivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19"]; // Ejemplo de fechas festivas
-const esFestivo = (fecha) => {
-    return festivos.includes(fecha);
-};
+
 
 // Modificar la función de cálculo de nómina
 const CalcularNomina = () => {
@@ -143,13 +182,14 @@ const CalcularNomina = () => {
     let suma_horas = 0;
     let contador_turnos = 0;
     let suma = 0;
+
+    
     
     // Selecciona todas las filas dinámicamente
     let filas = document.querySelectorAll('tbody tr'); // Selecciona todas las filas dentro de <tbody>
-
     filas.forEach((fila, index) => {
         let i = index + 1;
-        
+
         let horaInicio = document.getElementById(`hora_inicio_${i}`);
         let horaSalida = document.getElementById(`hora_salida_${i}`);
         let fechaInput = document.getElementById(`fecha_${i}`).value; // Obtener la fecha
@@ -195,7 +235,6 @@ const CalcularNomina = () => {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
         }
     });
-
     // Actualizar contadores y etiquetas
     turnos_label.innerText = contador_turnos;
     horas_label.innerText = suma_horas;
@@ -234,7 +273,7 @@ let contador = 1; // Contador para generar IDs únicos dinámicos
 const AñadirFila = () => {
     let totalFilas = tbody.querySelectorAll('tr').length + 1; // Cuenta las filas actuales y suma 1 para el nuevo índice
     tbody.insertAdjacentHTML("beforeend", `
-        <tr>
+        <tr id='fila_${totalFilas}'>
             <td>
                 <label id='dia_${totalFilas}' class='cajas' type='text'></label>
             </td>
@@ -300,7 +339,7 @@ const AñadirFila = () => {
     `);
 
         // Asignar el cálculo del día a la nueva fila
-        asignarCalculadorDia(`fecha_${totalFilas}`, `dia_${totalFilas}`);
+        asignarCalculadorDia(`fecha_${totalFilas}`, `dia_${totalFilas}`, `fila_${totalFilas}`);
 
         contador++; // Incrementar el contador para la próxima fila
         mostrador_contador.innerText = tbody.children.length;
