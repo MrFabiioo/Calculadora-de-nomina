@@ -206,34 +206,34 @@ const CalcularNomina = () => {
             if (turnos[key]) {
                 let valorTurno = turnos[key].valor; // Valor por defecto
                 if (incapacidad.checked==true) {
-                    valorTurno*=0.66;
+                    valorTurno*=0.6666;
                 }
                 if (esDomingo(fechaInput) && esFestivo(fechaInput)){
                     valorTurno = turnos[key].festivo; // Valor para domingo y festivo
                     if (incapacidad.checked==true) {
-                        valorTurno*=0.66;
+                        valorTurno*=0.6666;
                     }
                 }
                 // Verificar si es domingo o festivo
                 else if (esDomingo(fechaInput)) {
                     valorTurno = turnos[key].domingo; // Valor para domingo
                     if (incapacidad.checked==true) {
-                        valorTurno*=0.66;
+                        valorTurno*=0.6666;
                     }
                 } else if (esNormalAFestivo(fechaInput)) {
                     valorTurno = turnos[key].normalFestivo; // Valor para festivo
                     if (incapacidad.checked==true) {
-                        valorTurno*=0.66;
+                        valorTurno*=0.6666;
                     }
                     }else if (esFestivoANormal(fechaInput)) {
                         valorTurno = turnos[key].domingo;
                         if (incapacidad.checked==true) {
-                            valorTurno*=0.66;
+                            valorTurno*=0.6666;
                         }
                     } else if(esFestivo(fechaInput)) {
                         valorTurno= turnos[key].festivo;
                         if (incapacidad.checked==true) {
-                            valorTurno*=0.66;
+                            valorTurno*=0.6666;
                         }
                     }   
 
