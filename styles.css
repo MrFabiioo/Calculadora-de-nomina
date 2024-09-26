@@ -16,7 +16,14 @@ body{
     font-weight: 700;
     font-style: normal;
     text-align: center;
-    width: 900px;
+    display: flex;
+    justify-content: center;
+    justify-self: center;
+    width: 500px;
+    border: 2px solid black;
+    box-shadow: -3px 3px 0px;
+    border-radius: 6px;
+
 }
 
 .estilo-de-tabla th,td{
