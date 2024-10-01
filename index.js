@@ -131,6 +131,7 @@ const turnos = {
     "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
     "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
     "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
+    "8:00 Am-15:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
     "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
     "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
     "10:00 Am-16:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
