@@ -11,6 +11,10 @@ body{
     width: 900px;
 }
 
+.contenedor_h3 {
+    display: grid;
+    place-content: center;
+}
 .titulo{
     font-family: "IBM Plex Mono", monospace;
     font-weight: 700;
@@ -24,6 +28,24 @@ body{
     box-shadow: -3px 3px 0px;
     border-radius: 6px;
 
+}
+
+.contenedor_horas_adicionales{
+    background-color: white;
+    border: 2px solid black;
+    /* Asegura que el ancho sea igual al del otro div */
+    width: 900px;
+    height: 80px;
+    border-radius: 5px;
+    box-shadow: -3px 3px 0px;
+    display: grid;
+    grid-template-columns: 220px 220px 220px 220px ;
+    place-content: center;
+}
+
+.contenedor_horas_adicionales_hijo{
+    display: grid;
+    place-content: center;
 }
 
 .estilo-de-tabla th,td{

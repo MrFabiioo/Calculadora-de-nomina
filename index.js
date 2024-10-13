@@ -20,7 +20,11 @@ const valor_salud_empresa_label = document.getElementById('valor_salud_empresa_l
 const valor_pension_empresa_label = document.getElementById('valor_pension_empresa_label');
 const total_empresa_label = document.getElementById('total_empresa_label');
 const neto_a_pagar =  document.getElementById('neto_a_pagar');
-const btn_cambio_tema = document.getElementById('btn_cambio_tema')
+const btn_cambio_tema = document.getElementById('btn_cambio_tema');
+const hora_diurna = document.getElementById('hora_diurna');
+const hora_nocturna = document.getElementById('hora_nocturna');
+const hora_diurna_festiva=document.getElementById('hora_diurna_festiva');
+const hora_nocturna_festiva=document.getElementById('hora_nocturna_festiva');
 
 const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
 
@@ -154,6 +158,12 @@ const turnos = {
 };
 
 
+//valor horas
+const valor_hora_diurna= 10837.95;
+const valor_hora_nocturna=14631.28;
+const valor_hora_diurna_festiva=18966.37;
+const valor_hora_nocturna_festiva=22759.58;
+
 // Verifica si la fecha es domingo
 const esDomingo = (fecha) => {
     let diaSemana = new Date(fecha).getDay();
@@ -258,7 +268,28 @@ const CalcularNomina = () => {
             console.error(`No se encontró el elemento hora_inicio_${i} o hora_salida_${i}`);
         }
     });
+    // console.log(hora_diurna.value);
+    // console.log(hora_nocturna.value);
+    // console.log(hora_diurna_festiva.value);
+    // console.log(hora_nocturna_festiva.value);
     // Actualizar contadores y etiquetas
+    if (hora_diurna.value) {
+        suma+=hora_diurna.value*valor_hora_diurna; 
+        //console.log(suma);  
+    }
+    if (hora_nocturna.value) {
+        suma+=hora_nocturna.value*valor_hora_nocturna;
+        //console.log(suma);  
+    }
+    if (hora_diurna_festiva.value) {
+        suma+=hora_diurna_festiva.value*valor_hora_diurna_festiva;
+        //console.log(suma);  
+    }
+    if (hora_nocturna_festiva.value) {
+        suma+=hora_nocturna_festiva.value*valor_hora_nocturna_festiva;
+        //console.log(suma);  
+    }
+
     turnos_label.innerText = contador_turnos;
     horas_label.innerText = suma_horas;
     let total_subsidio = calcularNominaConSubsidio(suma);
