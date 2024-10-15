@@ -293,13 +293,14 @@ const CalcularNomina = () => {
     turnos_label.innerText = contador_turnos;
     horas_label.innerText = suma_horas;
     let total_subsidio = calcularNominaConSubsidio(suma);
-    suma += total_subsidio;
-    
-    // Calcular y actualizar los valores de salud, pensión y salario neto
     let salud_empleado = 4 * suma / 100;
     let salud_empresa = 8.5 * suma / 100;
     let pension_empleado = 4 * suma / 100;
     let pension_empresa = 12 * suma / 100;
+    suma += total_subsidio;
+    
+    // Calcular y actualizar los valores de salud, pensión y salario neto
+
     let total_salud_pension_empleado = salud_empleado + pension_empleado;
     let total_salud_pension_empresa = salud_empresa + pension_empresa;
     
