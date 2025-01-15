@@ -32,7 +32,7 @@ btn_cambio_tema.addEventListener('click',()=>{
     document.body.classList.toggle('dark-theme');
 })
 
-const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19","2025-01-01","2025-01-06"]; // Ejemplo de fechas festivas
+const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19","2025-01-01","2025-01-06","2025-01-05"]; // Ejemplo de fechas festivas
 const esFestivo = (fecha) => {
     let fechaString;
 
@@ -172,8 +172,8 @@ const esDomingo = (fecha) => {
     return diaSemana === 6; // 6 representa domingo
 };
 
-const normal_a_festivos = ["2024-12-31"];
-
+const normal_a_festivos = ["2024-12-31","2025-01-04","2025-01-11","2025-01-18","2025-01-25","2025-02-01"];
+const domingo_y_festivo= ["2024-10-13","2024-08-18","2025-01-05"];
 const festivo_a_normal =["2025-01-01","2025-01-06"]
 
 const esNormalAFestivo = (fecha)=>{
@@ -183,7 +183,7 @@ const esFestivoANormal = (fecha)=>{
     return festivo_a_normal.includes(fecha);
 };
 
-const domingo_y_festivo= ["2024-10-13","2024-08-18","2025-01-05"];
+
 
 
 // Verifica si la fecha es festivo (puedes personalizar este arreglo con las fechas de festivos)
