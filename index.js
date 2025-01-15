@@ -32,7 +32,7 @@ btn_cambio_tema.addEventListener('click',()=>{
     document.body.classList.toggle('dark-theme');
 })
 
-const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19"]; // Ejemplo de fechas festivas
+const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19","2025-01-01","2025-01-06"]; // Ejemplo de fechas festivas
 const esFestivo = (fecha) => {
     let fechaString;
 
@@ -107,17 +107,17 @@ let subsidio_transporte_global = 0; // Mantener el subsidio fuera de la función
 
 const calcularNominaConSubsidio = (suma) => {
     // Solo aplicar subsidio si no ha sido aplicado antes
-    if (suma < 2600000 && !subsidioYaAplicado) {  
+    if (suma < 2847000 && !subsidioYaAplicado) {  
         if (tbody.children.length > 30) {
-            subsidio_transporte_global = 162000;
+            subsidio_transporte_global = 200000;
         } else {
-            let dia_subsidio_transporte = 162000 / 30;
+            let dia_subsidio_transporte = 200000 / 30;
             subsidio_transporte_global = dia_subsidio_transporte * tbody.children.length;
         }
 
         subsidio_transporte_label.innerText = Number(subsidio_transporte_global).toLocaleString('es-ES', { style: 'currency', currency: 'COP' });
         subsidioYaAplicado = true;  // Asegurar que solo se aplica una vez
-    } else if (suma >= 2600000) {
+    } else if (suma >= 2847000) {
         subsidio_transporte_global = 0;
         subsidio_transporte_label.innerText = subsidio_transporte_global;       
     }
@@ -126,43 +126,44 @@ const calcularNominaConSubsidio = (suma) => {
 };
 
 
+const valor_hora_diurna=   11509.90; const valor_media_hora_diurna = valor_hora_diurna/2;
+const valor_hora_nocturna=  15538.42 ;const valor_media_hora_nocturna=valor_hora_nocturna/2;
+const valor_hora_diurna_festiva= 20142.28 ; const valor_media_hora_diurna_festiva=valor_hora_diurna_festiva/2;
+const valor_hora_nocturna_festiva= 24170.67;const valor_media_hora_nocturna_festiva=valor_hora_nocturna_festiva/2;
 
 const turnos = {
     "Descanso-Descanso": { valor: 0, horas: 0, domingo: 0, festivo: 0,normalFestivo:0},
-    "5:00 Am-13:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 , normalFestivo:90486.90},
-    "5:30 Am-13:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53, normalFestivo:88600.23},
-    "6:00 Am-12:00 m": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
-    "6:00 Am-13:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
-    "6:00 Am-14:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
-    "7:00 Am-15:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
-    "8:00 Am-15:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
-    "8:00 Am-16:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
-    "9:00 Am-16:00 Pm": { valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
-    "10:00 Am-16:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
-    "12:00 m-18:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
-    "13:00 Pm-19:00 Pm": { valor: 65027.70, horas: 6, domingo: 113798.22, festivo: 113798.22 , normalFestivo:65027.70},
-    "13:00 Pm-21:00 Pm": { valor: 86703.57, horas: 8, domingo: 151730.93, festivo: 151730.93 , normalFestivo:86703.57},
-    "13:30 Pm-21:30 Pm": { valor: 88600.23, horas: 8, domingo: 153627.53, festivo: 153627.53, normalFestivo:88600.23},
-    "14:00 Pm-22:00 Pm": { valor: 90486.90, horas: 8, domingo: 155524.14, festivo: 155524.14 , normalFestivo:90486.90},
-    "14:00 Pm-21:00 Pm": {  valor: 75865.62, horas: 7, domingo: 132764.56, festivo: 132764.56 , normalFestivo:75865.62},
-    "15:00 Pm-21:00 Pm": { valor: 65027.67, horas: 6, domingo: 113798.19, festivo: 113798.19 , normalFestivo:65027.67},
-    "15:00 Pm-22:00 Pm": { valor: 79658.94, horas: 7, domingo: 136557.75, festivo: 136557.75, normalFestivo:79658.94},
-    "15:00 Pm-23:00 Pm": { valor: 94290.24, horas: 8, domingo: 159317.35, festivo: 159317.35 , normalFestivo:94290.24},
-    "16:00 Pm-22:00 Pm": { valor: 68821.04, horas:6, domingo: 117591.43, festivo: 117591.43, normalFestivo:68821.04},
-    "16:00 Pm-23:00 Pm": { valor: 83452.29, horas: 7, domingo: 140350.98, festivo: 140350.98, normalFestivo:83452.29},
-    "16:00 Pm-24:00 Pm": { valor: 98083.58, horas: 8, domingo: 163110.56, festivo: 163110.56, normalFestivo:98083.58},
-    "17:00 Pm-23:00 Pm": { valor: 72614.31, horas: 6, domingo: 121384.64, festivo: 121384.64, normalFestivo:72614.31},
-    "18:00 Pm-24:00 Pm": { valor: 76407.64, horas: 6, domingo: 125177.85, festivo: 125177.85, normalFestivo:76407.64},
-    "22:00 Pm-6:00 Am": { valor: 117050.26, horas: 8, domingo: 133306.84, festivo: 182076.60, normalFestivo:165820.02},
-    "23:00 Pm-5:00 Am": { valor: 87787.66, horas: 6, domingo: 95915.98, festivo: 136557.48, normalFestivo:128429.16}
+    "5:00 Am-13:00 Pm": { valor: valor_hora_diurna*7+valor_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva , normalFestivo:valor_hora_diurna*7+valor_hora_nocturna},
+    "5:30 Am-13:30 Pm": { valor:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, normalFestivo:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna},
+    "6:00 Am-12:00 m": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
+    "6:00 Am-13:00 Pm": { valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
+    "6:00 Am-14:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_nocturna_festiva*8, festivo: valor_hora_nocturna_festiva*8 , normalFestivo:valor_hora_diurna*8},
+    "7:00 Am-15:00 Pm": {valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_nocturna_festiva*8, festivo: valor_hora_nocturna_festiva*8 , normalFestivo:valor_hora_diurna*8},
+    "8:00 Am-15:00 Pm": { valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
+    "8:00 Am-16:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_nocturna_festiva*8, festivo: valor_hora_nocturna_festiva*8 , normalFestivo:valor_hora_diurna*8},
+    "9:00 Am-16:00 Pm": { valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
+    "10:00 Am-16:00 Pm": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
+    "12:00 m-18:00 Pm": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
+    "13:00 Pm-19:00 Pm": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
+    "13:00 Pm-21:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_nocturna_festiva*8, festivo: valor_hora_nocturna_festiva*8 , normalFestivo:valor_hora_diurna*8},
+    "13:30 Pm-21:30 Pm": { valor:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, normalFestivo:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna},
+    "14:00 Pm-22:00 Pm": { valor: valor_hora_diurna*7+valor_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva , normalFestivo:valor_hora_diurna*7+valor_hora_nocturna},
+    "14:00 Pm-21:00 Pm": {  valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
+    "15:00 Pm-21:00 Pm": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
+    "15:00 Pm-22:00 Pm": { valor: valor_hora_diurna*6+valor_hora_nocturna, horas: 7, domingo: valor_hora_diurna_festiva*6+valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*6+valor_hora_nocturna_festiva, normalFestivo:valor_hora_diurna*6+valor_hora_nocturna},
+    "15:00 Pm-23:00 Pm": { valor:valor_hora_diurna*6+valor_hora_nocturna*2 , horas: 8, domingo:valor_hora_diurna_festiva*6+valor_hora_nocturna_festiva*2 , festivo: valor_hora_diurna_festiva*6+valor_hora_nocturna_festiva*2  , normalFestivo:valor_hora_diurna*6+valor_hora_nocturna*2},
+    "16:00 Pm-22:00 Pm": { valor: valor_hora_diurna*5+valor_hora_nocturna, horas:6, domingo: valor_hora_diurna_festiva*5+valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*5+valor_hora_nocturna_festiva, normalFestivo:valor_hora_diurna*5+valor_hora_nocturna},
+    "16:00 Pm-23:00 Pm": { valor:valor_hora_diurna*5+valor_hora_nocturna*2 , horas: 7, domingo:valor_hora_diurna_festiva*5+ valor_hora_nocturna_festiva*2, festivo: valor_hora_diurna_festiva*5+ valor_hora_nocturna_festiva*2, normalFestivo:valor_hora_diurna*5+valor_hora_nocturna*2},
+    "16:00 Pm-24:00 Pm": { valor: valor_hora_diurna*5+valor_hora_nocturna*3, horas: 8, domingo: valor_hora_diurna_festiva*5+ valor_hora_nocturna_festiva*3, festivo: valor_hora_diurna_festiva*5+ valor_hora_nocturna_festiva*3, normalFestivo:valor_hora_diurna*5+valor_hora_nocturna*3},
+    "17:00 Pm-23:00 Pm": { valor: valor_hora_diurna*4+valor_hora_nocturna*2, horas: 6, domingo: valor_hora_diurna_festiva*4+valor_hora_nocturna_festiva*2, festivo: valor_hora_diurna_festiva*4+valor_hora_nocturna_festiva*2, normalFestivo:valor_hora_diurna*4+valor_hora_nocturna*2},
+    "18:00 Pm-24:00 Pm": { valor: valor_hora_diurna*3+valor_hora_nocturna*3, horas: 6, domingo: valor_hora_diurna_festiva*3+valor_hora_nocturna_festiva*3, festivo: valor_hora_diurna_festiva*3+valor_hora_nocturna_festiva*3, normalFestivo:valor_hora_diurna*3+valor_hora_nocturna*3},
+    "22:00 Pm-6:00 Am": { valor: valor_hora_nocturna*8, horas: 8, domingo:valor_hora_nocturna_festiva*2+valor_hora_nocturna*6, festivo: valor_hora_nocturna_festiva*8, normalFestivo:valor_hora_nocturna_festiva*6+valor_hora_nocturna*2},
+    "23:00 Pm-5:00 Am": { valor: valor_hora_nocturna*6, horas: 6, domingo: valor_hora_nocturna_festiva+valor_hora_nocturna*5, festivo: valor_hora_nocturna_festiva*6, normalFestivo:valor_hora_nocturna_festiva*6+valor_hora_nocturna}
 };
 
 
 //valor horas
-const valor_hora_diurna= 10837.95;
-const valor_hora_nocturna=14631.28;
-const valor_hora_diurna_festiva=18966.37;
-const valor_hora_nocturna_festiva=22759.58;
+
 
 // Verifica si la fecha es domingo
 const esDomingo = (fecha) => {
@@ -170,9 +171,9 @@ const esDomingo = (fecha) => {
     return diaSemana === 6; // 6 representa domingo
 };
 
-const normal_a_festivos = ["2024-12-24","2024-09-21","2024-09-28","2024-10-05","2024-10-12","2024-10-19","2024-10-26","2024-11-02","2024-11-09","2024-11-16","2024-11-23","2024-11-30","2024-12-07","2024-12-14","2024-12-21","2024-12-28","2024-08-03","2024-08-10","2024-08-17","2024-08-24","2024-08-31"];
+const normal_a_festivos = ["2024-12-31"];
 
-const festivo_a_normal =["2024-10-14","2024-11-04","2024-11-11","2024-12-25","2024-08-07","2024-08-19"]
+const festivo_a_normal =["2025-01-01","2025-01-06"]
 
 const esNormalAFestivo = (fecha)=>{
     return normal_a_festivos.includes(fecha);
@@ -181,7 +182,7 @@ const esFestivoANormal = (fecha)=>{
     return festivo_a_normal.includes(fecha);
 };
 
-const domingo_y_festivo= ["2024-10-13","2024-08-18"];
+const domingo_y_festivo= ["2024-10-13","2024-08-18","2025-01-05"];
 
 
 // Verifica si la fecha es festivo (puedes personalizar este arreglo con las fechas de festivos)
@@ -382,6 +383,7 @@ const AñadirFila = () => {
                     <option class='opciones'>18:00 Pm</option>
                     <option class='opciones'>19:00 Pm</option>
                     <option class='opciones'>21:00 Pm</option>
+                    <option class='opciones'>21:30 Pm</option>
                     <option class='opciones'>22:00 Pm</option>
                     <option class='opciones'>23:00 Pm</option>
                     <option class='opciones'>24:00 Pm</option>
