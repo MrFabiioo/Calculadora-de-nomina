@@ -384,6 +384,7 @@ const AñadirFila = () => {
                     <option class='opciones'>17:00 Pm</option>
                     <option class='opciones'>18:00 Pm</option>
                     <option class='opciones'>19:00 Pm</option>
+                    <option class='opciones'>20:00 Pm</option>
                     <option class='opciones'>21:00 Pm</option>
                     <option class='opciones'>21:30 Pm</option>
                     <option class='opciones'>22:00 Pm</option>
