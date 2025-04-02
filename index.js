@@ -162,7 +162,7 @@ const turnos = {
     "17:00 Pm-23:00 Pm": { valor: valor_hora_diurna*4+valor_hora_nocturna*2, horas: 6, domingo: valor_hora_diurna_festiva*4+valor_hora_nocturna_festiva*2, festivo: valor_hora_diurna_festiva*4+valor_hora_nocturna_festiva*2, normalFestivo:valor_hora_diurna*4+valor_hora_nocturna*2},
     "18:00 Pm-24:00 Pm": { valor: valor_hora_diurna*3+valor_hora_nocturna*3, horas: 6, domingo: valor_hora_diurna_festiva*3+valor_hora_nocturna_festiva*3, festivo: valor_hora_diurna_festiva*3+valor_hora_nocturna_festiva*3, normalFestivo:valor_hora_diurna*3+valor_hora_nocturna*3},
     "22:00 Pm-6:00 Am": { valor: valor_hora_nocturna*8, horas: 8, domingo:valor_hora_nocturna_festiva*2+valor_hora_nocturna*6, festivo: valor_hora_nocturna_festiva*8, normalFestivo:valor_hora_nocturna_festiva*6+valor_hora_nocturna*2},
-    "23:00 Pm-5:00 Am": { valor: valor_hora_nocturna*6, horas: 6, domingo: valor_hora_nocturna_festiva+valor_hora_nocturna*5, festivo: valor_hora_nocturna_festiva*6, normalFestivo:valor_hora_nocturna_festiva*6+valor_hora_nocturna}
+    "23:00 Pm-5:00 Am": { valor: valor_hora_nocturna*6, horas: 6, domingo: valor_hora_nocturna_festiva+valor_hora_nocturna*5, festivo: valor_hora_nocturna_festiva*6, normalFestivo:valor_hora_nocturna_festiva*5+valor_hora_nocturna}
 };
 
 
