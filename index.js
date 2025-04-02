@@ -32,7 +32,7 @@ btn_cambio_tema.addEventListener('click',()=>{
     document.body.classList.toggle('dark-theme');
 })
 
-const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19","2025-01-01","2025-01-06","2025-01-05"]; // Ejemplo de fechas festivas
+const diasFestivos = ["2024-10-14", "2024-11-04","2024-11-11","2024-12-25","2024-10-13","2024-11-03","2024-11-10","2024-08-7","2024-08-19","2025-01-01","2025-01-06","2025-01-05","2025-03-24","2025-04-17","2025-04-18","2025-05-01"]; // Ejemplo de fechas festivas
 const esFestivo = (fecha) => {
     let fechaString;
 
@@ -140,6 +140,7 @@ const turnos = {
     "6:00 Am-14:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_diurna_festiva*8, festivo: valor_hora_diurna_festiva*8 , normalFestivo:valor_hora_diurna*8},
     "7:00 Am-13:00 Pm":{valor:valor_hora_diurna*6,horas:6,domingo:valor_hora_diurna_festiva*6,festivo:valor_hora_diurna_festiva*6,normalFestivo:valor_hora_diurna*6},
     "7:00 Am-15:00 Pm": {valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_diurna_festiva*8, festivo: valor_hora_diurna_festiva*8 , normalFestivo:valor_hora_diurna*8},
+    "8:00 Am-14:00 Pm":{valor:valor_hora_diurna*6,horas:6,domingo:valor_hora_diurna_festiva*6,festivo:valor_hora_diurna_festiva*6,normalFestivo:valor_hora_diurna*6},
     "8:00 Am-15:00 Pm": { valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
     "8:00 Am-16:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_diurna_festiva*8, festivo: valor_hora_diurna_festiva*8 , normalFestivo:valor_hora_diurna*8},
     "9:00 Am-16:00 Pm": { valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
@@ -148,6 +149,7 @@ const turnos = {
     "13:00 Pm-19:00 Pm": { valor: valor_hora_diurna*6, horas: 6, domingo: valor_hora_diurna_festiva*6, festivo: valor_hora_diurna_festiva*6, normalFestivo:valor_hora_diurna*6},
     "13:00 Pm-21:00 Pm": { valor: valor_hora_diurna*8, horas: 8, domingo: valor_hora_diurna_festiva*8, festivo: valor_hora_diurna_festiva*8 , normalFestivo:valor_hora_diurna*8},
     "13:30 Pm-21:30 Pm": { valor:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_media_hora_diurna_festiva+valor_media_hora_nocturna_festiva, normalFestivo:valor_hora_diurna*7+valor_media_hora_diurna+valor_media_hora_nocturna},
+    "14:00 Pm-20:00 Pm":{valor:valor_hora_diurna*6,horas:6,domingo:valor_hora_diurna_festiva*6,festivo:valor_hora_diurna_festiva*6,normalFestivo:valor_hora_diurna*6},
     "14:00 Pm-22:00 Pm": { valor: valor_hora_diurna*7+valor_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva*7+valor_hora_nocturna_festiva , normalFestivo:valor_hora_diurna*7+valor_hora_nocturna},
     "14:00 Pm-21:00 Pm": {  valor: valor_hora_diurna*7, horas: 7, domingo: valor_hora_diurna_festiva*7, festivo: valor_hora_diurna_festiva*7 , normalFestivo:valor_hora_diurna*7},
     "14:00 Pm-20:00 Pm":{valor:valor_hora_diurna*6,horas:6,domingo:valor_hora_diurna_festiva*6,festivo:valor_hora_diurna_festiva*6,normalFestivo:valor_hora_diurna*6},
@@ -173,9 +175,9 @@ const esDomingo = (fecha) => {
     return diaSemana === 6; // 6 representa domingo
 };
 
-const normal_a_festivos = ["2024-12-31","2025-01-04","2025-01-11","2025-01-18","2025-01-25","2025-02-01"];
-const domingo_y_festivo= ["2024-10-13","2024-08-18","2025-01-05"];
-const festivo_a_normal =["2025-01-01","2025-01-06"]
+const normal_a_festivos = ["2024-12-31","2025-01-04","2025-01-11","2025-01-18","2025-01-25","2025-02-01","2025-04-16","2025-04-90"];
+const domingo_y_festivo= ["2024-10-13","2024-08-18","2025-01-05","2025-03-23","2025-04-17"];
+const festivo_a_normal =["2025-01-01","2025-01-06","2025-03-24","2025-04-18","2025-05-01"]
 
 const esNormalAFestivo = (fecha)=>{
     return normal_a_festivos.includes(fecha);
