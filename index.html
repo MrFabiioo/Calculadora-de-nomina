@@ -25,6 +25,26 @@
     </header>
 
     <main id="main-content" class="main">
+        <!-- Panel de Resumen Sticky (en columna derecha en desktop) -->
+        <aside class="summary-panel" aria-label="Resumen de nómina">
+            <div class="summary-panel__content">
+                <div class="summary-panel__main">
+                    <span class="summary-panel__label">Salario Neto</span>
+                    <span id="neto-a-pagar" class="summary-panel__value">$0</span>
+                </div>
+                <div class="summary-panel__details">
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Total Devengado</span>
+                        <span id="total-devengado" class="summary-panel__subvalue">$0</span>
+                    </div>
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Deducciones</span>
+                        <span id="total-deducciones" class="summary-panel__subvalue">$0</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
         <!-- Sección de Turnos -->
         <section class="section section--turnos" aria-labelledby="turnos-heading">
             <div class="section__header">
@@ -140,26 +160,6 @@
         <!-- Sección de Resultados Detallados -->
         <section class="section section--resultados" aria-labelledby="resultados-heading">
             <h2 id="resultados-heading" class="section__title">📊 Detalle de Nómina</h2>
-            
-            <!-- Panel de Resumen Sticky (ubicación original antes de resultados) -->
-            <aside class="summary-panel" aria-label="Resumen de nómina">
-                <div class="summary-panel__content">
-                    <div class="summary-panel__main">
-                        <span class="summary-panel__label">Salario Neto</span>
-                        <span id="neto-a-pagar" class="summary-panel__value">$0</span>
-                    </div>
-                    <div class="summary-panel__details">
-                        <div class="summary-panel__item">
-                            <span class="summary-panel__label">Total Devengado</span>
-                            <span id="total-devengado" class="summary-panel__subvalue">$0</span>
-                        </div>
-                        <div class="summary-panel__item">
-                            <span class="summary-panel__label">Deducciones</span>
-                            <span id="total-deducciones" class="summary-panel__subvalue">$0</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
             
             <div class="resultados-grid">
                 <!-- Stats row -->
