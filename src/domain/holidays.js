@@ -50,6 +50,19 @@ export const FESTIVO_A_NORMAL = [
 export const DIAS_SEMANA = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 /**
+ * Convierte un string YYYY-MM-DD a Date en hora local (sin timezone issues)
+ * Importante: new Date("2026-04-01") interpreta como UTC, causando errores de día
+ * Solución: añadir hora local "T00:00:00" fuerza interpretación en timezone del usuario
+ * @param {string} fechaString - Fecha en formato YYYY-MM-DD
+ * @returns {Date} - Objeto Date en hora local
+ */
+export const toLocalDate = (fechaString) => {
+    if (!fechaString) return null;
+    // Forzar hora local para evitar timezone issues
+    return new Date(fechaString + "T00:00:00");
+};
+
+/**
  * Verifica si una fecha es festiva
  * @param {string|Date} fecha - Fecha a verificar
  * @returns {boolean} - true si es festivo
@@ -59,7 +72,8 @@ export const esFestivo = (fecha) => {
     if (fecha instanceof Date) {
         fechaString = fecha.toISOString().split('T')[0];
     } else {
-        fechaString = fecha;
+        // Usar toLocalDate para evitar timezone issues
+        fechaString = toLocalDate(fecha).toISOString().split('T')[0];
     }
     return FESTIVOS.includes(fechaString);
 };
@@ -74,7 +88,8 @@ export const esDomingo = (fecha) => {
     if (fecha instanceof Date) {
         diaSemana = fecha.getDay();
     } else {
-        diaSemana = new Date(fecha).getDay();
+        // Usar toLocalDate para evitar timezone issues
+        diaSemana = toLocalDate(fecha).getDay();
     }
     return diaSemana === 0;
 };

@@ -147,22 +147,51 @@ export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
         const nombreDia = obtenerNombreDia(fecha);
         labelDia.innerText = nombreDia;
         
-        const esDiaEspecial = nombreDia === "Domingo" || esFestivo(fecha);
+        const esDom = esDomingo(fecha);
+        const esFest = esFestivo(fecha);
         
         if (fila) {
-            if (esDiaEspecial) {
-                fila.style.boxShadow = "10px 5px 10px 5px rgba(0, 0, 0, 0.7)";
-                fila.style.transform = "scale(1.04)";
-            } else {
-                fila.style.boxShadow = "";
-                fila.style.transform = "";
+            // Limpiar clases anteriores
+            fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
+            
+            // Agregar badge si corresponde
+            const celdaDia = fila.querySelector('td:first-child');
+            if (celdaDia) {
+                // Limpiar badges anteriores
+                const badgeExistente = celdaDia.querySelector('.turno-badge');
+                if (badgeExistente) badgeExistente.remove();
+                
+                // Crear badges según corresponda
+                const badges = [];
+                if (esDom && esFest) {
+                    badges.push('<span class="turno-badge turno-badge--domingo-festivo">Domingo + Festivo</span>');
+                } else if (esDom) {
+                    badges.push('<span class="turno-badge turno-badge--domingo">Domingo</span>');
+                } else if (esFest) {
+                    badges.push('<span class="turno-badge turno-badge--festivo">Festivo</span>');
+                }
+                
+                if (badges.length > 0) {
+                    celdaDia.insertAdjacentHTML('beforeend', badges.join(''));
+                }
+            }
+            
+            // Aplicar clases semánticas
+            if (esDom && esFest) {
+                fila.classList.add('turno--domingo-festivo');
+            } else if (esDom) {
+                fila.classList.add('turno--domingo');
+            } else if (esFest) {
+                fila.classList.add('turno--festivo');
             }
         }
     } else {
         labelDia.innerText = "";
         if (fila) {
-            fila.style.boxShadow = "";
-            fila.style.transform = "";
+            fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
+            const celdaDia = fila?.querySelector('td:first-child');
+            const badge = celdaDia?.querySelector('.turno-badge');
+            if (badge) badge.remove();
         }
     }
 };

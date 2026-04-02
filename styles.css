@@ -4,8 +4,8 @@
    ============================================ */
 
 /* ----------------------
-   CSS Custom Properties
-   ---------------------- */
+    CSS Custom Properties
+    ---------------------- */
 :root {
     /* Colores - Light Theme */
     --color-primary: #2563eb;
@@ -24,6 +24,14 @@
     --color-warning-bg: #fef3c7;
     --color-danger: #ef4444;
     --color-danger-bg: #fee2e2;
+    
+    /* Colores semánticos para turnos */
+    --color-domingo: #6366f1;          /* Índigo suave */
+    --color-domingo-bg: #e0e7ff;        /* Índigo claro */
+    --color-domingo-border: #c7d2fe;   /* Borde indigo */
+    --color-festivo: #d97706;           /* Ámbar/Dorado suave */
+    --color-festivo-bg: #fef3c7;        /* Ámbar claro */
+    --color-festivo-border: #fcd34d;    /* Borde dorado */
     
     /* Espaciado */
     --spacing-xs: 0.25rem;
@@ -90,6 +98,14 @@
     --color-warning-bg: #78350f;
     --color-danger: #ef4444;
     --color-danger-bg: #7f1d1d;
+    
+    /* Colores semánticos para turnos - Dark */
+    --color-domingo: #818cf8;          /* Índigo más brillante en dark */
+    --color-domingo-bg: #312e81;        /* Índigo oscuro */
+    --color-domingo-border: #4338ca;   /* Borde indigo oscuro */
+    --color-festivo: #fbbf24;           /* Ámbar brillante en dark */
+    --color-festivo-bg: #78350f;        /* Ámbar oscuro */
+    --color-festivo-border: #b45309;    /* Borde dorado oscuro */
     
     /* Select dark */
     --select-bg: var(--color-surface);
@@ -436,12 +452,98 @@ body {
     background-color: var(--color-surface-elevated);
 }
 
-/* Turnos en móvil - Cards */
+/* ----------------------
+    Turnos Semánticos (Domingo/Festivo)
+    ---------------------- */
+
+/* Badge para turnossemánticos */
+.turno-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.turno-badge--domingo {
+    background-color: var(--color-domingo-bg);
+    color: var(--color-domingo);
+    border: 1px solid var(--color-domingo-border);
+}
+
+.turno-badge--festivo {
+    background-color: var(--color-festivo-bg);
+    color: var(--color-festivo);
+    border: 1px solid var(--color-festivo-border);
+}
+
+.turno-badge--domingo-festivo {
+    background: linear-gradient(135deg, var(--color-domingo-bg) 50%, var(--color-festivo-bg) 50%);
+    color: var(--color-text);
+    border: 1px solid var(--color-domingo-border);
+}
+
+/* Fila de turno con clase semántica - borde lateral/acento */
+.turno--domingo {
+    position: relative;
+}
+
+.turno--domingo::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--color-domingo);
+    border-radius: 4px 0 0 4px;
+}
+
+.turno--festivo {
+    position: relative;
+}
+
+.turno--festivo::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--color-festivo);
+    border-radius: 4px 0 0 4px;
+}
+
+.turno--domingo-festivo {
+    position: relative;
+}
+
+.turno--domingo-festivo::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--color-domingo) 50%, var(--color-festivo) 50%);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Ajustes de padding para filas con acento lateral */
+.turno--domingo td,
+.turno--festivo td,
+.turno--domingo-festivo td {
+    padding-left: var(--spacing-md);
+}
+
+/* Mobile: Cards de turnos con badges */
 @media (max-width: 768px) {
-    .table--turnos {
-        display: none;
-    }
-    
     .turno-card {
         background-color: var(--color-surface);
         border: 1px solid var(--color-border);
@@ -449,6 +551,24 @@ body {
         padding: var(--spacing-md);
         margin-bottom: var(--spacing-sm);
         box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Acento lateral en cards - Domingo */
+    .turno-card.turno--domingo {
+        border-left: 4px solid var(--color-domingo);
+    }
+    
+    /* Acento lateral en cards - Festivo */
+    .turno-card.turno--festivo {
+        border-left: 4px solid var(--color-festivo);
+    }
+    
+    /* Acento lateral en cards - Domingo + Festivo */
+    .turno-card.turno--domingo-festivo {
+        border-left: 6px solid var(--color-domingo);
+        background: linear-gradient(90deg, var(--color-domingo-bg) 0%, var(--color-surface) 30%);
     }
     
     .turno-card__header {
@@ -465,6 +585,12 @@ body {
         color: white;
         padding: var(--spacing-xs) var(--spacing-sm);
         border-radius: var(--radius-sm);
+    }
+    
+    .turno-card__badges {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
     }
     
     .turno-card__details {

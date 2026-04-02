@@ -3,6 +3,8 @@
  * NO toca el DOM - retorna objetos con resultado
  */
 
+import { toLocalDate } from '../domain/holidays.js';
+
 /**
  * Valida que un valor sea un número positivo
  * @param {*} valor - Valor a validar
@@ -63,7 +65,8 @@ export const validarFecha = (fecha) => {
         return { valid: true }; // Permitir vacío
     }
     
-    const fechaObj = new Date(fecha);
+    // Usar toLocalDate para evitar timezone issues
+    const fechaObj = toLocalDate(fecha);
     
     if (isNaN(fechaObj.getTime())) {
         return { valid: false, message: 'Fecha inválida' };

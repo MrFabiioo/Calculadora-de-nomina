@@ -3,7 +3,7 @@
  * Usa Intl.NumberFormat para moneda colombiana
  */
 
-import { DIAS_SEMANA } from '../domain/holidays.js';
+import { DIAS_SEMANA, toLocalDate } from '../domain/holidays.js';
 
 /**
  * Formatea un número como moneda colombiana
@@ -45,7 +45,8 @@ export const formatearNumero = (valor) => {
 export const formatearFecha = (fecha, locale = 'es-CO') => {
     if (!fecha) return '';
     
-    const fechaObj = fecha instanceof Date ? fecha : new Date(fecha);
+    // Usar toLocalDate si es string para evitar timezone issues
+    const fechaObj = fecha instanceof Date ? fecha : (fecha.includes('T') ? new Date(fecha) : toLocalDate(fecha));
     
     if (isNaN(fechaObj.getTime())) {
         return '';
@@ -66,7 +67,8 @@ export const formatearFecha = (fecha, locale = 'es-CO') => {
 export const obtenerNombreDia = (fecha) => {
     if (!fecha) return '';
     
-    const fechaObj = fecha instanceof Date ? fecha : new Date(fecha);
+    // Usar toLocalDate si es string para evitar timezone issues
+    const fechaObj = fecha instanceof Date ? fecha : toLocalDate(fecha);
     
     if (isNaN(fechaObj.getTime())) {
         return '';
