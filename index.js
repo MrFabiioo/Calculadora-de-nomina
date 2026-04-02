@@ -19,35 +19,46 @@ import * as renderer from './src/ui/renderer.js';
 let elementos = {};
 
 /**
- * Inicializa las referencias a elementos del DOM
+ * Inicializa las referencias a elementos del DOM (nuevos IDs de Fase 3)
  */
 const inicializarElementos = () => {
     elementos = {
-        tbody: document.getElementById('cuerpo_tabla'),
-        mostradorContador: document.getElementById('mostrador_contador'),
-        horaDiurna: document.getElementById('hora_diurna'),
-        horaNocturna: document.getElementById('hora_nocturna'),
-        horaDiurnaFestiva: document.getElementById('hora_diurna_festiva'),
-        horaNocturnaFestiva: document.getElementById('hora_nocturna_festiva'),
-        deduccionesNomina: document.getElementById('deducciones_nomina'),
-        deduccionesEMI: document.getElementById('deducciones_emi_familiares'),
-        otrasDeducciones: document.getElementById('otras_deducciones'),
-        turnosLabel: document.getElementById('turnos_label'),
-        horasLabel: document.getElementById('horas_label'),
-        subsidioTransporteLabel: document.getElementById('subsidio_transporte_label'),
-        totalDevengado: document.getElementById('total_devengado'),
-        totalDeducciones: document.getElementById('tota_deducciones'),
-        netoAPagar: document.getElementById('neto_a_pagar'),
-        valorSaludEmpleado: document.getElementById('valor_salud_empleado_label'),
-        valorPensionEmpleado: document.getElementById('valor_pension_empleado_label'),
-        valorSaludEmpresa: document.getElementById('valor_salud_empresa_label'),
-        valorPensionEmpresa: document.getElementById('valor_pension_empresa_label'),
-        totalEmpleado: document.getElementById('total_empleado_label'),
-        totalEmpresa: document.getElementById('total_empresa_label'),
-        botonCalcular: document.getElementById('calcular'),
-        botonAñadir: document.getElementById('añadir'),
-        botonQuitar: document.getElementById('quitar'),
-        botonTema: document.getElementById('btn_cambio_tema')
+        // Tabla de turnos - NUEVOS IDs del HTML
+        tbody: document.getElementById('turnos-body'),
+        mostradorContador: document.getElementById('turno-contador'),
+        
+        // Horas extras - NUEVOS IDs (con guiones)
+        horaDiurna: document.getElementById('hora-diurna'),
+        horaNocturna: document.getElementById('hora-nocturna'),
+        horaDiurnaFestiva: document.getElementById('hora-diurna-festiva'),
+        horaNocturnaFestiva: document.getElementById('hora-nocturna-festiva'),
+        
+        // Deducciones - NUEVOS IDs (con guiones)
+        deduccionesNomina: document.getElementById('deduccion-nomina'),
+        deduccionesEMI: document.getElementById('deduccion-emi'),
+        otrasDeducciones: document.getElementById('otras-deducciones'),
+        
+        // Resultados - NUEVOS IDs del sticky summary y section
+        turnosLabel: document.getElementById('turnos-count'),
+        horasLabel: document.getElementById('horas-count'),
+        subsidioTransporteLabel: document.getElementById('subsidio-transporte'),
+        totalDevengado: document.getElementById('total-devengado'),
+        totalDeducciones: document.getElementById('total-deducciones'),
+        netoAPagar: document.getElementById('neto-a-pagar'),
+        
+        // Salud y pensión - NUEVOS IDs de la tabla
+        valorSaludEmpleado: document.getElementById('salud-empleado'),
+        valorPensionEmpleado: document.getElementById('pension-empleado'),
+        valorSaludEmpresa: document.getElementById('salud-empresa'),
+        valorPensionEmpresa: document.getElementById('pension-empresa'),
+        totalEmpleado: document.getElementById('total-empleado'),
+        totalEmpresa: document.getElementById('total-empresa'),
+        
+        // Botones - NUEVOS IDs
+        botonCalcular: null, // Ya no hay botón calcular en Fase 3
+        botonAñadir: document.getElementById('btn-agregar'),
+        botonQuitar: document.getElementById('btn-quitar'),
+        botonTema: document.getElementById('theme-toggle')
     };
 };
 
@@ -238,51 +249,74 @@ const calcularNominaCompleta = () => {
  * Event handlers
  */
 
-// Validación de inputs (blur)
+// Validación de inputs con feedback visual (TASK-22)
 const setupValidaciones = () => {
     const inputs = [
-        { id: 'deducciones_nomina', key: 'nomina' },
-        { id: 'deducciones_emi_familiares', key: 'emi' },
-        { id: 'otras_deducciones', key: 'otras' },
-        { id: 'hora_diurna', key: 'diurna' },
-        { id: 'hora_nocturna', key: 'nocturna' },
-        { id: 'hora_diurna_festiva', key: 'diurnaFestiva' },
-        { id: 'hora_nocturna_festiva', key: 'nocturnaFestiva' }
+        { id: 'deduccion-nomina', key: 'nomina' },
+        { id: 'deduccion-emi', key: 'emi' },
+        { id: 'otras-deducciones', key: 'otras' },
+        { id: 'hora-diurna', key: 'diurna' },
+        { id: 'hora-nocturna', key: 'nocturna' },
+        { id: 'hora-diurna-festiva', key: 'diurnaFestiva' },
+        { id: 'hora-nocturna-festiva', key: 'nocturnaFestiva' }
     ];
     
     inputs.forEach(({ id, key }) => {
         const input = document.getElementById(id);
         if (input) {
+            // Feedback visual en tiempo real (input)
+            input.addEventListener('input', () => {
+                const resultado = validarNumeroPositivo(input.value);
+                const errorSpan = input.parentElement?.querySelector('.input-group__error');
+                
+                if (!resultado.valid && input.value) {
+                    input.classList.add('input-group__input--invalid');
+                    input.classList.remove('input-group__input--valid');
+                    if (errorSpan) errorSpan.textContent = resultado.message;
+                } else if (input.value) {
+                    input.classList.add('input-group__input--valid');
+                    input.classList.remove('input-group__input--invalid');
+                    if (errorSpan) errorSpan.textContent = '';
+                } else {
+                    input.classList.remove('input-group__input--valid', 'input-group__input--invalid');
+                    if (errorSpan) errorSpan.textContent = '';
+                }
+                
+                // Recalcular en tiempo real
+                calcularNominaCompleta();
+            });
+            
+            // Validación al perder foco (blur)
             input.addEventListener('blur', () => {
                 const resultado = validarNumeroPositivo(input.value);
                 if (!resultado.valid && input.value) {
                     alert(resultado.message);
                     input.value = '';
+                    input.classList.remove('input-group__input--valid', 'input-group__input--invalid');
+                    const errorSpan = input.parentElement?.querySelector('.input-group__error');
+                    if (errorSpan) errorSpan.textContent = '';
                 }
-            });
-            
-            // Recalcular en tiempo real
-            input.addEventListener('input', () => {
-                calcularNominaCompleta();
             });
         }
     });
 };
 
-// Botón tema
+// Botón tema - CORREGIDO para usar data-theme en html (Fase 3)
 const setupBotonTema = () => {
     if (elementos.botonTema) {
         elementos.botonTema.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
+            const html = document.documentElement;
+            const actual = html.getAttribute('data-theme');
+            const nuevo = actual === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', nuevo);
         });
     }
 };
 
-// Botón calcular
+// Botón calcular - ELIMINADO en Fase 3 (cálculo en tiempo real)
+// Mantengo la función vacía para no romper referencias
 const setupBotonCalcular = () => {
-    if (elementos.botonCalcular) {
-        elementos.botonCalcular.addEventListener('click', calcularNominaCompleta);
-    }
+    // Ya no hay botón calcular - el cálculo es automático
 };
 
 // Botón agregar turno
@@ -328,9 +362,10 @@ const setupBotonQuitar = () => {
     }
 };
 
-// Event delegation para turnos dinámicos
+// Event delegation para turnos dinámicos - AGREGADO input para selects
 const setupEventDelegation = () => {
     if (elementos.tbody) {
+        // Evento change para selects (hora inicio/salida) y date
         elementos.tbody.addEventListener('change', (e) => {
             const target = e.target;
             
@@ -350,6 +385,13 @@ const setupEventDelegation = () => {
             
             // Detectar cambio en incapacidad
             if (target.id && target.id.startsWith('incapacidad_')) {
+                calcularNominaCompleta();
+            }
+        });
+        
+        // Evento input para selects (calculo inmediato al cambiar opción)
+        elementos.tbody.addEventListener('input', (e) => {
+            if (e.target.tagName === 'SELECT') {
                 calcularNominaCompleta();
             }
         });

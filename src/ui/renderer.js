@@ -1,6 +1,8 @@
 /**
  * Módulo de Renderizado - Manipulación del DOM
  * NO calcula nada - solo renderiza lo que el store le dice
+ * 
+ * ACTUALIZADO para Fase 3: Nuevos IDs del HTML semántico
  */
 
 import { formatearMoneda, obtenerNombreDia } from '../utils/formatters.js';
@@ -11,46 +13,47 @@ import { esFestivo, esDomingo } from '../domain/holidays.js';
 let elementos = {};
 
 /**
- * Inicializa las referencias a elementos del DOM
+ * Inicializa las referencias a elementos del DOM (nuevos IDs de Fase 3)
  */
 export const inicializarElementos = () => {
     elementos = {
-        // Tabla de turnos
-        tbody: document.getElementById('cuerpo_tabla'),
-        mostradorContador: document.getElementById('mostrador_contador'),
+        // Tabla de turnos - NUEVOS IDs
+        tbody: document.getElementById('turnos-body'),
+        mostradorContador: document.getElementById('turno-contador'),
+        emptyState: document.getElementById('empty-state'),
         
-        // Horas extras
-        horaDiurna: document.getElementById('hora_diurna'),
-        horaNocturna: document.getElementById('hora_nocturna'),
-        horaDiurnaFestiva: document.getElementById('hora_diurna_festiva'),
-        horaNocturnaFestiva: document.getElementById('hora_nocturna_festiva'),
+        // Horas extras - NUEVOS IDs (con guiones)
+        horaDiurna: document.getElementById('hora-diurna'),
+        horaNocturna: document.getElementById('hora-nocturna'),
+        horaDiurnaFestiva: document.getElementById('hora-diurna-festiva'),
+        horaNocturnaFestiva: document.getElementById('hora-nocturna-festiva'),
         
-        // Deducciones
-        deduccionesNomina: document.getElementById('deducciones_nomina'),
-        deduccionesEMI: document.getElementById('deducciones_emi_familiares'),
-        otrasDeducciones: document.getElementById('otras_deducciones'),
+        // Deducciones - NUEVOS IDs (con guiones)
+        deduccionesNomina: document.getElementById('deduccion-nomina'),
+        deduccionesEMI: document.getElementById('deduccion-emi'),
+        otrasDeducciones: document.getElementById('otras-deducciones'),
         
-        // Resultados
-        turnosLabel: document.getElementById('turnos_label'),
-        horasLabel: document.getElementById('horas_label'),
-        subsidioTransporteLabel: document.getElementById('subsidio_transporte_label'),
-        totalDevengado: document.getElementById('total_devengado'),
-        totalDeducciones: document.getElementById('tota_deducciones'),
-        netoAPagar: document.getElementById('neto_a_pagar'),
+        // Resultados - NUEVOS IDs
+        turnosLabel: document.getElementById('turnos-count'),
+        horasLabel: document.getElementById('horas-count'),
+        subsidioTransporteLabel: document.getElementById('subsidio-transporte'),
+        totalDevengado: document.getElementById('total-devengado'),
+        totalDeducciones: document.getElementById('total-deducciones'),
+        netoAPagar: document.getElementById('neto-a-pagar'),
         
-        // Salud y pensión
-        valorSaludEmpleado: document.getElementById('valor_salud_empleado_label'),
-        valorPensionEmpleado: document.getElementById('valor_pension_empleado_label'),
-        valorSaludEmpresa: document.getElementById('valor_salud_empresa_label'),
-        valorPensionEmpresa: document.getElementById('valor_pension_empresa_label'),
-        totalEmpleado: document.getElementById('total_empleado_label'),
-        totalEmpresa: document.getElementById('total_empresa_label'),
+        // Salud y pensión - NUEVOS IDs de la tabla
+        valorSaludEmpleado: document.getElementById('salud-empleado'),
+        valorPensionEmpleado: document.getElementById('pension-empleado'),
+        valorSaludEmpresa: document.getElementById('salud-empresa'),
+        valorPensionEmpresa: document.getElementById('pension-empresa'),
+        totalEmpleado: document.getElementById('total-empleado'),
+        totalEmpresa: document.getElementById('total-empresa'),
         
-        // Botones
-        botonCalcular: document.getElementById('calcular'),
-        botonAñadir: document.getElementById('añadir'),
-        botonQuitar: document.getElementById('quitar'),
-        botonTema: document.getElementById('btn_cambio_tema')
+        // Botones - NUEVOS IDs
+        botonCalcular: null,
+        botonAñadir: document.getElementById('btn-agregar'),
+        botonQuitar: document.getElementById('btn-quitar'),
+        botonTema: document.getElementById('theme-toggle')
     };
 };
 
@@ -125,6 +128,15 @@ export const eliminarFilaTurno = () => {
  */
 export const actualizarContador = () => {
     elementos.mostradorContador.innerText = elementos.tbody.children.length;
+    
+    // Gestionar estado vacío
+    if (elementos.emptyState) {
+        if (elementos.tbody.children.length === 0) {
+            elementos.emptyState.style.display = 'block';
+        } else {
+            elementos.emptyState.style.display = 'none';
+        }
+    }
 };
 
 /**
@@ -255,10 +267,13 @@ export const limpiarErrorInput = (inputId) => {
 };
 
 /**
- * Alterna el tema dark/light
+ * Alterna el tema dark/light usando data-theme
  */
 export const alternarTema = () => {
-    document.body.classList.toggle('dark-theme');
+    const html = document.documentElement;
+    const actual = html.getAttribute('data-theme');
+    const nuevo = actual === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', nuevo);
 };
 
 /**
