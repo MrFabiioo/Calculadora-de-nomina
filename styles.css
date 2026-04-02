@@ -456,19 +456,21 @@ body {
     Turnos Semánticos (Domingo/Festivo)
     ---------------------- */
 
-/* Badge para turnossemánticos */
+/* Badge para turnossemánticos - dentro de la celda del día */
 .turno-badge {
-    display: inline-flex;
-    align-items: center;
+    display: block;
     font-family: var(--font-mono);
     font-size: 0.625rem;
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 6px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-top: 2px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
     white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .turno-badge--domingo {
@@ -536,10 +538,10 @@ body {
 }
 
 /* Ajustes de padding para filas con acento lateral */
-.turno--domingo td,
-.turno--festivo td,
-.turno--domingo-festivo td {
-    padding-left: var(--spacing-md);
+.turno--domingo td:first-child,
+.turno--festivo td:first-child,
+.turno--domingo-festivo td:first-child {
+    padding-bottom: var(--spacing-md);
 }
 
 /* Mobile: Cards de turnos con badges */

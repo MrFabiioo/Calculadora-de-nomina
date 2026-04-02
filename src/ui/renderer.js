@@ -154,25 +154,27 @@ export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
             // Limpiar clases anteriores
             fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
             
-            // Agregar badge si corresponde
+            // Agregar badge si corresponde - dentro de la celda del día
             const celdaDia = fila.querySelector('td:first-child');
             if (celdaDia) {
                 // Limpiar badges anteriores
                 const badgeExistente = celdaDia.querySelector('.turno-badge');
                 if (badgeExistente) badgeExistente.remove();
                 
-                // Crear badges según corresponda
-                const badges = [];
-                if (esDom && esFest) {
-                    badges.push('<span class="turno-badge turno-badge--domingo-festivo">Domingo + Festivo</span>');
-                } else if (esDom) {
-                    badges.push('<span class="turno-badge turno-badge--domingo">Domingo</span>');
-                } else if (esFest) {
-                    badges.push('<span class="turno-badge turno-badge--festivo">Festivo</span>');
-                }
+                // Crear badge como subtítulo DENTRO de la celda, no como elemento desplazante
+                const badgeClass = esDom && esFest ? 'turno-badge--domingo-festivo' 
+                                : esDom ? 'turno-badge--domingo' 
+                                : esFest ? 'turno-badge--festivo' 
+                                : '';
                 
-                if (badges.length > 0) {
-                    celdaDia.insertAdjacentHTML('beforeend', badges.join(''));
+                const badgeText = esDom && esFest ? 'Domingo + Festivo' 
+                                : esDom ? 'Domingo' 
+                                : esFest ? 'Festivo' 
+                                : '';
+                
+                if (badgeClass && badgeText) {
+                    // Crear estructura: nombre del día arriba, badge como subtítulo debajo
+                    labelDia.innerHTML = `${nombreDia}<span class="turno-badge ${badgeClass}">${badgeText}</span>`;
                 }
             }
             
@@ -189,9 +191,6 @@ export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
         labelDia.innerText = "";
         if (fila) {
             fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
-            const celdaDia = fila?.querySelector('td:first-child');
-            const badge = celdaDia?.querySelector('.turno-badge');
-            if (badge) badge.remove();
         }
     }
 };
