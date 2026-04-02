@@ -6,7 +6,7 @@
  */
 
 import { formatearMoneda, obtenerNombreDia } from '../utils/formatters.js';
-import { TURNOS, TURNOS_INICIO, TURNOS_SALIDA } from '../domain/shifts.js';
+import { TURNOS_INICIO, TURNOS_SALIDA } from '../domain/shifts.js';
 import { esFestivo, esDomingo } from '../domain/holidays.js';
 
 // Elementos del DOM (cacheados)

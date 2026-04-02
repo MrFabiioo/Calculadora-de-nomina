@@ -8,7 +8,7 @@
  */
 
 import { store, getState, setState } from './src/state/store.js';
-import { TURNOS } from './src/domain/shifts.js';
+import { calcularTurno } from './src/domain/shifts.js';
 import { calcularValorTurno, calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
@@ -144,10 +144,9 @@ const calcularNominaCompleta = () => {
     let contadorTurnosUI = 0;
     turnos.forEach((turno, index) => {
         const i = index + 1;
-        const key = `${turno.horaInicio}-${turno.horaSalida}`;
-        const turnoData = TURNOS[key];
+        const turnoData = calcularTurno(turno.horaInicio, turno.horaSalida);
 
-        if (turnoData && !(turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso")) {
+        if (turnoData && turnoData.horas > 0) {
             const valorTurno = calcularValorTurno(turnoData, turno.fecha, turno.incapacidad);
 
             const celdaValor = document.getElementById(`valor_${i}`);

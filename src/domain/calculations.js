@@ -3,7 +3,7 @@
  * NO toca el DOM - solo lógica de negocio
  */
 
-import { TARIFAS_HORA, TURNOS } from './shifts.js';
+import { TARIFAS_HORA, calcularTurno } from './shifts.js';
 import { esFestivo, esDomingo, esNormalAFestivo, esFestivoANormal } from './holidays.js';
 
 // Constantes para deducciones
@@ -13,8 +13,8 @@ const TARIFA_SALUD_EMPLEADO = 0.04; // 4%
 const TARIFA_SALUD_EMPRESA = 0.085;  // 8.5%
 const TARIFA_PENSION_EMPLEADO = 0.04; // 4%
 const TARIFA_PENSION_EMPRESA = 0.12;  // 12%
-const SUBSIDIO_TRANSPORTE_MAXIMO = 200000;
-const LIMITE_SUBSIDIO = 2847000;
+const SUBSIDIO_TRANSPORTE_MAXIMO = 249095;
+const LIMITE_SUBSIDIO = 1750905*2; // Si el devengado supera este límite, no aplica subsidio
 
 /**
  * Calcula el valor de un turno según el tipo de día
@@ -155,10 +155,9 @@ export const calcularNomina = (input) => {
             return;
         }
         
-        // Buscar el turno en el mapa
-        const key = `${horaInicio}-${horaSalida}`;
-        const turnoData = TURNOS[key];
-        
+        // Calcular dinámicamente según Art. 15 CST
+        const turnoData = calcularTurno(horaInicio, horaSalida);
+
         if (turnoData) {
             const valorTurno = calcularValorTurno(turnoData, fecha, incapacidad);
             totalTurnos += valorTurno;
