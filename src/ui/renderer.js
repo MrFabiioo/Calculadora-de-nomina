@@ -145,40 +145,21 @@ export const actualizarContador = () => {
 export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
     if (fecha) {
         const nombreDia = obtenerNombreDia(fecha);
-        labelDia.innerText = nombreDia;
         
         const esDom = esDomingo(fecha);
         const esFest = esFestivo(fecha);
+        
+        // Determinar tipo de turno para el borde interno
+        const tipoTurno = esDom && esFest ? 'domingo-festivo' 
+                        : esDom ? 'domingo' 
+                        : esFest ? 'festivo' 
+                        : '';
         
         if (fila) {
             // Limpiar clases anteriores
             fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
             
-            // Agregar badge si corresponde - dentro de la celda del día
-            const celdaDia = fila.querySelector('td:first-child');
-            if (celdaDia) {
-                // Limpiar badges anteriores
-                const badgeExistente = celdaDia.querySelector('.turno-badge');
-                if (badgeExistente) badgeExistente.remove();
-                
-                // Crear badge como subtítulo DENTRO de la celda, no como elemento desplazante
-                const badgeClass = esDom && esFest ? 'turno-badge--domingo-festivo' 
-                                : esDom ? 'turno-badge--domingo' 
-                                : esFest ? 'turno-badge--festivo' 
-                                : '';
-                
-                const badgeText = esDom && esFest ? 'Domingo + Festivo' 
-                                : esDom ? 'Domingo' 
-                                : esFest ? 'Festivo' 
-                                : '';
-                
-                if (badgeClass && badgeText) {
-                    // Crear estructura: nombre del día arriba, badge como subtítulo debajo
-                    labelDia.innerHTML = `${nombreDia}<span class="turno-badge ${badgeClass}">${badgeText}</span>`;
-                }
-            }
-            
-            // Aplicar clases semánticas
+            // Aplicar clases semánticas para el borde lateral (en la fila)
             if (esDom && esFest) {
                 fila.classList.add('turno--domingo-festivo');
             } else if (esDom) {
@@ -186,11 +167,40 @@ export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
             } else if (esFest) {
                 fila.classList.add('turno--festivo');
             }
+            
+            // Ahora actualizar la celda del día con estructura vertical interna
+            const celdaDia = fila.querySelector('td:first-child');
+            if (celdaDia) {
+                // Limpiar clases de estado anteriores en la celda
+                celdaDia.classList.remove('turno-dia--domingo', 'turno-dia--festivo', 'turno-dia--domingo-festivo');
+                
+                if (tipoTurno) {
+                    // Agregar clase de estado para el borde interno
+                    celdaDia.classList.add(`turno-dia--${tipoTurno}`);
+                    
+                    // Crear estructura: contenedor día con nombre + subtítulo
+                    labelDia.innerHTML = `
+                        <span class="turno-dia__nombre">${nombreDia}</span>
+                        <span class="turno-dia__estado turno-dia__estado--${tipoTurno}">${esDom && esFest ? 'Domingo + Festivo' : esDom ? 'Domingo' : 'Festivo'}</span>
+                    `;
+                } else {
+                    // Solo día normal, sin subtítulo
+                    labelDia.innerHTML = `<span class="turno-dia__nombre">${nombreDia}</span>`;
+                }
+            } else {
+                labelDia.innerText = nombreDia;
+            }
+        } else {
+            labelDia.innerText = nombreDia;
         }
     } else {
         labelDia.innerText = "";
         if (fila) {
             fila.classList.remove('turno--domingo', 'turno--festivo', 'turno--domingo-festivo');
+            const celdaDia = fila.querySelector('td:first-child');
+            if (celdaDia) {
+                celdaDia.classList.remove('turno-dia--domingo', 'turno-dia--festivo', 'turno-dia--domingo-festivo');
+            }
         }
     }
 };

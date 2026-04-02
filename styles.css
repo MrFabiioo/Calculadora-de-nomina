@@ -453,11 +453,16 @@ body {
 }
 
 /* ----------------------
-    Turnos Semánticos (Domingo/Festivo)
-    ---------------------- */
+     Turnos Semánticos (Domingo/Festivo)
+     ---------------------- */
 
-/* Badge para turnossemánticos - dentro de la celda del día */
-.turno-badge {
+/* Contenedor interno de la celda Día - estructura vertical */
+.turno-dia__nombre {
+    display: block;
+    font-weight: 600;
+}
+
+.turno-dia__estado {
     display: block;
     font-family: var(--font-mono);
     font-size: 0.625rem;
@@ -467,84 +472,69 @@ body {
     margin-top: 2px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    white-space: nowrap;
-    width: 100%;
     text-align: center;
-    box-sizing: border-box;
 }
 
-.turno-badge--domingo {
+.turno-dia__estado--domingo {
     background-color: var(--color-domingo-bg);
     color: var(--color-domingo);
     border: 1px solid var(--color-domingo-border);
 }
 
-.turno-badge--festivo {
+.turno-dia__estado--festivo {
     background-color: var(--color-festivo-bg);
     color: var(--color-festivo);
     border: 1px solid var(--color-festivo-border);
 }
 
-.turno-badge--domingo-festivo {
+.turno-dia__estado--domingo-festivo {
     background: linear-gradient(135deg, var(--color-domingo-bg) 50%, var(--color-festivo-bg) 50%);
     color: var(--color-text);
     border: 1px solid var(--color-domingo-border);
 }
 
-/* Fila de turno con clase semántica - borde lateral/acento */
-.turno--domingo {
+/* Borde lateral interno en la celda del día (no en la fila) */
+.turno-dia--domingo,
+.turno-dia--festivo,
+.turno-dia--domingo-festivo {
     position: relative;
+    padding-left: var(--spacing-md) !important;
 }
 
-.turno--domingo::before {
+.turno-dia--domingo::before,
+.turno-dia--festivo::before,
+.turno-dia--domingo-festivo::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+}
+
+.turno-dia--domingo::before {
     background-color: var(--color-domingo);
-    border-radius: 4px 0 0 4px;
 }
 
-.turno--festivo {
-    position: relative;
-}
-
-.turno--festivo::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
+.turno-dia--festivo::before {
     background-color: var(--color-festivo);
-    border-radius: 4px 0 0 4px;
 }
 
-.turno--domingo-festivo {
-    position: relative;
-}
-
-.turno--domingo-festivo::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 6px;
+.turno-dia--domingo-festivo::before {
     background: linear-gradient(180deg, var(--color-domingo) 50%, var(--color-festivo) 50%);
-    border-radius: 4px 0 0 4px;
 }
 
-/* Ajustes de padding para filas con acento lateral */
-.turno--domingo td:first-child,
-.turno--festivo td:first-child,
-.turno--domingo-festivo td:first-child {
-    padding-bottom: var(--spacing-md);
+/* Fila de turno con clase semántica - se mantiene para referencia pero el acento visual ahora está en la celda */
+.turno--domingo,
+.turno--festivo,
+.turno--domingo-festivo {
+    /* El borde lateral ahora está en la celda del día via .turno-dia--* */
+    /* Esta clase se mantiene por si se necesita para otros estilos de fila */
 }
 
 /* Mobile: Cards de turnos con badges */
+/* El borde lateral ya no está en la fila, ahora está en la celda del día */
 @media (max-width: 768px) {
     .turno-card {
         background-color: var(--color-surface);
@@ -555,22 +545,6 @@ body {
         box-shadow: var(--shadow-sm);
         position: relative;
         overflow: hidden;
-    }
-    
-    /* Acento lateral en cards - Domingo */
-    .turno-card.turno--domingo {
-        border-left: 4px solid var(--color-domingo);
-    }
-    
-    /* Acento lateral en cards - Festivo */
-    .turno-card.turno--festivo {
-        border-left: 4px solid var(--color-festivo);
-    }
-    
-    /* Acento lateral en cards - Domingo + Festivo */
-    .turno-card.turno--domingo-festivo {
-        border-left: 6px solid var(--color-domingo);
-        background: linear-gradient(90deg, var(--color-domingo-bg) 0%, var(--color-surface) 30%);
     }
     
     .turno-card__header {
@@ -593,6 +567,36 @@ body {
         display: flex;
         gap: 4px;
         flex-wrap: wrap;
+    }
+    
+    /* Badge para mobile - similar a la celda del día */
+    .turno-card__badge {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.625rem;
+        font-weight: 600;
+        padding: 2px 4px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+    
+    .turno-card__badge--domingo {
+        background-color: var(--color-domingo-bg);
+        color: var(--color-domingo);
+        border: 1px solid var(--color-domingo-border);
+    }
+    
+    .turno-card__badge--festivo {
+        background-color: var(--color-festivo-bg);
+        color: var(--color-festivo);
+        border: 1px solid var(--color-festivo-border);
+    }
+    
+    .turno-card__badge--domingo-festivo {
+        background: linear-gradient(135deg, var(--color-domingo-bg) 50%, var(--color-festivo-bg) 50%);
+        color: var(--color-text);
+        border: 1px solid var(--color-domingo-border);
     }
     
     .turno-card__details {
