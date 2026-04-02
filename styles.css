@@ -228,8 +228,8 @@ body {
 }
 
 /* ----------------------
-     Sticky Summary - AHORA ES ESTÁTICO
-     ---------------------- */
+      Sticky Summary Panel
+      ---------------------- */
 .summary-panel {
     position: static;
     background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
@@ -239,6 +239,21 @@ body {
     box-shadow: var(--shadow-lg);
     margin-bottom: var(--spacing-md);
     transition: background var(--transition-normal);
+    /* Necesario para que sticky funcione en desktop */
+    align-self: start;
+}
+
+/* Sticky solo en desktop - no tapa turnos porque está en columna separada */
+@media (min-width: 1024px) {
+    .summary-panel {
+        position: sticky;
+        top: calc(var(--header-height) + var(--spacing-lg));
+        z-index: 10;
+        /* Limitar sticky para que no pase el contenedor */
+        max-height: calc(100vh - var(--header-height) - var(--spacing-xl));
+        overflow-y: auto;
+        margin-bottom: 0;
+    }
 }
 
 [data-theme="dark"] .summary-panel {
