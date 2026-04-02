@@ -26,13 +26,108 @@ const hora_nocturna = document.getElementById('hora_nocturna');
 const hora_diurna_festiva = document.getElementById('hora_diurna_festiva');
 const hora_nocturna_festiva = document.getElementById('hora_nocturna_festiva');
 
-const diasSemana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+// Validación de inputs para prevenir valores negativos
+const validarNoNegativo = (input, labelId) => {
+    const valor = parseFloat(input.value);
+    const label = document.getElementById(labelId);
+    
+    if (isNaN(valor)) return true; // Allow empty
+    
+    if (valor < 0) {
+        // Mostrar error visual
+        input.style.borderColor = 'red';
+        input.style.borderWidth = '2px';
+        if (label) {
+            label.style.color = 'red';
+            label.innerText = 'No puede ser negativo';
+        }
+        return false;
+    }
+    
+    // Limpiar error si es válido
+    input.style.borderColor = '';
+    input.style.borderWidth = '';
+    if (label) {
+        label.style.color = '';
+    }
+    return true;
+};
+
+// Agregar validaciones a los inputs de deducciones
+deducciones_nomina.addEventListener('blur', () => {
+    if (deducciones_nomina.value && parseFloat(deducciones_nomina.value) < 0) {
+        deducciones_nomina.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+deducciones_emi_familiares.addEventListener('blur', () => {
+    if (deducciones_emi_familiares.value && parseFloat(deducciones_emi_familiares.value) < 0) {
+        deducciones_emi_familiares.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+otras_deducciones.addEventListener('blur', () => {
+    if (otras_deducciones.value && parseFloat(otras_deducciones.value) < 0) {
+        otras_deducciones.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+// Validar horas adicionales
+hora_diurna.addEventListener('blur', () => {
+    if (hora_diurna.value && parseFloat(hora_diurna.value) < 0) {
+        hora_diurna.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+hora_nocturna.addEventListener('blur', () => {
+    if (hora_nocturna.value && parseFloat(hora_nocturna.value) < 0) {
+        hora_nocturna.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+hora_diurna_festiva.addEventListener('blur', () => {
+    if (hora_diurna_festiva.value && parseFloat(hora_diurna_festiva.value) < 0) {
+        hora_diurna_festiva.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
+
+hora_nocturna_festiva.addEventListener('blur', () => {
+    if (hora_nocturna_festiva.value && parseFloat(hora_nocturna_festiva.value) < 0) {
+        hora_nocturna_festiva.value = '';
+        alert('El valor no puede ser negativo');
+    }
+});
 
 btn_cambio_tema.addEventListener('click', () => {
     document.body.classList.toggle('dark-theme');
 })
 
-const diasFestivos = ["2024-10-14", "2024-11-04", "2024-11-11", "2024-12-25", "2024-10-13", "2024-11-03", "2024-11-10", "2024-08-7", "2024-08-19", "2025-01-01", "2025-01-06", "2025-01-05", "2025-03-24", "2025-04-17", "2025-04-18", "2025-05-01", "2025-06-02", "2025-06-23", , "2025-06-30", "2025-08-07", , "2025-08-18", "2025-10-13"]; // Ejemplo de fechas festivas
+// Festivos oficiales de Colombia 2024-2026
+const diasFestivos = [
+    // 2024
+    "2024-01-01", "2024-01-06", "2024-03-24", "2024-03-28", "2024-03-29",
+    "2024-05-01", "2024-06-02", "2024-06-03", "2024-07-01", "2024-07-20",
+    "2024-08-07", "2024-08-19", "2024-10-14", "2024-11-04", "2024-11-11",
+    "2024-12-08", "2024-12-25",
+    // 2025
+    "2025-01-01", "2025-01-06", "2025-03-24", "2025-04-13", "2025-04-14",
+    "2025-04-17", "2025-04-18", "2025-05-01", "2025-06-02", "2025-06-23",
+    "2025-07-20", "2025-08-07", "2025-08-18", "2025-10-13", "2025-11-03",
+    "2025-11-17", "2025-12-08", "2025-12-25",
+    // 2026
+    "2026-01-01", "2026-01-05", "2026-01-06", "2026-03-23", "2026-03-24",
+    "2026-04-02", "2026-04-03", "2026-05-01", "2026-06-08", "2026-06-15",
+    "2026-07-20", "2026-08-07", "2026-08-17", "2026-10-12", "2026-11-02",
+    "2026-11-16", "2026-12-08", "2026-12-25"
+];
 const esFestivo = (fecha) => {
     let fechaString;
 
@@ -153,7 +248,6 @@ const turnos = {
     "14:00 Pm-20:00 Pm": { valor: valor_hora_diurna * 6, horas: 6, domingo: valor_hora_diurna_festiva * 6, festivo: valor_hora_diurna_festiva * 6, normalFestivo: valor_hora_diurna * 6 },
     "14:00 Pm-22:00 Pm": { valor: valor_hora_diurna * 7 + valor_hora_nocturna, horas: 8, domingo: valor_hora_diurna_festiva * 7 + valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva * 7 + valor_hora_nocturna_festiva, normalFestivo: valor_hora_diurna * 7 + valor_hora_nocturna },
     "14:00 Pm-21:00 Pm": { valor: valor_hora_diurna * 7, horas: 7, domingo: valor_hora_diurna_festiva * 7, festivo: valor_hora_diurna_festiva * 7, normalFestivo: valor_hora_diurna * 7 },
-    "14:00 Pm-20:00 Pm": { valor: valor_hora_diurna * 6, horas: 6, domingo: valor_hora_diurna_festiva * 6, festivo: valor_hora_diurna_festiva * 6, normalFestivo: valor_hora_diurna * 6 },
     "15:00 Pm-21:00 Pm": { valor: valor_hora_diurna * 6, horas: 6, domingo: valor_hora_diurna_festiva * 6, festivo: valor_hora_diurna_festiva * 6, normalFestivo: valor_hora_diurna * 6 },
     "15:00 Pm-22:00 Pm": { valor: valor_hora_diurna * 6 + valor_hora_nocturna, horas: 7, domingo: valor_hora_diurna_festiva * 6 + valor_hora_nocturna_festiva, festivo: valor_hora_diurna_festiva * 6 + valor_hora_nocturna_festiva, normalFestivo: valor_hora_diurna * 6 + valor_hora_nocturna },
     "15:00 Pm-23:00 Pm": { valor: valor_hora_diurna * 6 + valor_hora_nocturna * 2, horas: 8, domingo: valor_hora_diurna_festiva * 6 + valor_hora_nocturna_festiva * 2, festivo: valor_hora_diurna_festiva * 6 + valor_hora_nocturna_festiva * 2, normalFestivo: valor_hora_diurna * 6 + valor_hora_nocturna * 2 },
@@ -174,14 +268,33 @@ const turnos = {
 // Verifica si la fecha es domingo
 const esDomingo = (fecha) => {
     let diaSemana = new Date(fecha).getDay();
-    return diaSemana === 6; // 6 representa domingo
+    return diaSemana === 0; // 0 representa domingo en getDay()
 };
 
-const normal_a_festivos = ["2024-12-31", "2025-01-04", "2025-01-11", "2025-01-18", "2025-01-25", "2025-02-01", "2025-04-16", "2025-04-90", "2025-03-01", "2025-03-08", "2025-03-15", "2025-03-22", "2025-03-29",
-    "2025-04-05", "2025-04-12", "2025-04-19", "2025-04-26", "2025-05-03", "2025-05-10", "2025-05-17", "2025-05-24", "2025-05-31", "2025-06-07", "2025-06-14", "2025-06-21", "2025-06-28"];
-const domingo_y_festivo = ["2024-10-13", "2024-08-18", "2025-01-05", "2025-03-23", "2025-04-17", "2025-06-01", "2025-06-08", "2025-06-16", "2025-06-22", "2025-06-29"];
-const festivo_a_normal = ["2025-01-01", "2025-01-06", "2025-03-24", "2025-04-18", "2025-05-01", "2025-03-02", "2025-03-09", "2025-03-16", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20",
-    "2025-04-27", "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-02", "2025-06-23", "2025-06-30"]
+// Días que cambian de normal a festivo (puente)
+const normal_a_festivos = [
+    "2024-12-31", "2025-01-04", "2025-01-11", "2025-01-18", "2025-01-25", "2025-02-01", 
+    "2025-04-16", "2025-04-18", "2025-03-01", "2025-03-08", "2025-03-15", "2025-03-22", "2025-03-29",
+    "2025-04-05", "2025-04-12", "2025-04-19", "2025-04-26", "2025-05-03", "2025-05-10", "2025-05-17", "2025-05-24", "2025-05-31", "2025-06-07", "2025-06-14", "2025-06-21", "2025-06-28",
+    // 2026
+    "2026-01-03", "2026-01-10", "2026-01-17", "2026-01-24", "2026-01-31", "2026-02-07", "2026-02-14", "2026-02-21", "2026-02-28",
+    "2026-03-07", "2026-03-14", "2026-03-21", "2026-03-28", "2026-04-04", "2026-04-11", "2026-04-18", "2026-04-25", "2026-05-02", "2026-05-09", "2026-05-16", "2026-05-23", "2026-05-30", "2026-06-06", "2026-06-13", "2026-06-20", "2026-06-27"
+];
+
+// Días que son domingo y festivo
+const domingo_y_festivo = [
+    "2024-01-07", "2024-03-28", "2024-06-03", "2024-10-13", "2024-12-08",
+    "2025-01-05", "2025-03-23", "2025-06-01", "2025-06-22", "2025-06-29", "2025-12-08",
+    "2026-01-04", "2026-03-29", "2026-06-21", "2026-10-18", "2026-12-08"
+];
+
+// Días que cambian de festivo a normal
+const festivo_a_normal = [
+    "2025-01-01", "2025-01-06", "2025-03-24", "2025-04-18", "2025-05-01", "2025-03-02", "2025-03-09", "2025-03-16", "2025-03-30", "2025-04-06", "2025-04-13", "2025-04-20",
+    "2025-04-27", "2025-05-04", "2025-05-11", "2025-05-18", "2025-05-25", "2025-06-02", "2025-06-23", "2025-06-30",
+    "2026-01-01", "2026-01-05", "2026-01-06", "2026-03-23", "2026-03-24", "2026-04-03", "2026-04-06", "2026-04-10", "2026-04-13", "2026-04-17", "2026-04-20", "2026-04-24", "2026-04-27",
+    "2026-05-01", "2026-05-04", "2026-05-08", "2026-05-11", "2026-05-15", "2026-05-18", "2026-05-22", "2026-05-25", "2026-05-29", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-19", "2026-06-22", "2026-06-26", "2026-06-29"
+];
 
 const esNormalAFestivo = (fecha) => {
     return normal_a_festivos.includes(fecha);

@@ -387,20 +387,20 @@ body.dark-theme{
     color-scheme: dark;
     border-color: white;
 }
-.dark-theme #contenedor_deducciones{
+.dark-theme .contenedor_deducciones{
     background-color: Canvas;
     color: CanvasText;
     color-scheme: dark;
     border-color: white;
 }
 
-.dark-theme #contenedor_deducciones .contenedor_hijo{
+.dark-theme .contenedor_deducciones .contenedor_hijo{
     background-color: Canvas;
     color: CanvasText;
     color-scheme: dark;
     border-color: white;
 }
-.dark-theme #contenedor_deducciones .contenedor_hijo img{
+.dark-theme .contenedor_deducciones .contenedor_hijo img{
     background-color: Canvas;
     color: CanvasText;
     color-scheme: dark;
@@ -451,7 +451,7 @@ body.dark-theme{
     border-color:Canvas ;
 }
 
-.dark-theme #encabezado_salud_pension{
+.dark-theme .encabezado_salud_pension{
     background-color: rgb(118, 118, 118);
 }
 
