@@ -7,10 +7,9 @@
  * Los ES modules no funcionan con file:// en algunos navegadores por CORS
  */
 
-import { store, getState, setState, subscribe } from './src/state/store.js';
+import { store, getState, setState } from './src/state/store.js';
 import { TURNOS } from './src/domain/shifts.js';
-import { esFestivo, esDomingo, esNormalAFestivo, esFestivoANormal } from './src/domain/holidays.js';
-import { calcularValorTurno, calcularHorasExtras, calcularDeducciones, calcularNomina } from './src/domain/calculations.js';
+import { calcularValorTurno, calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
 import * as renderer from './src/ui/renderer.js';
@@ -110,139 +109,90 @@ const obtenerDeduccionesDelDOM = () => ({
 });
 
 /**
- * Calcula la nómina completa
- * Este método híbrido mantiene la lógica original para compatibilidad
- * pero usa las funciones puras del módulo domain
+ * Calcula la nómina completa.
+ * Flujo: lee DOM → delega cálculo a calculations.js → renderiza con renderer.js → persiste en store.
  */
 const calcularNominaCompleta = () => {
     const turnos = obtenerTurnosDelDOM();
     const horasExtras = obtenerHorasExtrasDelDOM();
     const deducciones = obtenerDeduccionesDelDOM();
-    
-    let sumaTurnos = 0;
-    let sumaHoras = 0;
-    let contadorTurnos = 0;
-    
-    // Calcular turnos uno por uno (lógica original)
+
+    // Actualizar estilos de filas de descanso (responsabilidad visual que queda en index)
+    turnos.forEach((turno, index) => {
+        const fila = document.getElementById(`fila_${index + 1}`);
+        if (turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso") {
+            if (fila) fila.style.opacity = "0.4";
+        } else {
+            if (fila) fila.style.opacity = "";
+        }
+    });
+
+    // Delegar todo el cálculo a la función pura de calculations.js
+    const resultados = calcularNomina({
+        turnos,
+        horaDiurna: horasExtras.diurna,
+        horaNocturna: horasExtras.nocturna,
+        horaDiurnaFestiva: horasExtras.diurnaFestiva,
+        horaNocturnaFestiva: horasExtras.nocturnaFestiva,
+        deduccionNomina: deducciones.nomina,
+        deduccionEMI: deducciones.emi,
+        otrasDeducciones: deducciones.otras
+    });
+
+    // Actualizar celdas individuales de la tabla de turnos (valor + horas por fila)
+    // renderer no tiene esta granularidad, así que lo hacemos aquí
+    let contadorTurnosUI = 0;
     turnos.forEach((turno, index) => {
         const i = index + 1;
         const key = `${turno.horaInicio}-${turno.horaSalida}`;
-        const fila = document.getElementById(`fila_${i}`);
-        
-        if (turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso") {
-            if (fila) fila.style.opacity = "0.4";
-        }
-        
         const turnoData = TURNOS[key];
-        
-        if (turnoData) {
-            let valorTurno = calcularValorTurno(turnoData, turno.fecha, turno.incapacidad);
-            
-            // Mostrar valor en la tabla
+
+        if (turnoData && !(turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso")) {
+            const valorTurno = calcularValorTurno(turnoData, turno.fecha, turno.incapacidad);
+
             const celdaValor = document.getElementById(`valor_${i}`);
-            if (celdaValor) {
-                celdaValor.innerText = formatearMoneda(valorTurno);
-            }
-            
-            sumaTurnos += valorTurno;
-            
-            // Horas trabajadas
+            if (celdaValor) celdaValor.innerText = formatearMoneda(valorTurno);
+
             const celdaHoras = document.getElementById(`horas_${i}`);
-            if (celdaHoras) {
-                celdaHoras.innerText = turnoData.horas;
-            }
-            sumaHoras += turnoData.horas;
-            
-            // Contador de turnos
-            if (!(turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso")) {
-                contadorTurnos++;
-                const celdaNumero = document.getElementById(`numero_${i}`);
-                if (celdaNumero) {
-                    celdaNumero.innerText = contadorTurnos;
-                }
-            }
+            if (celdaHoras) celdaHoras.innerText = turnoData.horas;
+
+            contadorTurnosUI++;
+            const celdaNumero = document.getElementById(`numero_${i}`);
+            if (celdaNumero) celdaNumero.innerText = contadorTurnosUI;
+        } else {
+            // Limpiar celdas de filas de descanso o sin turno
+            const celdaValor = document.getElementById(`valor_${i}`);
+            if (celdaValor) celdaValor.innerText = '';
+            const celdaHoras = document.getElementById(`horas_${i}`);
+            if (celdaHoras) celdaHoras.innerText = '';
+            const celdaNumero = document.getElementById(`numero_${i}`);
+            if (celdaNumero) celdaNumero.innerText = '';
         }
     });
-    
-    // Agregar horas extras
-    let sumaHorasExtras = 0;
-    if (horasExtras.diurna) sumaHorasExtras += horasExtras.diurna * 11509.90;
-    if (horasExtras.nocturna) sumaHorasExtras += horasExtras.nocturna * 15538.42;
-    if (horasExtras.diurnaFestiva) sumaHorasExtras += horasExtras.diurnaFestiva * 20717.82;
-    if (horasExtras.nocturnaFestiva) sumaHorasExtras += horasExtras.nocturnaFestiva * 24737.29;
-    
-    const devengadoSinSubsidio = sumaTurnos + sumaHorasExtras;
-    
-    // Subsidio de transporte
-    let subsidioTransporte = 0;
-    if (devengadoSinSubsidio < 2847000) {
-        if (contadorTurnos > 30) {
-            subsidioTransporte = 200000;
-        } else {
-            const diario = 200000 / 30;
-            subsidioTransporte = diario * contadorTurnos;
+
+    // Delegar el render de resultados al renderer
+    renderer.renderizarResultados(resultados);
+
+    // Persistir en el store: inputs del usuario + resultados calculados
+    setState({
+        turnos,
+        horasExtras,
+        deducciones,
+        resultados: {
+            devengadoTotal: resultados.devengadoTotal,
+            totalDeducciones: resultados.totalDeducciones,
+            netoPagar: resultados.netoPagar,
+            subsidioTransporte: resultados.subsidioTransporte,
+            saludEmpleado: resultados.saludEmpleado,
+            pensionEmpleado: resultados.pensionEmpleado,
+            saludEmpresa: resultados.saludEmpresa,
+            pensionEmpresa: resultados.pensionEmpresa,
+            cantidadTurnos: resultados.cantidadTurnos,
+            cantidadHoras: resultados.cantidadHoras
         }
-    }
-    
-    if (elementos.subsidioTransporteLabel) {
-        elementos.subsidioTransporteLabel.innerText = formatearMoneda(subsidioTransporte);
-    }
-    
-    // Actualizar contadores
-    if (elementos.turnosLabel) elementos.turnosLabel.innerText = contadorTurnos;
-    if (elementos.horasLabel) elementos.horasLabel.innerText = sumaHoras;
-    
-    // Deducciones de salud y pensión
-    const devengadoTotal = devengadoSinSubsidio + subsidioTransporte;
-    const deduccionesSP = calcularDeducciones(devengadoTotal);
-    
-    const montoDeducciones = 
-        deducciones.nomina + 
-        deducciones.emi + 
-        deducciones.otras + 
-        deduccionesSP.saludEmpleado + 
-        deduccionesSP.pensionEmpleado;
-    
-    // Actualizar UI
-    if (elementos.totalDeducciones) {
-        elementos.totalDeducciones.innerText = formatearMoneda(montoDeducciones);
-    }
-    if (elementos.totalEmpresa) {
-        elementos.totalEmpresa.innerText = formatearMoneda(deduccionesSP.saludEmpresa + deduccionesSP.pensionEmpresa);
-    }
-    if (elementos.valorPensionEmpresa) {
-        elementos.valorPensionEmpresa.innerText = formatearMoneda(deduccionesSP.pensionEmpresa);
-    }
-    if (elementos.valorSaludEmpresa) {
-        elementos.valorSaludEmpresa.innerText = formatearMoneda(deduccionesSP.saludEmpresa);
-    }
-    if (elementos.totalEmpleado) {
-        elementos.totalEmpleado.innerText = formatearMoneda(deduccionesSP.saludEmpleado + deduccionesSP.pensionEmpleado);
-    }
-    if (elementos.valorPensionEmpleado) {
-        elementos.valorPensionEmpleado.innerText = formatearMoneda(deduccionesSP.pensionEmpleado);
-    }
-    if (elementos.valorSaludEmpleado) {
-        elementos.valorSaludEmpleado.innerText = formatearMoneda(deduccionesSP.saludEmpleado);
-    }
-    
-    // Neto a pagar
-    const netoPagar = devengadoTotal - montoDeducciones;
-    if (elementos.netoAPagar) {
-        elementos.netoAPagar.innerText = formatearMoneda(netoPagar);
-    }
-    if (elementos.totalDevengado) {
-        elementos.totalDevengado.innerText = formatearMoneda(devengadoTotal);
-    }
-    
-    return {
-        devengadoTotal,
-        totalDeducciones: montoDeducciones,
-        netoPagar,
-        cantidadTurnos: contadorTurnos,
-        cantidadHoras: sumaHoras,
-        ...deduccionesSP
-    };
+    });
+
+    return resultados;
 };
 
 /**
@@ -301,7 +251,7 @@ const setupValidaciones = () => {
     });
 };
 
-// Botón tema - CORREGIDO para usar data-theme en html (Fase 3)
+// Botón tema - sincronizado con el store para persistencia
 const setupBotonTema = () => {
     if (elementos.botonTema) {
         elementos.botonTema.addEventListener('click', () => {
@@ -309,6 +259,8 @@ const setupBotonTema = () => {
             const actual = html.getAttribute('data-theme');
             const nuevo = actual === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', nuevo);
+            // Persistir el tema en el store
+            store.cambiarTema(nuevo);
         });
     }
 };
@@ -399,19 +351,53 @@ const setupEventDelegation = () => {
 };
 
 /**
+ * Pre-carga los inputs del formulario con los datos guardados en el store (localStorage).
+ * Se llama después de inicializar los elementos del DOM.
+ */
+const preCargarDesdeStore = () => {
+    const estado = getState();
+
+    // Restaurar tema
+    const temaGuardado = estado.configuracion?.tema;
+    if (temaGuardado) {
+        document.documentElement.setAttribute('data-theme', temaGuardado);
+    }
+
+    // Restaurar inputs de horas extras
+    const he = estado.horasExtras;
+    if (he) {
+        if (elementos.horaDiurna && he.diurna) elementos.horaDiurna.value = he.diurna;
+        if (elementos.horaNocturna && he.nocturna) elementos.horaNocturna.value = he.nocturna;
+        if (elementos.horaDiurnaFestiva && he.diurnaFestiva) elementos.horaDiurnaFestiva.value = he.diurnaFestiva;
+        if (elementos.horaNocturnaFestiva && he.nocturnaFestiva) elementos.horaNocturnaFestiva.value = he.nocturnaFestiva;
+    }
+
+    // Restaurar inputs de deducciones
+    const ded = estado.deducciones;
+    if (ded) {
+        if (elementos.deduccionesNomina && ded.nomina) elementos.deduccionesNomina.value = ded.nomina;
+        if (elementos.deduccionesEMI && ded.emi) elementos.deduccionesEMI.value = ded.emi;
+        if (elementos.otrasDeducciones && ded.otras) elementos.otrasDeducciones.value = ded.otras;
+    }
+};
+
+/**
  * Inicializa la aplicación
  */
 const inicializarApp = () => {
     inicializarElementos();
     renderer.inicializarElementos();
-    
+
+    // Pre-cargar formulario con datos persistidos en localStorage
+    preCargarDesdeStore();
+
     setupValidaciones();
     setupBotonTema();
     setupBotonCalcular();
     setupBotonAgregar();
     setupBotonQuitar();
     setupEventDelegation();
-    
+
     // Agregar primera fila vacía
     if (elementos.tbody && elementos.tbody.children.length === 0) {
         renderer.agregarFilaTurno();

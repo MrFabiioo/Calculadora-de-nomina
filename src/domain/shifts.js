@@ -34,8 +34,8 @@ export const TURNOS = {
     "8:00 Am-16:00 Pm": { valor: TARIFAS_HORA.diurna * 8, horas: 8, domingo: TARIFAS_HORA.diurnaFestiva * 8, festivo: TARIFAS_HORA.diurnaFestiva * 8, normalFestivo: TARIFAS_HORA.diurna * 8 },
     "9:00 Am-16:00 Pm": { valor: TARIFAS_HORA.diurna * 7, horas: 7, domingo: TARIFAS_HORA.diurnaFestiva * 7, festivo: TARIFAS_HORA.diurnaFestiva * 7, normalFestivo: TARIFAS_HORA.diurna * 7 },
     "10:00 Am-16:00 Pm": { valor: TARIFAS_HORA.diurna * 6, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 6, festivo: TARIFAS_HORA.diurnaFestiva * 6, normalFestivo: TARIFAS_HORA.diurna * 6 },
-    "10:00 Am-17:00 Pm": { valor: TARIFAS_HORA.diurna * 7, horas: 7, domingo: TARIFAS_HORA.diurnaFestiva * 7, festivo: TARIFAS_HORA.diurnaFestiva * 7, normalFestivo: TARIFAS_HORA.diurna * 6 },
-    "12:00 m-18:00 Pm": { valor: TARIFAS_HORA.diurna * 6, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 6, festivo: TARIFAS_HORA.diurnaFestiva * 6, normalFestivo: TARIFAS_HORA.diurna * 7 },
+    "10:00 Am-17:00 Pm": { valor: TARIFAS_HORA.diurna * 7, horas: 7, domingo: TARIFAS_HORA.diurnaFestiva * 7, festivo: TARIFAS_HORA.diurnaFestiva * 7, normalFestivo: TARIFAS_HORA.diurna * 7 },
+    "12:00 m-18:00 Pm": { valor: TARIFAS_HORA.diurna * 6, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 6, festivo: TARIFAS_HORA.diurnaFestiva * 6, normalFestivo: TARIFAS_HORA.diurna * 6 },
     "13:00 Pm-19:00 Pm": { valor: TARIFAS_HORA.diurna * 6, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 6, festivo: TARIFAS_HORA.diurnaFestiva * 6, normalFestivo: TARIFAS_HORA.diurna * 6 },
     "13:00 Pm-21:00 Pm": { valor: TARIFAS_HORA.diurna * 8, horas: 8, domingo: TARIFAS_HORA.diurnaFestiva * 8, festivo: TARIFAS_HORA.diurnaFestiva * 8, normalFestivo: TARIFAS_HORA.diurna * 8 },
     "13:30 Pm-21:30 Pm": { valor: TARIFAS_HORA.diurna * 7 + MEDIA_HORA.diurna + MEDIA_HORA.nocturna, horas: 8, domingo: TARIFAS_HORA.diurnaFestiva * 7 + MEDIA_HORA.diurnaFestiva + MEDIA_HORA.nocturnaFestiva, festivo: TARIFAS_HORA.diurnaFestiva * 7 + MEDIA_HORA.diurnaFestiva + MEDIA_HORA.nocturnaFestiva, normalFestivo: TARIFAS_HORA.diurna * 7 + MEDIA_HORA.diurna + MEDIA_HORA.nocturna },
@@ -51,8 +51,8 @@ export const TURNOS = {
     "17:00 Pm-23:00 Pm": { valor: TARIFAS_HORA.diurna * 4 + TARIFAS_HORA.nocturna * 2, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 4 + TARIFAS_HORA.nocturnaFestiva * 2, festivo: TARIFAS_HORA.diurnaFestiva * 4 + TARIFAS_HORA.nocturnaFestiva * 2, normalFestivo: TARIFAS_HORA.diurna * 4 + TARIFAS_HORA.nocturna * 2 },
     "17:00 Pm-24:00 Pm": { valor: TARIFAS_HORA.diurna * 4 + TARIFAS_HORA.nocturna * 3, horas: 7, domingo: TARIFAS_HORA.diurnaFestiva * 4 + TARIFAS_HORA.nocturnaFestiva * 3, festivo: TARIFAS_HORA.diurnaFestiva * 4 + TARIFAS_HORA.nocturnaFestiva * 3, normalFestivo: TARIFAS_HORA.diurna * 4 + TARIFAS_HORA.nocturna * 3 },
     "18:00 Pm-24:00 Pm": { valor: TARIFAS_HORA.diurna * 3 + TARIFAS_HORA.nocturna * 3, horas: 6, domingo: TARIFAS_HORA.diurnaFestiva * 3 + TARIFAS_HORA.nocturnaFestiva * 3, festivo: TARIFAS_HORA.diurnaFestiva * 3 + TARIFAS_HORA.nocturnaFestiva * 3, normalFestivo: TARIFAS_HORA.diurna * 3 + TARIFAS_HORA.nocturna * 3 },
-    "22:00 Pm-6:00 Am": { valor: TARIFAS_HORA.nocturna * 8, horas: 8, domingo: TARIFAS_HORA.nocturnaFestiva * 2 + TARIFAS_HORA.nocturna * 6, festivo: TARIFAS_HORA.nocturnaFestiva * 8, normalFestivo: TARIFAS_HORA.nocturnaFestiva * 6 + TARIFAS_HORA.nocturna * 2 },
-    "23:00 Pm-5:00 Am": { valor: TARIFAS_HORA.nocturna * 6, horas: 6, domingo: TARIFAS_HORA.nocturnaFestiva + TARIFAS_HORA.nocturna * 5, festivo: TARIFAS_HORA.nocturnaFestiva * 6, normalFestivo: TARIFAS_HORA.nocturnaFestiva * 5 + TARIFAS_HORA.nocturna }
+    "22:00 Pm-6:00 Am": { valor: TARIFAS_HORA.nocturna * 8, horas: 8, domingo: TARIFAS_HORA.nocturnaFestiva * 8, festivo: TARIFAS_HORA.nocturnaFestiva * 8, normalFestivo: TARIFAS_HORA.nocturnaFestiva * 6 + TARIFAS_HORA.nocturna * 2 },
+    "23:00 Pm-5:00 Am": { valor: TARIFAS_HORA.nocturna * 6, horas: 6, domingo: TARIFAS_HORA.nocturnaFestiva * 6, festivo: TARIFAS_HORA.nocturnaFestiva * 6, normalFestivo: TARIFAS_HORA.nocturnaFestiva * 5 + TARIFAS_HORA.nocturna }
 };
 
 // Lista de turnos para select

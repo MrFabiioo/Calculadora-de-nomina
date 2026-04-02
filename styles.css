@@ -533,10 +533,16 @@ body {
     /* Esta clase se mantiene por si se necesita para otros estilos de fila */
 }
 
-/* Mobile: Cards de turnos con badges */
-/* El borde lateral ya no está en la fila, ahora está en la celda del día */
+/* Mobile: Responsive table — cada fila se convierte en una card */
 @media (max-width: 768px) {
-    .turno-card {
+    /* Ocultar encabezados de la tabla de turnos */
+    .table--turnos thead {
+        display: none;
+    }
+
+    /* Cada fila se convierte en un bloque card */
+    .turno-row {
+        display: block;
         background-color: var(--color-surface);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
@@ -546,79 +552,46 @@ body {
         position: relative;
         overflow: hidden;
     }
-    
-    .turno-card__header {
+
+    /* Cada celda se convierte en una fila label + valor */
+    .turno-row td {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: var(--spacing-sm);
+        padding: var(--spacing-xs) 0;
+        border: none;
+        text-align: right;
     }
-    
-    .turno-card__number {
-        font-family: var(--font-mono);
-        font-weight: 700;
-        background: var(--color-primary);
-        color: white;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        border-radius: var(--radius-sm);
-    }
-    
-    .turno-card__badges {
-        display: flex;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    
-    /* Badge para mobile - similar a la celda del día */
-    .turno-card__badge {
-        display: block;
-        font-family: var(--font-mono);
-        font-size: 0.625rem;
-        font-weight: 600;
-        padding: 2px 4px;
-        border-radius: 3px;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-    }
-    
-    .turno-card__badge--domingo {
-        background-color: var(--color-domingo-bg);
-        color: var(--color-domingo);
-        border: 1px solid var(--color-domingo-border);
-    }
-    
-    .turno-card__badge--festivo {
-        background-color: var(--color-festivo-bg);
-        color: var(--color-festivo);
-        border: 1px solid var(--color-festivo-border);
-    }
-    
-    .turno-card__badge--domingo-festivo {
-        background: linear-gradient(135deg, var(--color-domingo-bg) 50%, var(--color-festivo-bg) 50%);
-        color: var(--color-text);
-        border: 1px solid var(--color-domingo-border);
-    }
-    
-    .turno-card__details {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--spacing-sm);
-    }
-    
-    .turno-card__field {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .turno-card__label {
+
+    /* El pseudo-elemento muestra el data-label como etiqueta izquierda */
+    .turno-row td::before {
+        content: attr(data-label);
         font-size: var(--font-size-xs);
         color: var(--color-text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-right: var(--spacing-sm);
+        white-space: nowrap;
+        flex-shrink: 0;
+        pointer-events: none;
     }
-    
-    .turno-card__value {
-        font-family: var(--font-mono);
-        font-weight: 500;
+
+    /* Separador visual entre celdas */
+    .turno-row td + td {
+        border-top: 1px solid var(--color-border);
+        padding-top: var(--spacing-xs);
     }
+
+    /* Celda del día: destacada arriba como header de la card */
+    .turno-row td:first-child {
+        font-weight: 600;
+        margin-bottom: var(--spacing-xs);
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: var(--spacing-xs);
+        border-top: none;
+    }
+
 }
 
 /* ----------------------
@@ -750,7 +723,8 @@ body {
     transition: opacity var(--transition-normal), transform var(--transition-normal);
 }
 
-.empty-state.hidden {
+.empty-state.hidden,
+.hidden {
     display: none;
 }
 

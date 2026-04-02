@@ -64,27 +64,27 @@ export const inicializarElementos = () => {
  */
 export const renderizarFilaTurno = (indice) => {
     return `
-        <tr id='fila_${indice}'>
-            <td>
-                <label id='dia_${indice}' class='cajas' type='text'></label>
+        <tr id='fila_${indice}' class='turno-row'>
+            <td data-label='Día'>
+                <label id='dia_${indice}' class='cajas'></label>
             </td>
-            <td>
+            <td data-label='Fecha'>
                 <input id='fecha_${indice}' class='cajas' type='date'>
             </td>
-            <td class='list-1'>
+            <td class='list-1' data-label='Inicio'>
                 <select id='hora_inicio_${indice}' class='opciones'>
                     ${TURNOS_INICIO.map(hora => `<option class='opciones'>${hora}</option>`).join('')}
                 </select>
             </td>
-            <td class='list-1'>
+            <td class='list-1' data-label='Salida'>
                 <select id='hora_salida_${indice}' class='opciones'>
                     ${TURNOS_SALIDA.map(hora => `<option class='opciones'>${hora}</option>`).join('')}
                 </select>
             </td>
-            <td id='valor_${indice}' class='Valor'></td>
-            <td id='horas_${indice}' class='Horas'></td>
-            <td id='numero_${indice}' class='numero'></td>
-            <td>
+            <td id='valor_${indice}' class='Valor' data-label='Valor'></td>
+            <td id='horas_${indice}' class='Horas' data-label='Horas'></td>
+            <td id='numero_${indice}' class='numero' data-label='#'></td>
+            <td data-label='Inc.'>
                 <input id='incapacidad_${indice}' type='checkbox' value='incapacidad'>
             </td>
         </tr>

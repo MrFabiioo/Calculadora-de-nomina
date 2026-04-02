@@ -137,7 +137,7 @@ export const validarHorasTurno = (horaInicio, horaSalida) => {
     }
     
     // Si alguna es descanso y la otra no, es inválido
-    if (horaInicio === 'Descanso' !== horaSalida === 'Descanso') {
+    if ((horaInicio === 'Descanso') !== (horaSalida === 'Descanso')) {
         return { valid: false, message: 'Ambos deben ser descanso o ninguno' };
     }
     

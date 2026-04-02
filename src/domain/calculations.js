@@ -7,6 +7,8 @@ import { TARIFAS_HORA, TURNOS } from './shifts.js';
 import { esFestivo, esDomingo, esNormalAFestivo, esFestivoANormal } from './holidays.js';
 
 // Constantes para deducciones
+// 66.67% según normativa laboral colombiana (Art. 227 CST): incapacidad se paga a 2/3 del salario
+const DESCUENTO_INCAPACIDAD = 2 / 3;
 const TARIFA_SALUD_EMPLEADO = 0.04; // 4%
 const TARIFA_SALUD_EMPRESA = 0.085;  // 8.5%
 const TARIFA_PENSION_EMPLEADO = 0.04; // 4%
@@ -33,7 +35,7 @@ export const calcularValorTurno = (turnoData, fecha, tieneIncapacidad = false) =
     } else if (esNormalAFestivo(fecha)) {
         valor = turnoData.normalFestivo;
     } else if (esFestivoANormal(fecha)) {
-        valor = turnoData.domingo;
+        valor = turnoData.valor;
     } else if (esFestivo(fecha)) {
         valor = turnoData.festivo;
     } else {
@@ -42,7 +44,7 @@ export const calcularValorTurno = (turnoData, fecha, tieneIncapacidad = false) =
     
     // Aplicar descuento por incapacidad
     if (tieneIncapacidad) {
-        valor *= 0.6666;
+        valor *= DESCUENTO_INCAPACIDAD;
     }
     
     return valor;

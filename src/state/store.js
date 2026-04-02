@@ -15,7 +15,7 @@ const estadoInicial = {
         diurna: 0,
         nocturna: 0,
         diurnaFestiva: 0,
-        nocturnasFestiva: 0
+        nocturnaFestiva: 0
     },
     deducciones: {
         nomina: 0,
