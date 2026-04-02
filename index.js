@@ -416,8 +416,6 @@ const inicializarApp = () => {
     if (elementos.tbody && elementos.tbody.children.length === 0) {
         renderer.agregarFilaTurno();
     }
-    
-    console.log('Calculadora de nómina inicializada');
 };
 
 // Iniciar cuando el DOM esté listo

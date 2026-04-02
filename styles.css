@@ -84,9 +84,27 @@
     --color-text-muted: #64748b;
     --color-border: #334155;
     --color-border-strong: #475569;
+    --color-success: #22c55e;
     --color-success-bg: #14532d;
+    --color-warning: #f59e0b;
     --color-warning-bg: #78350f;
+    --color-danger: #ef4444;
     --color-danger-bg: #7f1d1d;
+    
+    /* Select dark */
+    --select-bg: var(--color-surface);
+    --select-border: var(--color-border-strong);
+    
+    /* Table dark */
+    --table-border: var(--color-border);
+    --table-header-bg: var(--color-surface-elevated);
+    
+    /* Input dark */
+    --input-bg: var(--color-surface);
+    --input-border: var(--color-border-strong);
+    
+    /* Sticky summary gradient dark */
+    --sticky-gradient: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
 }
 
 /* ----------------------
@@ -194,8 +212,8 @@ body {
 }
 
 /* ----------------------
-   Sticky Summary
-   ---------------------- */
+    Sticky Summary
+    ---------------------- */
 .sticky-summary {
     position: sticky;
     top: var(--header-height);
@@ -205,6 +223,11 @@ body {
     padding: var(--spacing-md);
     box-shadow: var(--shadow-lg);
     margin-bottom: var(--spacing-md);
+    transition: background var(--transition-normal);
+}
+
+[data-theme="dark"] .sticky-summary {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
 }
 
 .sticky-summary__content {
@@ -584,8 +607,8 @@ body {
 }
 
 /* ----------------------
-   Estados Vacíos
-   ---------------------- */
+    Estados Vacíos
+    ---------------------- */
 .empty-state {
     text-align: center;
     padding: var(--spacing-xl);
@@ -593,11 +616,41 @@ body {
     background-color: var(--color-bg);
     border: 2px dashed var(--color-border);
     border-radius: var(--radius-lg);
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.empty-state.hidden {
+    display: none;
 }
 
 .empty-state__icon {
     font-size: 3rem;
     margin-bottom: var(--spacing-md);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.empty-state__title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state__hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
 }
 
 /* ----------------------
@@ -729,8 +782,8 @@ body {
 }
 
 /* ----------------------
-   Select
-   ---------------------- */
+    Select
+    ---------------------- */
 select {
     font-family: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -741,26 +794,50 @@ select {
     color: var(--color-text);
     cursor: pointer;
     min-width: 100px;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+select:hover {
+    border-color: var(--color-border-strong);
 }
 
 select:focus {
     border-color: var(--color-primary);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+select option {
+    background-color: var(--color-surface);
+    color: var(--color-text);
 }
 
 /* ----------------------
-   Checkbox
-   ---------------------- */
+    Checkbox
+    ---------------------- */
 input[type="checkbox"] {
     width: 20px;
     height: 20px;
     cursor: pointer;
     accent-color: var(--color-primary);
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--color-primary);
+}
+
+input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* ----------------------
-   Date Input
-   ---------------------- */
+    Date Input
+    ---------------------- */
 input[type="date"] {
     font-family: var(--font-mono);
     font-size: var(--font-size-sm);
@@ -769,11 +846,17 @@ input[type="date"] {
     border-radius: var(--radius-md);
     background-color: var(--color-surface);
     color: var(--color-text);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+input[type="date"]:hover {
+    border-color: var(--color-border-strong);
 }
 
 input[type="date"]:focus {
     border-color: var(--color-primary);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* Dark mode date input */

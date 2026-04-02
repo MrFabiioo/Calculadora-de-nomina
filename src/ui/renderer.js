@@ -129,12 +129,12 @@ export const eliminarFilaTurno = () => {
 export const actualizarContador = () => {
     elementos.mostradorContador.innerText = elementos.tbody.children.length;
     
-    // Gestionar estado vacío
+    // Gestionar estado vacío con clase para animación suave
     if (elementos.emptyState) {
         if (elementos.tbody.children.length === 0) {
-            elementos.emptyState.style.display = 'block';
+            elementos.emptyState.classList.remove('hidden');
         } else {
-            elementos.emptyState.style.display = 'none';
+            elementos.emptyState.classList.add('hidden');
         }
     }
 };

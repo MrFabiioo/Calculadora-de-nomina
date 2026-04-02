@@ -1,7 +1,12 @@
 /**
  * Módulo de Estado - Store reactivo con patrón pub/sub
  * Gestiona el estado de la aplicación y notifica a los suscriptores
+ * Persiste el estado en localStorage
  */
+
+// Constantes de persistencia
+const STORAGE_KEY = 'calculadora-nomina-state';
+const DEBOUNCE_DELAY = 300;
 
 // Estado inicial
 const estadoInicial = {
@@ -34,9 +39,67 @@ const estadoInicial = {
     }
 };
 
+/**
+ * Guarda el estado en localStorage
+ * @param {Object} estado - Estado a guardar
+ */
+const guardarEnStorage = (estado) => {
+    try {
+        const datosPersistir = {
+            turnos: estado.turnos,
+            horasExtras: estado.horasExtras,
+            deducciones: estado.deducciones,
+            configuracion: estado.configuracion
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(datosPersistir));
+    } catch (error) {
+        console.warn('No se pudo guardar en localStorage:', error.message);
+    }
+};
+
+/**
+ * Carga el estado desde localStorage
+ * @returns {Object} - Estado cargado o estado inicial
+ */
+const cargarDesdeStorage = () => {
+    try {
+        const datos = localStorage.getItem(STORAGE_KEY);
+        if (datos) {
+            const parsed = JSON.parse(datos);
+            // Validar que tenga la estructura esperada
+            if (parsed.turnos && parsed.horasExtras && parsed.deducciones && parsed.configuracion) {
+                return parsed;
+            }
+        }
+    } catch (error) {
+        console.warn('No se pudo cargar desde localStorage:', error.message);
+    }
+    return null;
+};
+
+// Debounce timer
+let debounceTimer = null;
+
+/**
+ * Programa el guardado con debounce
+ * @param {Object} estado - Estado a guardar
+ */
+const programarGuardado = (estado) => {
+    if (debounceTimer) {
+        clearTimeout(debounceTimer);
+    }
+    debounceTimer = setTimeout(() => {
+        guardarEnStorage(estado);
+    }, DEBOUNCE_DELAY);
+};
+
 class Store {
     constructor() {
-        this.estado = { ...estadoInicial };
+        // Cargar estado desde localStorage si existe
+        const estadoGuardado = cargarDesdeStorage();
+        this.estado = estadoGuardado 
+            ? { ...estadoInicial, ...estadoGuardado }
+            : { ...estadoInicial };
         this.suscriptores = [];
     }
 
@@ -60,6 +123,9 @@ class Store {
         
         // Notificar a todos los suscriptores
         this.notificarSuscriptores();
+        
+        // Persistir en localStorage con debounce
+        programarGuardado(this.estado);
     }
 
     /**
