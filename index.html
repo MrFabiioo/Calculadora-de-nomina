@@ -145,6 +145,15 @@
     </div>
     
 
-    <script type="text/javascript" src="index.js"></script>
+    <!-- 
+        IMPORTANTE: Este archivo usa ES Modules.
+        Para desarrollo local, usa:
+        - Live Server en VS Code
+        - python -m http.server en la terminal
+        - npm install -g http-server
+        
+        Los ES modules no funcionan con file:// en algunos navegadores por CORS.
+    -->
+    <script type="module" src="index.js"></script>
 </body>
 </html>
