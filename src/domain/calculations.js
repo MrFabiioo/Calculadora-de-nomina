@@ -3,8 +3,8 @@
  * NO toca el DOM - solo lógica de negocio
  */
 
-import { TARIFAS_HORA, calcularTurno } from './shifts.js';
-import { esFestivo, esDomingo, esNormalAFestivo, esFestivoANormal } from './holidays.js';
+import { TARIFAS_HORA } from './shifts.js';
+import { liquidarTurnoPorTramos } from './payroll-breakdown.js';
 
 // Constantes para deducciones
 // 66.67% según normativa laboral colombiana (Art. 227 CST): incapacidad se paga a 2/3 del salario
@@ -15,40 +15,6 @@ const TARIFA_PENSION_EMPLEADO = 0.04; // 4%
 const TARIFA_PENSION_EMPRESA = 0.12;  // 12%
 const SUBSIDIO_TRANSPORTE_MAXIMO = 249095;
 const LIMITE_SUBSIDIO = 1750905*2; // Si el devengado supera este límite, no aplica subsidio
-
-/**
- * Calcula el valor de un turno según el tipo de día
- * @param {Object} turnoData - Datos del turno (valor, domingo, festivo, etc.)
- * @param {string} fecha - Fecha en formato YYYY-MM-DD
- * @param {boolean} tieneIncapacidad - Si tiene incapacidad
- * @returns {number} - Valor calculado del turno
- */
-export const calcularValorTurno = (turnoData, fecha, tieneIncapacidad = false) => {
-    if (!turnoData) return 0;
-    
-    let valor;
-    
-    if (esDomingo(fecha) && esFestivo(fecha)) {
-        valor = turnoData.festivo;
-    } else if (esDomingo(fecha)) {
-        valor = turnoData.domingo;
-    } else if (esNormalAFestivo(fecha)) {
-        valor = turnoData.normalFestivo;
-    } else if (esFestivoANormal(fecha)) {
-        valor = turnoData.valor;
-    } else if (esFestivo(fecha)) {
-        valor = turnoData.festivo;
-    } else {
-        valor = turnoData.valor;
-    }
-    
-    // Aplicar descuento por incapacidad
-    if (tieneIncapacidad) {
-        valor *= DESCUENTO_INCAPACIDAD;
-    }
-    
-    return valor;
-};
 
 /**
  * Calcula el valor de horas extras
@@ -141,30 +107,41 @@ export const calcularNomina = (input) => {
         otrasDeducciones = 0
     } = input;
     
-    // Calcular turnos
+    // Calcular turnos con pipeline segmentado
     let totalTurnos = 0;
     let totalHoras = 0;
     let contadorTurnosReales = 0;
+    let turnosLiquidados = [];
+    
+    const turnosLiquidadosRaw = [];
     
     turnos.forEach(turno => {
-        const { horaInicio, horaSalida, fecha, incapacidad } = turno;
+        const { horaInicio, horaSalida } = turno;
         
         // Ignorar descanso
         if (horaInicio === "Descanso" && horaSalida === "Descanso") {
-            totalTurnos += 0;
             return;
         }
         
-        // Calcular dinámicamente según Art. 15 CST
-        const turnoData = calcularTurno(horaInicio, horaSalida);
-
-        if (turnoData) {
-            const valorTurno = calcularValorTurno(turnoData, fecha, incapacidad);
-            totalTurnos += valorTurno;
-            totalHoras += turnoData.horas;
+        // Usar pipeline segmentado
+        const resultado = liquidarTurnoPorTramos(turno, ['midnight']);
+        
+        if (resultado) {
+            // Agregar al total
+            totalTurnos += resultado.total;
+            totalHoras += resultado.horas;
             contadorTurnosReales++;
+            
+            // Guardar breakdown para auditoría/UI
+            turnosLiquidadosRaw.push({
+                turno: { ...turno },
+                liquidacion: resultado
+            });
         }
     });
+    
+    // Guardar turnos liquidados
+    turnosLiquidados = turnosLiquidadosRaw;
     
     // Calcular horas extras
     const totalHorasExtras = calcularHorasExtras(
@@ -199,7 +176,7 @@ export const calcularNomina = (input) => {
     // Neto a pagar
     const netoPagar = devengadoTotal - totalDeducciones;
     
-    return {
+    const resultado = {
         // Totales
         devengadoTotal,
         totalDeducciones,
@@ -220,27 +197,11 @@ export const calcularNomina = (input) => {
         cantidadTurnos: contadorTurnosReales,
         cantidadHoras: totalHoras
     };
-};
-
-/**
- * Versión simplificada que toma el estado directamente del store
- * y calcula el resultado
- * @param {Object} state - Estado de la aplicación
- * @returns {Object} - Resultados calculados
- */
-export const calcularDesdeEstado = (state) => {
-    const turnos = state.turnos || [];
-    const horasExtras = state.horasExtras || {};
-    const deducciones = state.deducciones || {};
     
-    return calcularNomina({
-        turnos,
-        horaDiurna: horasExtras.diurna || 0,
-        horaNocturna: horasExtras.nocturna || 0,
-        horaDiurnaFestiva: horasExtras.diurnaFestiva || 0,
-        horaNocturnaFestiva: horasExtras.nocturnaFestiva || 0,
-        deduccionNomina: deducciones.nomina || 0,
-        deduccionEMI: deducciones.emi || 0,
-        otrasDeducciones: deducciones.otras || 0
-    });
+    // Agregar turnosLiquidados para auditoría/UI
+    if (turnosLiquidados.length > 0) {
+        resultado.turnosLiquidados = turnosLiquidados;
+    }
+    
+    return resultado;
 };

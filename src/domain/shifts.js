@@ -5,6 +5,31 @@
  * - Nocturno: 7:00 PM a 6:00 AM (horas 19 a 24 + 0 a 6)
  */
 
+// ============================================
+// CONSTANTES - Límites de franquicia horaria
+// ============================================
+
+/**
+ * Límites de franquicias horarias (Art. 15 CST)
+ * - Diurno: [06:00, 19:00)
+ * - Nocturno: [19:00, 06:00)
+ */
+export const FRANQUICIA_DIURNA_INICIO = 6;   // 06:00
+export const FRANQUICIA_DIURNA_FIN = 19;     // 19:00
+export const FRANQUICIA_NOCTURNA_INICIO = 19; // 19:00
+export const FRANQUICIA_NOCTURNA_FIN = 6;    // 06:00
+
+//boundaries configurables para segmentación
+export const BOUNDARIES = {
+    MIDNIGHT: 'midnight',
+    MAÑANA: '06:00',
+    TARDE: '19:00'
+};
+
+// ============================================
+// TARIFAS
+// ============================================
+
 // Tarifas por hora
 export const TARIFAS_HORA = {
     diurna: 12210,
@@ -110,3 +135,89 @@ export const TURNOS_SALIDA = [
     "14:00 Pm", "15:00 Pm", "16:00 Pm", "17:00 Pm", "18:00 Pm", "19:00 Pm", 
     "20:00 Pm", "21:00 Pm", "21:30 Pm", "22:00 Pm", "23:00 Pm", "24:00 Pm"
 ];
+
+// ============================================
+// HELPERS REUTILIZABLES PARA MOTOR NUEVO
+// ============================================
+
+/**
+ * Determina si un turno cruza la medianoche
+ * @param {number} horaInicio - Hora de inicio en formato decimal
+ * @param {number} horaFin - Hora de fin en formato decimal
+ * @returns {boolean} - true si cruza medianoche
+ */
+export const cruzaMedianoche = (horaInicio, horaFin) => {
+    return horaFin <= horaInicio;
+};
+
+/**
+ * Normaliza hora para turnos que cruzan medianoche
+ * @param {number} hora - Hora decimal
+ * @returns {number} - Hora normalizada (0-24)
+ */
+export const normalizarHora = (hora) => hora % 24;
+
+/**
+ * Verifica si una hora está dentro de la franquicia diurna
+ * @param {number} hora - Hora decimal a verificar
+ * @returns {boolean} - true si está en horario diurno [6, 19)
+ */
+export const esFranquiciaDiurna = (hora) => {
+    const h = normalizarHora(hora);
+    return h >= FRANQUICIA_DIURNA_INICIO && h < FRANQUICIA_DIURNA_FIN;
+};
+
+/**
+ * Verifica si una hora está dentro de la franquicia nocturna
+ * @param {number} hora - Hora decimal a verificar
+ * @returns {boolean} - true si está en horario nocturno
+ */
+export const esFranquiciaNocturna = (hora) => {
+    return !esFranquiciaDiurna(hora);
+};
+
+/**
+ * Obtiene los límites de segmentación configurables
+ * @param {string[]} boundaries - Lista de boundaries ['midnight', '06:00', '19:00']
+ * @returns {number[]} - Límites en horas decimales
+ */
+export const getSegmentBoundaries = (boundaries = ['midnight']) => {
+    const limites = [];
+    
+    if (boundaries.includes(BOUNDARIES.MIDNIGHT)) {
+        limites.push(0); // medianoche
+    }
+    if (boundaries.includes(BOUNDARIES.MAÑANA)) {
+        limites.push(6); // 06:00
+    }
+    if (boundaries.includes(BOUNDARIES.TARDE)) {
+        limites.push(19); // 19:00
+    }
+    
+    // Siempre incluir el límite final (24 o el fin del turno)
+    return [...limites].sort((a, b) => a - b);
+};
+
+/**
+ * Convierte hora decimal a objeto Date
+ * @param {Date} fechaBase - Fecha base
+ * @param {number} horaDecimal - Hora en formato decimal
+ * @returns {Date} - Date con hora ajustada
+ */
+export const horaDecimalToDate = (fechaBase, horaDecimal) => {
+    const fecha = new Date(fechaBase);
+    const horas = Math.floor(horaDecimal);
+    const minutos = (horaDecimal - horas) * 60;
+    
+    fecha.setHours(horas, minutos, 0, 0);
+    return fecha;
+};
+
+/**
+ * Convierte Date a hora decimal
+ * @param {Date} date - Objeto Date
+ * @returns {number} - Hora en formato decimal
+ */
+export const dateToHoraDecimal = (date) => {
+    return date.getHours() + (date.getMinutes() / 60);
+};

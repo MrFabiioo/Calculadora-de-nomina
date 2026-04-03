@@ -3,6 +3,7 @@
  * NO calcula nada - solo renderiza lo que el store le dice
  * 
  * ACTUALIZADO para Fase 3: Nuevos IDs del HTML semántico
+ * ACTUALIZADO para Fase 5: Soporte para breakdown por tramo en dataset de fila
  */
 
 import { formatearMoneda, obtenerNombreDia } from '../utils/formatters.js';
@@ -141,13 +142,44 @@ export const actualizarContador = () => {
 
 /**
  * Actualiza el día de la semana y el estilo de la fila
+ * 
+ * MEJORADO (Task 5.2): Ahora usa el breakdown del dataset de la fila para determinar
+ * el tipo de turno. Esto alinea la UI con el motor segmentado - si un tramo es festivo,
+ * la fila se muestra como festiva.
  */
 export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
     if (fecha) {
         const nombreDia = obtenerNombreDia(fecha);
         
-        const esDom = esDomingo(fecha);
-        const esFest = esFestivo(fecha);
+        // ============================================
+        // Task 5.2: Intentar leer breakdown del dataset de la fila
+        // ============================================
+        let esDom = false;
+        let esFest = false;
+        
+        if (fila && fila.dataset.breakdown) {
+            try {
+                const breakdown = JSON.parse(fila.dataset.breakdown);
+                // Analizar segmentos para determinar tipo de turno
+                // Si CUALQUIER segmento es festivo/domingo, el turno se marca como tal
+                breakdown.forEach(seg => {
+                    if (seg.categoria?.includes('festivo')) {
+                        esFest = true;
+                    }
+                    if (seg.categoria?.includes('festivo') && seg.categoria?.includes('noche')) {
+                        esDom = true; // Domingo también cuenta como festivo
+                    }
+                });
+            } catch (e) {
+                // Fallback si no se puede parsear
+                esDom = esDomingo(fecha);
+                esFest = esFestivo(fecha);
+            }
+        } else {
+            // Fallback legacy: usar fecha directamente
+            esDom = esDomingo(fecha);
+            esFest = esFestivo(fecha);
+        }
         
         // Determinar tipo de turno para el borde interno
         const tipoTurno = esDom && esFest ? 'domingo-festivo' 
@@ -203,6 +235,23 @@ export const actualizarDiaYEstilo = (fecha, labelDia, fila) => {
             }
         }
     }
+};
+
+/**
+ * Obtiene el detalle de breakdown por tramos de una fila (para posibles tooltips/modal)
+ * @param {number} indice - Índice de la fila
+ * @returns {Array|null} - Array de segmentos o null si no hay breakdown
+ */
+export const obtenerBreakdownFila = (indice) => {
+    const fila = document.getElementById(`fila_${indice}`);
+    if (fila && fila.dataset.breakdown) {
+        try {
+            return JSON.parse(fila.dataset.breakdown);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
 };
 
 /**

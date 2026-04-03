@@ -9,7 +9,7 @@
 
 import { store, getState, setState } from './src/state/store.js';
 import { calcularTurno } from './src/domain/shifts.js';
-import { calcularValorTurno, calcularNomina } from './src/domain/calculations.js';
+import { calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
 import * as renderer from './src/ui/renderer.js';
@@ -111,6 +111,9 @@ const obtenerDeduccionesDelDOM = () => ({
 /**
  * Calcula la nómina completa.
  * Flujo: lee DOM → delega cálculo a calculations.js → renderiza con renderer.js → persiste en store.
+ * 
+ * MEJORADO: Ahora usa el pipeline segmentado si está habilitado, propagando turnosLiquidados[]
+ * al renderer para mostrar breakdown por fila sin recalcular reglas de negocio.
  */
 const calcularNominaCompleta = () => {
     const turnos = obtenerTurnosDelDOM();
@@ -127,7 +130,9 @@ const calcularNominaCompleta = () => {
         }
     });
 
-    // Delegar todo el cálculo a la función pura de calculations.js
+    // ============================================
+    // Calcular nómina con pipeline segmentado
+    // ============================================
     const resultados = calcularNomina({
         turnos,
         horaDiurna: horasExtras.diurna,
@@ -139,25 +144,42 @@ const calcularNominaCompleta = () => {
         otrasDeducciones: deducciones.otras
     });
 
-    // Actualizar celdas individuales de la tabla de turnos (valor + horas por fila)
-    // renderer no tiene esta granularidad, así que lo hacemos aquí
-    let contadorTurnosUI = 0;
+    // ============================================
+    // Actualizar celdas individuales de la tabla de turnos (Task 5.1)
+    // AHORA: usar breakdown del resultado segmentado en lugar de recalcular
+    // ============================================
+    const turnosLiquidados = resultados.turnosLiquidados || [];
+    
     turnos.forEach((turno, index) => {
         const i = index + 1;
-        const turnoData = calcularTurno(turno.horaInicio, turno.horaSalida);
-
-        if (turnoData && turnoData.horas > 0) {
-            const valorTurno = calcularValorTurno(turnoData, turno.fecha, turno.incapacidad);
+        
+        // Buscar el breakdown correspondiente en turnosLiquidados
+        const liquido = turnosLiquidados.find(t => 
+            t.turno.horaInicio === turno.horaInicio && 
+            t.turno.horaSalida === turno.horaSalida &&
+            t.turno.fecha === turno.fecha
+        );
+        
+        if (liquido && liquido.liquidacion && liquido.liquidacion.total > 0) {
+            // Usar valores del breakdown segmentado (más preciso)
+            const { total, horas } = liquido.liquidacion;
 
             const celdaValor = document.getElementById(`valor_${i}`);
-            if (celdaValor) celdaValor.innerText = formatearMoneda(valorTurno);
+            if (celdaValor) celdaValor.innerText = formatearMoneda(total);
 
             const celdaHoras = document.getElementById(`horas_${i}`);
-            if (celdaHoras) celdaHoras.innerText = turnoData.horas;
+            if (celdaHoras) celdaHoras.innerText = horas;
+            
+            // Guardar breakdown en la fila para posible detalle futuro (Task 5.2)
+            const fila = document.getElementById(`fila_${i}`);
+            if (fila) {
+                fila.dataset.breakdown = JSON.stringify(liquido.liquidacion.breakdown);
+            }
 
-            contadorTurnosUI++;
+            // Actualizar contador
+            const contadorUI = index + 1;
             const celdaNumero = document.getElementById(`numero_${i}`);
-            if (celdaNumero) celdaNumero.innerText = contadorTurnosUI;
+            if (celdaNumero) celdaNumero.innerText = contadorUI;
         } else {
             // Limpiar celdas de filas de descanso o sin turno
             const celdaValor = document.getElementById(`valor_${i}`);
@@ -166,13 +188,17 @@ const calcularNominaCompleta = () => {
             if (celdaHoras) celdaHoras.innerText = '';
             const celdaNumero = document.getElementById(`numero_${i}`);
             if (celdaNumero) celdaNumero.innerText = '';
+            
+            // Limpiar dataset
+            const fila = document.getElementById(`fila_${i}`);
+            if (fila) delete fila.dataset.breakdown;
         }
     });
 
-    // Delegar el render de resultados al renderer
+    // Delegar el render de resultados al renderer (totales)
     renderer.renderizarResultados(resultados);
 
-    // Persistir en el store: inputs del usuario + resultados calculados
+    // Persistir en el store: inputs del usuario + resultados calculados + breakdown por turno
     setState({
         turnos,
         horasExtras,
@@ -188,7 +214,9 @@ const calcularNominaCompleta = () => {
             pensionEmpresa: resultados.pensionEmpresa,
             cantidadTurnos: resultados.cantidadTurnos,
             cantidadHoras: resultados.cantidadHoras
-        }
+        },
+        // Guardar breakdown para auditoría (Task 5.1)
+        turnosLiquidados: turnosLiquidados
     });
 
     return resultados;
