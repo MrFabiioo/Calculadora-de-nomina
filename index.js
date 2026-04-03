@@ -164,6 +164,15 @@ const calcularNominaCompleta = () => {
             // Usar valores del breakdown segmentado (más preciso)
             const { total, horas } = liquido.liquidacion;
 
+            // === LOG TEMPORAL DE DIAGNÓSTICO ===
+            console.log('=== ASIGNACIÓN CELDA ===');
+            console.log('Fila índice:', index, '| Fecha:', turno.fecha);
+            console.log('Valor asignado:', total);
+            console.log('Horas:', horas);
+            console.log('¿Liquido encontrado?: SÍ');
+            console.log('========================');
+            // === FIN LOG TEMPORAL ===
+
             const celdaValor = document.getElementById(`valor_${i}`);
             if (celdaValor) celdaValor.innerText = formatearMoneda(total);
 
@@ -182,6 +191,13 @@ const calcularNominaCompleta = () => {
             if (celdaNumero) celdaNumero.innerText = contadorUI;
         } else {
             // Limpiar celdas de filas de descanso o sin turno
+            // === LOG TEMPORAL DE DIAGNÓSTICO ===
+            console.log('=== ASIGNACIÓN CELDA ===');
+            console.log('Fila índice:', index, '| Fecha:', turno.fecha);
+            console.log('¿Liquido encontrado?: NO (descanso o sin turno)');
+            console.log('========================');
+            // === FIN LOG TEMPORAL ===
+            
             const celdaValor = document.getElementById(`valor_${i}`);
             if (celdaValor) celdaValor.innerText = '';
             const celdaHoras = document.getElementById(`horas_${i}`);

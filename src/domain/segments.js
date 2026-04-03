@@ -76,7 +76,8 @@ export const segmentShift = (normalized, boundaries = ['midnight']) => {
         horaInicio, 
         horaSalida, 
         esDescanso,
-        fechaSalida 
+        fechaSalida,
+        cruzaMedianoche 
     } = normalized;
     
     // Si es descanso, retornar array vacío
@@ -115,9 +116,10 @@ export const segmentShift = (normalized, boundaries = ['midnight']) => {
             if (horaSegmento >= 24) {
                 fechaNominal = fechaSalida;
             } else {
-                // Si el turno cruza medianoche y el segmento empieza después de la medianoche del día siguiente
-                // Usar fechaSalida cuando el segmento está claramente en el día siguiente
-                fechaNominal = (horaSegmento < horaInicio && horaInicio < 6) ? fechaSalida : fechaBase;
+                // Si el turno cruza medianoche y el segmento empieza antes que la hora de inicio del turno
+                // (es decir, el segmento pertenece al día siguiente) → usar fechaSalida
+                // En cualquier otro caso → usar fechaBase
+                fechaNominal = (cruzaMedianoche && horaSegmento < horaInicio) ? fechaSalida : fechaBase;
             }
             
             // Ajustar horas para Date (si > 24, restar 24)
@@ -155,7 +157,9 @@ const getSegmentLimits = (boundaries, horaInicio, horaFinEffective) => {
         let hora;
         switch (boundary) {
             case 'midnight':
-                hora = 0;
+                // Para turnos que cruzan medianoche (finEffective > 24), usar 24
+                // Para turnos normales, usar 0 (equivalente a 24)
+                hora = horaFinEffective > 24 ? 24 : 0;
                 break;
             case '06:00':
             case 'mañana':
@@ -170,7 +174,9 @@ const getSegmentLimits = (boundaries, horaInicio, horaFinEffective) => {
         }
         
         // Solo agregar si está dentro del rango del turno
-        if (hora > horaInicio && hora < horaFinEffective) {
+        // Usar >= y <= para incluir turnos que cruzan medianoche
+        // Por ejemplo: 22:00-06:00 con finEffective=30 debe incluir midnight (24)
+        if (hora >= horaInicio && hora <= horaFinEffective) {
             limites.add(hora);
         }
     });
