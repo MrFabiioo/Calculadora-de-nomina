@@ -79,24 +79,6 @@ export const liquidarTurnoPorTramos = (turno, boundaries = ['midnight']) => {
         });
     }
     
-    // === LOG TEMPORAL DE DIAGNÓSTICO ===
-    console.log('=== LIQUIDACIÓN POR TRAMOS ===');
-    console.log('Turno:', turno.fecha, turno.horaInicio, '-', turno.horaSalida);
-    breakdown.forEach(seg => {
-        console.log('Segmento:', {
-            inicio: seg.inicio,
-            fin: seg.fin,
-            minutos: seg.minutos,
-            fechaNominal: seg.fechaNominal,
-            categoria: seg.categoria,
-            tarifa: seg.tarifa,
-            valor: seg.valor
-        });
-    });
-    console.log('TOTAL:', total);
-    console.log('==============================');
-    // === FIN LOG TEMPORAL ===
-
     return {
         total,
         horas: totalHoras,
