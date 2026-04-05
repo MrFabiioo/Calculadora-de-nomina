@@ -126,11 +126,15 @@ export const calcularNomina = (input) => {
     // Calcular subsidio
     const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales);
     
-    // Devengado total con subsidio
+    // Devengado total con subsidio (para nómina del empleado)
     const devengadoTotal = totalTurnos + subsidioTransporte;
     
-    // Calcular deducciones de salud y pensión
-    const deduccionesSaludPension = calcularDeducciones(devengadoTotal);
+    // Base para deducciones de seguridad social: NO incluye subsidio de transporte
+    // Según normativa colombiana, el auxilio de transporte NO es salario para efectos de SS
+    const baseDeducciones = totalTurnos;
+    
+    // Calcular deducciones de salud y pensión sobre la base correcta
+    const deduccionesSaludPension = calcularDeducciones(baseDeducciones);
     
     // Calcular deducciones adicionales
     const deduccionesAdicionales = {
