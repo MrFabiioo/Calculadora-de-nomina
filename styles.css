@@ -243,6 +243,10 @@ body {
     background-color: #16a34a;
 }
 
+.btn__icon {
+    flex-shrink: 0;
+}
+
 .btn--clear {
     background-color: var(--color-surface);
     color: var(--color-text);
@@ -822,8 +826,117 @@ body {
 }
 
 /* ----------------------
-    Responsive - Tablet
-    ---------------------- */
+      Botón flotante de WhatsApp
+      ---------------------- */
+.whatsapp-float-wrapper {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    z-index: var(--z-sticky);
+}
+
+.whatsapp-float {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.whatsapp-float:hover {
+    background: linear-gradient(135deg, var(--color-primary-hover) 0%, #1e40af 100%);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+    text-decoration: none;
+    color: white;
+}
+
+.whatsapp-float:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.whatsapp-float__icon {
+    width: 28px;
+    height: 28px;
+}
+
+.whatsapp-float__label {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0.8;
+    transition: opacity var(--transition-fast);
+}
+
+.whatsapp-float-wrapper:hover .whatsapp-float__label {
+    opacity: 1;
+    color: var(--color-text-secondary);
+}
+
+.whatsapp-float:hover {
+    background: linear-gradient(135deg, var(--color-primary-hover) 0%, #1e40af 100%);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+    text-decoration: none;
+    color: white;
+}
+
+.whatsapp-float:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.whatsapp-float__icon {
+    width: 28px;
+    height: 28px;
+}
+
+/* Mobile: botón un poco más pequeño y más pegado a la esquina */
+@media (max-width: 768px) {
+    .whatsapp-float-wrapper {
+        bottom: var(--spacing-md);
+        right: var(--spacing-md);
+    }
+
+    .whatsapp-float {
+        width: 48px;
+        height: 48px;
+    }
+
+    .whatsapp-float__icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .whatsapp-float__label {
+        font-size: 0.625rem;
+    }
+}
+
+/* Tablet: tamaño intermedio */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .whatsapp-float-wrapper {
+        bottom: var(--spacing-xl);
+        right: var(--spacing-xl);
+    }
+}
+
+/* ----------------------
+     Responsive - Tablet
+     ---------------------- */
 @media (min-width: 768px) {
     .main {
         padding: 0 var(--spacing-lg);
@@ -1146,6 +1259,22 @@ input[type="date"]:focus {
     animation: fadeIn var(--transition-normal) ease-out;
 }
 
+.news-banner__section {
+    margin-bottom: var(--spacing-md);
+}
+
+.news-banner__section:last-child {
+    margin-bottom: 0;
+}
+
+.news-banner__section-title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-xs) 0;
+    padding-left: var(--spacing-xs);
+}
+
 .news-banner__list {
     list-style: none;
     padding: 0;
@@ -1166,6 +1295,10 @@ input[type="date"]:focus {
 /* Dark mode para banner */
 [data-theme="dark"] .news-banner__list li {
     background-color: var(--color-surface-elevated);
+}
+
+[data-theme="dark"] .news-banner__section-title {
+    color: var(--color-text);
 }
 
 /* ----------------------
