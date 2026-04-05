@@ -467,6 +467,30 @@ const setupBotonLimpiar = () => {
     }
 };
 
+// Banner de Novedades - Toggle
+const setupBannerNovedades = () => {
+    const banner = document.getElementById('news-banner');
+    const toggle = document.getElementById('news-banner-toggle');
+    
+    if (banner && toggle) {
+        toggle.addEventListener('click', () => {
+            const estaAbierto = banner.classList.contains('news-banner--open');
+            
+            if (estaAbierto) {
+                // Cerrar
+                banner.classList.remove('news-banner--open');
+                banner.classList.add('news-banner--closed');
+                toggle.setAttribute('aria-expanded', 'false');
+            } else {
+                // Abrir
+                banner.classList.remove('news-banner--closed');
+                banner.classList.add('news-banner--open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+};
+
 // Event delegation para turnos dinámicos - AGREGADO input para selects
 const setupEventDelegation = () => {
     if (elementos.tbody) {
@@ -542,6 +566,7 @@ const inicializarApp = () => {
     setupBotonQuitar();
     setupBotonExportar();
     setupBotonLimpiar();
+    setupBannerNovedades();
     setupEventDelegation();
 
     // Agregar primera fila vacía

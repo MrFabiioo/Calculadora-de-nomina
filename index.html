@@ -32,25 +32,44 @@
         </div>
     </header>
 
-    <!-- Panel de Resumen Estático -->
-    <aside class="summary-panel" aria-label="Resumen de nómina">
-        <div class="summary-panel__content">
-            <div class="summary-panel__main">
-                <span class="summary-panel__label">Salario Neto</span>
-                <span id="neto-a-pagar" class="summary-panel__value">$0</span>
-            </div>
-            <div class="summary-panel__details">
-                <div class="summary-panel__item">
-                    <span class="summary-panel__label">Total Devengado</span>
-                    <span id="total-devengado" class="summary-panel__subvalue">$0</span>
+    <!-- Sidebar Wrapper para Desktop: agrupa summary + banner -->
+    <div class="sidebar-wrapper" aria-label="Panel lateral">
+        <!-- Panel de Resumen Estático -->
+        <div class="summary-panel" aria-label="Resumen de nómina">
+            <div class="summary-panel__content">
+                <div class="summary-panel__main">
+                    <span class="summary-panel__label">Salario Neto</span>
+                    <span id="neto-a-pagar" class="summary-panel__value">$0</span>
                 </div>
-                <div class="summary-panel__item">
-                    <span class="summary-panel__label">Deducciones</span>
-                    <span id="total-deducciones" class="summary-panel__subvalue">$0</span>
+                <div class="summary-panel__details">
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Total Devengado</span>
+                        <span id="total-devengado" class="summary-panel__subvalue">$0</span>
+                    </div>
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Deducciones</span>
+                        <span id="total-deducciones" class="summary-panel__subvalue">$0</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </aside>
+
+        <!-- Banner de Novedades (toggleable) -->
+        <div id="news-banner" class="news-banner news-banner--open" aria-label="Novedades">
+            <button id="news-banner-toggle" class="news-banner__toggle" aria-expanded="true" aria-controls="news-banner-content">
+                <span class="news-banner__icon">🎉</span>
+                <span class="news-banner__title">Novedades</span>
+                <span class="news-banner__arrow">▼</span>
+            </button>
+            <div id="news-banner-content" class="news-banner__content">
+                <ul class="news-banner__list">
+                    <li>📊 Ahora podés exportar a Excel</li>
+                    <li>🗑️ Botón limpiar para reiniciar todo</li>
+                    <li>🌗 Soporte para tema oscuro</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <main id="main-content" class="main">
         <!-- Sección de Turnos -->

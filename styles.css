@@ -261,10 +261,9 @@ body {
 }
 
 /* ----------------------
-     Sticky Summary - AHORA ES ESTÁTICO
-     ---------------------- */
+      Sticky Summary - AHORA ES ESTÁTICO
+      ---------------------- */
 .summary-panel {
-    position: static;
     background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
     color: white;
     padding: var(--spacing-md);
@@ -272,6 +271,13 @@ body {
     box-shadow: var(--shadow-lg);
     margin-bottom: var(--spacing-md);
     transition: background var(--transition-normal);
+}
+
+/* Sidebar wrapper - base (mobile) */
+.sidebar-wrapper {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto var(--spacing-md);
 }
 
 [data-theme="dark"] .summary-panel {
@@ -876,6 +882,21 @@ body {
         top: calc(var(--spacing-md) * 4 + 56px); /* debajo del header sticky */
     }
 
+    /* Sidebar wrapper para agrupar summary + banner en desktop */
+    .sidebar-wrapper {
+        grid-column: 3;
+        grid-row: 2;
+        margin: var(--spacing-md) var(--spacing-md) 0 0;
+        align-self: start;
+        position: sticky;
+        top: calc(var(--spacing-md) * 4 + 56px);
+    }
+
+    /* Banner dentro del sidebar en desktop - se muestra y apila */
+    .news-banner {
+        display: block;
+    }
+
     /* Footer: ancho completo, row 3 */
     .footer {
         grid-column: 1 / -1;
@@ -1056,4 +1077,101 @@ input[type="date"]:focus {
 .numero {
     font-family: var(--font-mono);
     font-weight: 500;
+}
+
+/* ----------------------
+    Banner de Novedades
+    ---------------------- */
+.news-banner {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.news-banner__toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text);
+    text-align: left;
+    transition: background-color var(--transition-fast);
+}
+
+.news-banner__toggle:hover {
+    background-color: var(--color-bg);
+}
+
+.news-banner__icon {
+    font-size: var(--font-size-lg);
+}
+
+.news-banner__title {
+    flex: 1;
+}
+
+.news-banner__arrow {
+    font-size: var(--font-size-sm);
+    transition: transform var(--transition-fast);
+}
+
+/* Estado abierto (por defecto) */
+.news-banner--open .news-banner__arrow {
+    transform: rotate(180deg);
+}
+
+/* Estado cerrado */
+.news-banner--closed .news-banner__content {
+    display: none;
+}
+
+.news-banner--closed .news-banner__arrow {
+    transform: rotate(0deg);
+}
+
+.news-banner__content {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.news-banner__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.news-banner__list li {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-bg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Dark mode para banner */
+[data-theme="dark"] .news-banner__list li {
+    background-color: var(--color-surface-elevated);
+}
+
+/* ----------------------
+    Responsive - Desktop: Banner al lado del summary
+    ---------------------- */
+@media (min-width: 1024px) {
+    /* El banner se posiciona en la columna 3 (donde está el summary) */
+    .news-banner {
+        display: none; /* Oculto en desktop por defecto - se muestra dentro del sidebar-wrapper */
+    }
 }
