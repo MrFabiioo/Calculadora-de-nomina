@@ -11,12 +11,6 @@ const DEBOUNCE_DELAY = 300;
 // Estado inicial
 const estadoInicial = {
     turnos: [],
-    horasExtras: {
-        diurna: 0,
-        nocturna: 0,
-        diurnaFestiva: 0,
-        nocturnaFestiva: 0
-    },
     deducciones: {
         nomina: 0,
         emi: 0,
@@ -47,7 +41,6 @@ const guardarEnStorage = (estado) => {
     try {
         const datosPersistir = {
             turnos: estado.turnos,
-            horasExtras: estado.horasExtras,
             deducciones: estado.deducciones,
             configuracion: estado.configuracion
         };
@@ -67,7 +60,7 @@ const cargarDesdeStorage = () => {
         if (datos) {
             const parsed = JSON.parse(datos);
             // Validar que tenga la estructura esperada
-            if (parsed.turnos && parsed.horasExtras && parsed.deducciones && parsed.configuracion) {
+            if (parsed.turnos && parsed.deducciones && parsed.configuracion) {
                 return parsed;
             }
         }
@@ -190,14 +183,6 @@ class Store {
         const turnos = [...this.estado.turnos];
         turnos[indice] = turnoActualizado;
         this.setState({ turnos });
-    }
-
-    /**
-     * Actualiza las horas extras
-     * @param {Object} horasExtras - Nuevo objeto de horas extras
-     */
-    actualizarHorasExtras(horasExtras) {
-        this.setState({ horasExtras });
     }
 
     /**

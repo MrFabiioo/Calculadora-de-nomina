@@ -26,12 +26,6 @@ const inicializarElementos = () => {
         tbody: document.getElementById('turnos-body'),
         mostradorContador: document.getElementById('turno-contador'),
         
-        // Horas extras - NUEVOS IDs (con guiones)
-        horaDiurna: document.getElementById('hora-diurna'),
-        horaNocturna: document.getElementById('hora-nocturna'),
-        horaDiurnaFestiva: document.getElementById('hora-diurna-festiva'),
-        horaNocturnaFestiva: document.getElementById('hora-nocturna-festiva'),
-        
         // Deducciones - NUEVOS IDs (con guiones)
         deduccionesNomina: document.getElementById('deduccion-nomina'),
         deduccionesEMI: document.getElementById('deduccion-emi'),
@@ -90,16 +84,6 @@ const obtenerTurnosDelDOM = () => {
 };
 
 /**
- * Lee las horas extras desde el DOM
- */
-const obtenerHorasExtrasDelDOM = () => ({
-    diurna: parseFloat(elementos.horaDiurna?.value) || 0,
-    nocturna: parseFloat(elementos.horaNocturna?.value) || 0,
-    diurnaFestiva: parseFloat(elementos.horaDiurnaFestiva?.value) || 0,
-    nocturnaFestiva: parseFloat(elementos.horaNocturnaFestiva?.value) || 0
-});
-
-/**
  * Lee las deducciones desde el DOM
  */
 const obtenerDeduccionesDelDOM = () => ({
@@ -117,7 +101,6 @@ const obtenerDeduccionesDelDOM = () => ({
  */
 const calcularNominaCompleta = () => {
     const turnos = obtenerTurnosDelDOM();
-    const horasExtras = obtenerHorasExtrasDelDOM();
     const deducciones = obtenerDeduccionesDelDOM();
 
     // Actualizar estilos de filas de descanso (responsabilidad visual que queda en index)
@@ -135,10 +118,6 @@ const calcularNominaCompleta = () => {
     // ============================================
     const resultados = calcularNomina({
         turnos,
-        horaDiurna: horasExtras.diurna,
-        horaNocturna: horasExtras.nocturna,
-        horaDiurnaFestiva: horasExtras.diurnaFestiva,
-        horaNocturnaFestiva: horasExtras.nocturnaFestiva,
         deduccionNomina: deducciones.nomina,
         deduccionEMI: deducciones.emi,
         otrasDeducciones: deducciones.otras
@@ -202,7 +181,6 @@ const calcularNominaCompleta = () => {
     // Persistir en el store: inputs del usuario + resultados calculados + breakdown por turno
     setState({
         turnos,
-        horasExtras,
         deducciones,
         resultados: {
             devengadoTotal: resultados.devengadoTotal,
@@ -232,11 +210,7 @@ const setupValidaciones = () => {
     const inputs = [
         { id: 'deduccion-nomina', key: 'nomina' },
         { id: 'deduccion-emi', key: 'emi' },
-        { id: 'otras-deducciones', key: 'otras' },
-        { id: 'hora-diurna', key: 'diurna' },
-        { id: 'hora-nocturna', key: 'nocturna' },
-        { id: 'hora-diurna-festiva', key: 'diurnaFestiva' },
-        { id: 'hora-nocturna-festiva', key: 'nocturnaFestiva' }
+        { id: 'otras-deducciones', key: 'otras' }
     ];
     
     inputs.forEach(({ id, key }) => {
@@ -389,15 +363,6 @@ const preCargarDesdeStore = () => {
     const temaGuardado = estado.configuracion?.tema;
     if (temaGuardado) {
         document.documentElement.setAttribute('data-theme', temaGuardado);
-    }
-
-    // Restaurar inputs de horas extras
-    const he = estado.horasExtras;
-    if (he) {
-        if (elementos.horaDiurna && he.diurna) elementos.horaDiurna.value = he.diurna;
-        if (elementos.horaNocturna && he.nocturna) elementos.horaNocturna.value = he.nocturna;
-        if (elementos.horaDiurnaFestiva && he.diurnaFestiva) elementos.horaDiurnaFestiva.value = he.diurnaFestiva;
-        if (elementos.horaNocturnaFestiva && he.nocturnaFestiva) elementos.horaNocturnaFestiva.value = he.nocturnaFestiva;
     }
 
     // Restaurar inputs de deducciones

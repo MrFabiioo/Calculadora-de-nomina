@@ -23,12 +23,6 @@ export const inicializarElementos = () => {
         mostradorContador: document.getElementById('turno-contador'),
         emptyState: document.getElementById('empty-state'),
         
-        // Horas extras - NUEVOS IDs (con guiones)
-        horaDiurna: document.getElementById('hora-diurna'),
-        horaNocturna: document.getElementById('hora-nocturna'),
-        horaDiurnaFestiva: document.getElementById('hora-diurna-festiva'),
-        horaNocturnaFestiva: document.getElementById('hora-nocturna-festiva'),
-        
         // Deducciones - NUEVOS IDs (con guiones)
         deduccionesNomina: document.getElementById('deduccion-nomina'),
         deduccionesEMI: document.getElementById('deduccion-emi'),
@@ -369,18 +363,6 @@ export const alternarTema = () => {
 export const limpiarTurnos = () => {
     elementos.tbody.innerHTML = '';
     actualizarContador();
-};
-
-/**
- * Obtiene los valores actuales de horas extras desde el DOM
- */
-export const obtenerHorasExtrasDOM = () => {
-    return {
-        diurna: parseFloat(elementos.horaDiurna?.value) || 0,
-        nocturna: parseFloat(elementos.horaNocturna?.value) || 0,
-        diurnaFestiva: parseFloat(elementos.horaDiurnaFestiva?.value) || 0,
-        nocturnaFestiva: parseFloat(elementos.horaNocturnaFestiva?.value) || 0
-    };
 };
 
 /**

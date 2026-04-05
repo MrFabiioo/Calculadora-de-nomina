@@ -14,36 +14,13 @@ const TARIFA_SALUD_EMPRESA = 0.085;  // 8.5%
 const TARIFA_PENSION_EMPLEADO = 0.04; // 4%
 const TARIFA_PENSION_EMPRESA = 0.12;  // 12%
 const SUBSIDIO_TRANSPORTE_MAXIMO = 249095;
-const LIMITE_SUBSIDIO = 1750905*2; // Si el devengado supera este límite, no aplica subsidio
-
-/**
- * Calcula el valor de horas extras
- * @param {number} horasDiurnas - Horas extras diurnas
- * @param {number} horasNocturnas - Horas extras nocturnas
- * @param {number} horasDiurnasFestivas - Horas extras diurnas festivas
- * @param {number} horasNocturnasFestivas - Horas extras nocturnas festivas
- * @returns {number} - Total de horas extras
- */
-export const calcularHorasExtras = (
-    horasDiurnas = 0,
-    horasNocturnas = 0,
-    horasDiurnasFestivas = 0,
-    horasNocturnasFestivas = 0
-) => {
-    const total = 
-        (horasDiurnas || 0) * TARIFAS_HORA.diurna +
-        (horasNocturnas || 0) * TARIFAS_HORA.nocturna +
-        (horasDiurnasFestivas || 0) * TARIFAS_HORA.diurnaFestiva +
-        (horasNocturnasFestivas || 0) * TARIFAS_HORA.nocturnaFestiva;
-    
-    return total;
-};
+const LIMITE_SUBSIDIO = 1750905*2; // Si el devengado supera este límite, no aplica subsidy
 
 /**
  * Calcula el subsidy de transporte
- * @param {number} devengadoTotal - Total devengado sin subsidio
+ * @param {number} devengadoTotal - Total devengado sin subsidy
  * @param {number} cantidadTurnos - Cantidad de turnos trabajados
- * @returns {number} - Valor del subsidio
+ * @returns {number} - Valor del subsidy
  */
 export const calcularSubsidioTransporte = (devengadoTotal, cantidadTurnos) => {
     // Si el devengado supera el límite, no aplica subsidio
@@ -98,10 +75,6 @@ export const calcularTotalDeducciones = (deducciones, saludPension) => {
 export const calcularNomina = (input) => {
     const {
         turnos = [],
-        horaDiurna = 0,
-        horaNocturna = 0,
-        horaDiurnaFestiva = 0,
-        horaNocturnaFestiva = 0,
         deduccionNomina = 0,
         deduccionEMI = 0,
         otrasDeducciones = 0
@@ -143,22 +116,11 @@ export const calcularNomina = (input) => {
     // Guardar turnos liquidados
     turnosLiquidados = turnosLiquidadosRaw;
     
-    // Calcular horas extras
-    const totalHorasExtras = calcularHorasExtras(
-        horaDiurna,
-        horaNocturna,
-        horaDiurnaFestiva,
-        horaNocturnaFestiva
-    );
-    
-    // Devengado sin subsidio
-    const devengadoSinSubsidio = totalTurnos + totalHorasExtras;
-    
     // Calcular subsidio
-    const subsidioTransporte = calcularSubsidioTransporte(devengadoSinSubsidio, contadorTurnosReales);
+    const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales);
     
     // Devengado total con subsidio
-    const devengadoTotal = devengadoSinSubsidio + subsidioTransporte;
+    const devengadoTotal = totalTurnos + subsidioTransporte;
     
     // Calcular deducciones de salud y pensión
     const deduccionesSaludPension = calcularDeducciones(devengadoTotal);
@@ -184,7 +146,6 @@ export const calcularNomina = (input) => {
         
         // Componentes
         totalTurnos,
-        totalHorasExtras,
         subsidioTransporte,
         
         // Salud y pensión
