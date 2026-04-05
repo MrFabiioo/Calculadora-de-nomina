@@ -53,7 +53,8 @@ const inicializarElementos = () => {
         botonAñadir: document.getElementById('btn-agregar'),
         botonQuitar: document.getElementById('btn-quitar'),
         botonTema: document.getElementById('theme-toggle'),
-        botonExportar: document.getElementById('btn-exportar')
+        botonExportar: document.getElementById('btn-exportar'),
+        botonLimpiar: document.getElementById('btn-limpiar')
     };
 };
 
@@ -240,6 +241,9 @@ const setupValidaciones = () => {
                 
                 // Recalcular en tiempo real
                 calcularNominaCompleta();
+                
+                // Actualizar estado del botón limpiar
+                actualizarBotonLimpiar();
             });
             
             // Validación al perder foco (blur)
@@ -306,6 +310,9 @@ const setupBotonAgregar = () => {
             }
             
             calcularNominaCompleta();
+            
+            // Actualizar estado del botón limpiar
+            actualizarBotonLimpiar();
         });
     }
 };
@@ -316,6 +323,8 @@ const setupBotonQuitar = () => {
         elementos.botonQuitar.addEventListener('click', () => {
             renderer.eliminarFilaTurno();
             calcularNominaCompleta();
+            // Actualizar estado del botón limpiar
+            actualizarBotonLimpiar();
         });
     }
 };
@@ -339,6 +348,122 @@ const setupBotonExportar = () => {
                 console.log('✅ Excel exportado correctamente');
             }
         });
+    }
+};
+
+/**
+ * Verifica si hay datos que limpiar en la aplicación
+ * @returns {boolean} - true si hay algo que limpiar
+ */
+const hayDatosParaLimpiar = () => {
+    // Contamos las filas en la tabla de turnos
+    const filasTurnos = elementos.tbody?.querySelectorAll('tr') || [];
+    const cantidadFilas = filasTurnos.length;
+    
+    // También verificamos si hay deducciones填入
+    const deducciones = obtenerDeduccionesDelDOM();
+    const hayDeducciones = deducciones.nomina > 0 || deducciones.emi > 0 || deducciones.otras > 0;
+    
+    // Hay algo que limpiar si:
+    // - Hay 1 o más filas en la tabla, O
+    // - Hay deducciones填入
+    return cantidadFilas >= 1 || hayDeducciones;
+};
+
+/**
+ * Habilita/deshabilita el botón limpiar según el estado actual
+ */
+const actualizarBotonLimpiar = () => {
+    if (elementos.botonLimpiar) {
+        const habilitado = hayDatosParaLimpiar();
+        elementos.botonLimpiar.disabled = !habilitado;
+    }
+};
+
+/**
+ * Limpia todos los campos de la aplicación:
+ * - Elimina todas las filas de turnos
+ * - Limpia los inputs de deducciones
+ * - Resetea los resultados a cero
+ */
+const limpiarTodosLosCampos = () => {
+    if (!hayDatosParaLimpiar()) return;
+    
+    // Confirmar con el usuario antes de limpiar
+    if (!confirm('¿Estás seguro de que quieres limpiar todos los campos?')) {
+        return;
+    }
+    
+    // 1. Limpiar todas las filas de turnos (dejar solo una vacía si es necesario, o ninguna)
+    const filas = elementos.tbody?.querySelectorAll('tr') || [];
+    filas.forEach(fila => fila.remove());
+    
+    // 2. Limpiar inputs de deducciones
+    if (elementos.deduccionesNomina) elementos.deduccionesNomina.value = '';
+    if (elementos.deduccionesEMI) elementos.deduccionesEMI.value = '';
+    if (elementos.otrasDeducciones) elementos.otrasDeducciones.value = '';
+    
+    // 3. Resetear el store al estado inicial (manteniendo el tema)
+    const estadoActual = getState();
+    const temaGuardado = estadoActual.configuracion?.tema || 'light';
+    
+    // Usar la función reset del store
+    setState({
+        turnos: [],
+        deducciones: { nomina: 0, emi: 0, otras: 0 },
+        resultados: {
+            devengadoTotal: 0,
+            totalDeducciones: 0,
+            netoPagar: 0,
+            subsidioTransporte: 0,
+            saludEmpleado: 0,
+            pensionEmpleado: 0,
+            saludEmpresa: 0,
+            pensionEmpresa: 0,
+            cantidadTurnos: 0,
+            cantidadHoras: 0,
+            totalTurnos: 0,
+            diasDescanso: 0
+        },
+        turnosLiquidados: []
+    });
+    
+    // 4. Renderizar resultados en cero
+    renderer.renderizarResultados({
+        cantidadTurnos: 0,
+        cantidadHoras: 0,
+        devengadoTotal: 0,
+        totalDeducciones: 0,
+        netoPagar: 0,
+        subsidioTransporte: 0,
+        saludEmpleado: 0,
+        pensionEmpleado: 0,
+        saludEmpresa: 0,
+        pensionEmpresa: 0
+    });
+    
+    // 5. Agregar una fila vacía inicial (para que no quede la tabla vacía del todo)
+    renderer.agregarFilaTurno();
+    
+    // 6. Actualizar contador
+    renderer.actualizarContador();
+    
+    // 7. Actualizar estado del botón limpiar
+    actualizarBotonLimpiar();
+    
+    console.log('✅ Todos los campos han sido limpiados');
+};
+
+// Botón limpiar todos los campos
+const setupBotonLimpiar = () => {
+    if (elementos.botonLimpiar) {
+        // Configurar evento click
+        elementos.botonLimpiar.addEventListener('click', () => {
+            limpiarTodosLosCampos();
+        });
+        
+        // Inicializar estado del botón
+        actualizarBotonLimpiar();
     }
 };
 
@@ -416,12 +541,16 @@ const inicializarApp = () => {
     setupBotonAgregar();
     setupBotonQuitar();
     setupBotonExportar();
+    setupBotonLimpiar();
     setupEventDelegation();
 
     // Agregar primera fila vacía
     if (elementos.tbody && elementos.tbody.children.length === 0) {
         renderer.agregarFilaTurno();
     }
+    
+    // Actualizar botón limpiar después de cargar el estado
+    actualizarBotonLimpiar();
 };
 
 // Iniciar cuando el DOM esté listo
