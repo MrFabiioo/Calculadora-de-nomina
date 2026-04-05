@@ -1172,6 +1172,6 @@ input[type="date"]:focus {
 @media (min-width: 1024px) {
     /* El banner se posiciona en la columna 3 (donde está el summary) */
     .news-banner {
-        display: none; /* Oculto en desktop por defecto - se muestra dentro del sidebar-wrapper */
+        display: block;
     }
 }
