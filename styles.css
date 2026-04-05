@@ -884,6 +884,7 @@ body {
 
     /* Turnos siempre full width arriba dentro de main */
     .section--turnos {
+        margin-top: 20px;
         grid-column: 1 / -1;
         grid-row: 1;
     }
