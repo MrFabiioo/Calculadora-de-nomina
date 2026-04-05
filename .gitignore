@@ -1,2 +1,8 @@
 # Claude artifacts
 .claude/
+
+# Backups
+backup/
+
+# Propuesta interna (no es documentación pública)
+propuesta-rediseño-funcional.md
