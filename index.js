@@ -13,6 +13,7 @@ import { calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
 import * as renderer from './src/ui/renderer.js';
+import { exportarExcel, estaDisponiblExportacion } from './src/utils/exporter.js';
 
 // Elementos del DOM
 let elementos = {};
@@ -51,7 +52,8 @@ const inicializarElementos = () => {
         botonCalcular: null, // Ya no hay botón calcular en Fase 3
         botonAñadir: document.getElementById('btn-agregar'),
         botonQuitar: document.getElementById('btn-quitar'),
-        botonTema: document.getElementById('theme-toggle')
+        botonTema: document.getElementById('theme-toggle'),
+        botonExportar: document.getElementById('btn-exportar')
     };
 };
 
@@ -192,7 +194,9 @@ const calcularNominaCompleta = () => {
             saludEmpresa: resultados.saludEmpresa,
             pensionEmpresa: resultados.pensionEmpresa,
             cantidadTurnos: resultados.cantidadTurnos,
-            cantidadHoras: resultados.cantidadHoras
+            cantidadHoras: resultados.cantidadHoras,
+            totalTurnos: resultados.totalTurnos,
+            diasDescanso: resultados.diasDescanso
         },
         // Guardar breakdown para auditoría (Task 5.1)
         turnosLiquidados: turnosLiquidados
@@ -316,6 +320,28 @@ const setupBotonQuitar = () => {
     }
 };
 
+// Botón exportar a Excel
+const setupBotonExportar = () => {
+    if (elementos.botonExportar) {
+        elementos.botonExportar.addEventListener('click', () => {
+            // Verificar que SheetJS esté disponible
+            if (!estaDisponiblExportacion()) {
+                alert('La librería de exportación aún no está cargada. Intentá en unos segundos.');
+                return;
+            }
+            
+            // Recalcular antes de exportar para tener datos actualizados
+            calcularNominaCompleta();
+            
+            // Exportar
+            const exito = exportarExcel();
+            if (exito) {
+                console.log('✅ Excel exportado correctamente');
+            }
+        });
+    }
+};
+
 // Event delegation para turnos dinámicos - AGREGADO input para selects
 const setupEventDelegation = () => {
     if (elementos.tbody) {
@@ -389,6 +415,7 @@ const inicializarApp = () => {
     setupBotonCalcular();
     setupBotonAgregar();
     setupBotonQuitar();
+    setupBotonExportar();
     setupEventDelegation();
 
     // Agregar primera fila vacía

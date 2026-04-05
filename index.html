@@ -18,9 +18,14 @@
     <header class="header">
         <div class="header__container">
             <h1 class="header__title">📋 Calculadora de Nómina</h1>
-            <button id="theme-toggle" class="btn btn--icon" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
-                🌗
-            </button>
+            <div class="header__actions">
+                <button id="btn-exportar" class="btn btn--export" aria-label="Exportar a Excel" title="Exportar a Excel">
+                    📥 Excel
+                </button>
+                <button id="theme-toggle" class="btn btn--icon" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
+                    🌗
+                </button>
+            </div>
         </div>
     </header>
 
@@ -182,6 +187,9 @@
         <p>Calculadora de Nómina v1.0.0 | Colombia 2026</p>
     </footer>
 
+    <!-- SheetJS para exportación Excel (sin build) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    
     <!-- Importante: Este archivo usa ES Modules -->
     <!-- Para desarrollo local usa un servidor como Live Server -->
     <script type="module" src="index.js"></script>

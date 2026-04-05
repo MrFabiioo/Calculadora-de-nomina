@@ -24,8 +24,8 @@
 const TARIFAS_HORA = {
     diurna: 12210,
     nocturna: 16483.5,
-    diurnaFestiva: 18204,
-    nocturnaFestiva: 22693.5
+    diurnaFestiva: 21978,
+    nocturnFestiva: 26251.6666667
 };
 
 const MEDIA_HORA = TARIFAS_HORA.diurna / 2;
@@ -225,14 +225,20 @@ const getSegmentLimits = (boundaries, horaInicio, horaFinEffective) => {
     boundaries.forEach(boundary => {
         let hora;
         switch (boundary) {
-            case 'midnight': hora = 0; break;
+            case 'midnight':
+                // Para turnos que cruzan medianoche (finEffective > 24), usar 24
+                // Para turnos normales, usar 0
+                hora = horaFinEffective > 24 ? 24 : 0;
+                break;
             case '06:00':
             case 'mañana': hora = 6; break;
             case '19:00':
             case 'tarde': hora = 19; break;
             default: return;
         }
-        if (hora > horaInicio && hora < horaFinEffective) {
+        
+        // Solo agregar si está dentro del rango del turno
+        if (hora >= horaInicio && hora <= horaFinEffective) {
             limites.add(hora);
         }
     });
@@ -326,7 +332,7 @@ const TARIFAS_POR_CATEGORIA = {
     'festivo-noche': TARIFAS_HORA.nocturnaFestiva
 };
 
-const liquidarTurnoPorTramos = (turno, boundaries = ['midnight']) => {
+const liquidarTurnoPorTramos = (turno, boundaries = ['midnight', '06:00', '19:00']) => {
     const { horaInicio, horaSalida, incapacidad = false } = turno;
     
     if (horaInicio === 'Descanso' || horaSalida === 'Descanso') {
@@ -380,8 +386,8 @@ const compararCalculos = (turno) => {
     const turnoData = calcularTurno(horaInicio, horaSalida);
     const valorLegacy = turnoData ? calcularValorTurno(turnoData, fecha, incapacidad) : 0;
     
-    // Segmentado
-    const resultadoSegmentado = liquidarTurnoPorTramos(turno, ['midnight']);
+    // Segmentado (usa defaults: ['midnight', '06:00', '19:00'])
+    const resultadoSegmentado = liquidarTurnoPorTramos(turno);
     const valorSegmentado = resultadoSegmentado ? resultadoSegmentado.total : 0;
     
     const diff = Math.abs(valorLegacy - valorSegmentado);

@@ -26,7 +26,9 @@ const estadoInicial = {
         saludEmpresa: 0,
         pensionEmpresa: 0,
         cantidadTurnos: 0,
-        cantidadHoras: 0
+        cantidadHoras: 0,
+        totalTurnos: 0,
+        diasDescanso: 0
     },
     configuracion: {
         tema: 'light'

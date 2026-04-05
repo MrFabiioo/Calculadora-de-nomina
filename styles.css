@@ -227,6 +227,22 @@ body {
     color: var(--color-text);
 }
 
+.header__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.btn--export {
+    background-color: var(--color-success);
+    color: white;
+    border-color: var(--color-success);
+}
+
+.btn--export:hover {
+    background-color: #16a34a;
+}
+
 /* ----------------------
      Sticky Summary - AHORA ES ESTÁTICO
      ---------------------- */

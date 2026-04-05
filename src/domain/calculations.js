@@ -84,6 +84,7 @@ export const calcularNomina = (input) => {
     let totalTurnos = 0;
     let totalHoras = 0;
     let contadorTurnosReales = 0;
+    let diasDescanso = 0;
     let turnosLiquidados = [];
     
     const turnosLiquidadosRaw = [];
@@ -91,13 +92,19 @@ export const calcularNomina = (input) => {
     turnos.forEach(turno => {
         const { horaInicio, horaSalida } = turno;
         
+        // Contar días de descanso
+        if (horaInicio === "Descanso" && horaSalida === "Descanso") {
+            diasDescanso++;
+            return;
+        }
+        
         // Ignorar descanso
         if (horaInicio === "Descanso" && horaSalida === "Descanso") {
             return;
         }
         
-        // Usar pipeline segmentado
-        const resultado = liquidarTurnoPorTramos(turno, ['midnight']);
+        // Usar pipeline segmentado (usa defaults de payroll-breakdown.js)
+        const resultado = liquidarTurnoPorTramos(turno);
         
         if (resultado) {
             // Agregar al total
@@ -156,7 +163,8 @@ export const calcularNomina = (input) => {
         
         // Contadores
         cantidadTurnos: contadorTurnosReales,
-        cantidadHoras: totalHoras
+        cantidadHoras: totalHoras,
+        diasDescanso
     };
     
     // Agregar turnosLiquidados para auditoría/UI

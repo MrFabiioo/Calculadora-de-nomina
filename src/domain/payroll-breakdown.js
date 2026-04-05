@@ -30,7 +30,7 @@ const TARIFAS_POR_CATEGORIA = {
  * @param {string[]} boundaries - Límites de segmentación
  * @returns {Object} - Breakdown completo {total, horas, breakdown: [{inicio, fin, minutos, categoria, tarifa, valor}]}
  */
-export const liquidarTurnoPorTramos = (turno, boundaries = ['midnight']) => {
+export const liquidarTurnoPorTramos = (turno, boundaries = ['midnight', '06:00', '19:00']) => {
     const { horaInicio, horaSalida, incapacidad = false } = turno;
     
     // Detectar descanso
@@ -158,7 +158,7 @@ export const liquidarTurnoLegacyCompat = (turno) => {
         return { valor: 0, domingo: 0, festivo: 0, normalFestivo: 0, horas: 0 };
     }
     
-    const resultado = liquidarTurnoPorTramos(turno, ['midnight']);
+    const resultado = liquidarTurnoPorTramos(turno);
     
     // Calcular valores por tipo de día
     let ordinario = 0;
