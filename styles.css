@@ -196,7 +196,7 @@ body {
     width: 100%;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: var(--spacing-md);
+    padding: 0 var(--spacing-md);
 }
 
 /* ----------------------
@@ -261,15 +261,14 @@ body {
 }
 
 /* ----------------------
-      Sticky Summary - AHORA ES ESTÁTICO
-      ---------------------- */
+       Sticky Summary - AHORA ES ESTÁTICO
+       ---------------------- */
 .summary-panel {
     background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
     color: white;
     padding: var(--spacing-md);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    margin-bottom: var(--spacing-md);
     transition: background var(--transition-normal);
 }
 
@@ -277,7 +276,10 @@ body {
 .sidebar-wrapper {
     width: 100%;
     max-width: var(--max-width);
-    margin: 0 auto var(--spacing-md);
+    margin: 0 auto var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
 [data-theme="dark"] .summary-panel {
@@ -695,18 +697,18 @@ body {
 }
 
 /* ----------------------
-   Resultados
-   ---------------------- */
+    Resultados
+    ---------------------- */
 .resultados-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-xl);
 }
 
 .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: var(--spacing-md);
+    gap: var(--spacing-lg);
 }
 
 .stat-card {
@@ -783,14 +785,15 @@ body {
 }
 
 /* ----------------------
-   Footer
-   ---------------------- */
+    Footer
+    ---------------------- */
 .footer {
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
     padding: var(--spacing-lg);
     text-align: center;
     margin-top: auto;
+    margin-bottom: var(--spacing-lg);
 }
 
 .footer p {
@@ -819,15 +822,16 @@ body {
 }
 
 /* ----------------------
-   Responsive - Tablet
-   ---------------------- */
+    Responsive - Tablet
+    ---------------------- */
 @media (min-width: 768px) {
     .main {
-        padding: var(--spacing-lg);
+        padding: 0 var(--spacing-lg);
     }
     
     .section {
         padding: var(--spacing-xl);
+        margin-bottom: var(--spacing-xl);
     }
     
     /* Grid más grande en tablet */
@@ -837,8 +841,8 @@ body {
 }
 
 /* ----------------------
-     Responsive - Desktop
-     ---------------------- */
+      Responsive - Desktop
+      ---------------------- */
 @media (min-width: 1024px) {
     /*
      * Layout: header (row 1), aside + main (row 2), footer (row 3)
@@ -847,7 +851,7 @@ body {
         display: grid;
         grid-template-columns: 1fr 1fr 340px;
         grid-template-rows: auto 1fr auto;
-        column-gap: var(--spacing-lg);
+        column-gap: var(--spacing-xl);
         align-items: start;
     }
 
@@ -866,30 +870,29 @@ body {
         grid-row: 2;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-md);
+        gap: var(--spacing-xl);
+        padding: 0 var(--spacing-lg);
         max-width: none;
         margin: 0;
-    }
-
-    /* Summary Panel en col 3, row 2 */
-    .summary-panel {
-        grid-column: 3;
-        grid-row: 2;
-        margin: var(--spacing-md) var(--spacing-md) 0 0;
-        align-self: start;
-        position: sticky;
-        top: calc(var(--spacing-md) * 4 + 56px); /* debajo del header sticky */
     }
 
     /* Sidebar wrapper para agrupar summary + banner en desktop */
     .sidebar-wrapper {
         grid-column: 3;
         grid-row: 2;
-        margin: var(--spacing-md) var(--spacing-md) 0 0;
+        margin: 0 var(--spacing-lg) 0 0;
         align-self: start;
         position: sticky;
-        top: calc(var(--spacing-md) * 4 + 56px);
+        top: calc(var(--header-height) + var(--spacing-xl));
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        max-width: var(--sidebar-width);
+    }
+
+    /* Summary Panel dentro del sidebar - quitamos margins duplicados */
+    .summary-panel {
+        margin: 0;
     }
 
     /* Banner dentro del sidebar en desktop - se muestra y apila */
@@ -905,7 +908,7 @@ body {
 
     /* Turnos siempre full width arriba dentro de main */
     .section--turnos {
-        margin-top: 20px;
+        margin-top: 16px;
         grid-column: 1 / -1;
         grid-row: 1;
     }
@@ -932,7 +935,7 @@ body {
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: start;
-        gap: var(--spacing-lg);
+        gap: var(--spacing-xl);
     }
 
     /* Stats apilados verticalmente en desktop */
@@ -1080,13 +1083,12 @@ input[type="date"]:focus {
 }
 
 /* ----------------------
-    Banner de Novedades
-    ---------------------- */
+     Banner de Novedades
+     ---------------------- */
 .news-banner {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-md);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
 }
