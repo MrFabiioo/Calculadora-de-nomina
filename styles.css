@@ -205,7 +205,7 @@ body {
 .header {
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
@@ -218,19 +218,142 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--spacing-sm);
+    min-height: var(--header-height);
 }
 
 .header__title {
-    font-family: var(--font-mono);
-    font-size: clamp(1rem, 4vw, var(--font-size-xl));
-    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    /* Previene que el título aplaste a los botones */
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+/* Logo principal — composición horizontal isotipo + wordmark */
+.header__logo {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
     color: var(--color-text);
+    transition: opacity var(--transition-fast);
+    border-radius: var(--radius-sm);
+    /* Permite que el link se encoja en mobile */
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.header__logo:hover {
+    opacity: 0.75;
+    text-decoration: none;
+}
+
+.header__logo:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+}
+
+/* SVG logo — base (todos los breakpoints) */
+.header__logo-svg {
+    /* currentColor hereda de .header__logo → adapta automáticamente a dark/light */
+    display: block;
+    /* Fijamos altura y dejamos que el width salga del aspect ratio del viewBox */
+    width: auto;
+    flex-shrink: 1;
+}
+
+/* Logo completo: isotipo + wordmark + descriptor */
+.header__logo-svg--full {
+    height: 44px;
+    max-width: 260px;
+}
+
+/* Logo compacto (solo isotipo): oculto por defecto */
+.header__logo-svg--compact {
+    display: none;
+    height: 36px;
+    width: 36px;
+}
+
+/* ≤ 480px: Reducir logo completo */
+@media (max-width: 480px) {
+    .header__logo-svg--full {
+        height: 38px;
+        max-width: 200px;
+    }
+}
+
+/* ≤ 360px: Muy pequeño — mostrar solo isotipo, ocultar logo completo */
+@media (max-width: 360px) {
+    .header__logo-svg--full {
+        display: none;
+    }
+
+    .header__logo-svg--compact {
+        display: block;
+    }
+}
+
+/* ≥ 1024px: Desktop — agrandar logo para mayor presencia visual */
+@media (min-width: 1024px) {
+    .header__logo-svg--full {
+        height: 52px;
+        max-width: 300px;
+    }
 }
 
 .header__actions {
     display: flex;
     gap: var(--spacing-sm);
     align-items: center;
+    /* Nunca se encoge: los botones tienen prioridad sobre el logo */
+    flex-shrink: 0;
+}
+
+/* ≤ 480px: Compactar los botones del header */
+@media (max-width: 480px) {
+    .header {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .header__actions {
+        gap: var(--spacing-xs);
+    }
+
+    /* Ocultar labels de texto en botones de acción — queda solo el icono */
+    .header__actions .btn__label {
+        display: none;
+    }
+
+    /* Ajustar padding de los botones que ahora son solo icono */
+    .header__actions .btn--clear,
+    .header__actions .btn--export {
+        padding: var(--spacing-sm);
+        min-width: 40px;
+        min-height: 40px;
+    }
+}
+
+/* ≤ 360px: botones del header ultra compactos */
+@media (max-width: 360px) {
+    .header__actions {
+        gap: 4px;
+    }
+
+    .header__actions .btn--clear,
+    .header__actions .btn--export {
+        padding: var(--spacing-xs);
+        min-width: 36px;
+        min-height: 36px;
+        font-size: 0.75rem;
+    }
+
+    .header__actions .btn--icon {
+        min-width: 36px;
+        min-height: 36px;
+        font-size: var(--font-size-base);
+    }
 }
 
 .btn--export {
@@ -794,16 +917,177 @@ body {
 .footer {
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
-    padding: var(--spacing-lg);
-    text-align: center;
+    padding: var(--spacing-lg) var(--spacing-md);
     margin-top: auto;
-    margin-bottom: var(--spacing-lg);
 }
 
-.footer p {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+.footer__container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    text-align: center;
 }
+
+/* Brand / Logo */
+.footer__brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer__logo {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+    border-radius: var(--radius-sm);
+    min-width: 0;
+}
+
+.footer__logo:hover {
+    color: var(--color-text);
+    opacity: 0.85;
+    text-decoration: none;
+}
+
+.footer__logo:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 4px;
+}
+
+.footer__logo-svg {
+    display: block;
+    width: auto;
+    flex-shrink: 1;
+}
+
+.footer__logo-svg--full {
+    height: 36px;
+    max-width: 220px;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.footer__logo:hover .footer__logo-svg--full {
+    opacity: 1;
+}
+
+.footer__logo-svg--compact {
+    display: none;
+    height: 28px;
+    width: 28px;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.footer__logo:hover .footer__logo-svg--compact {
+    opacity: 1;
+}
+
+/* Info central */
+.footer__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+.footer__tagline {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.01em;
+}
+
+.footer__legal {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+}
+
+/* Versión y crédito */
+.footer__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.footer__version {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 2px var(--spacing-xs);
+    letter-spacing: 0.02em;
+}
+
+.footer__divider {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    opacity: 0.5;
+    user-select: none;
+}
+
+.footer__credit {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.02em;
+}
+
+/* ≤ 360px: logo compacto (solo isotipo) */
+@media (max-width: 360px) {
+    .footer__logo-svg--full {
+        display: none;
+    }
+
+    .footer__logo-svg--compact {
+        display: block;
+    }
+}
+
+/* ≥ 1024px: Desktop — logo un poco más grande para mejor presencia */
+@media (min-width: 1024px) {
+    .footer__logo-svg--full {
+        height: 44px;
+        max-width: 260px;
+    }
+}
+
+/* Tablet+ : layout horizontal en fila */
+@media (min-width: 600px) {
+    .footer__container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        gap: var(--spacing-lg);
+        padding: 0 var(--spacing-lg);
+    }
+
+    .footer__brand {
+        justify-content: flex-start;
+        flex-shrink: 0;
+    }
+
+    .footer__info {
+        align-items: flex-start;
+        flex: 1;
+    }
+
+    .footer__meta {
+        flex-shrink: 0;
+    }
+}
+
+/* Desktop: padding coherente con el layout del body
+   (grid-column y grid-row se definen en el bloque principal de desktop) */
 
 /* ----------------------
    External Link
@@ -884,24 +1168,6 @@ body {
 .whatsapp-float-wrapper:hover .whatsapp-float__label {
     opacity: 1;
     color: var(--color-text-secondary);
-}
-
-.whatsapp-float:hover {
-    background: linear-gradient(135deg, var(--color-primary-hover) 0%, #1e40af 100%);
-    transform: scale(1.1);
-    box-shadow: var(--shadow-xl);
-    text-decoration: none;
-    color: white;
-}
-
-.whatsapp-float:focus {
-    outline: 3px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-.whatsapp-float__icon {
-    width: 28px;
-    height: 28px;
 }
 
 /* Mobile: botón un poco más pequeño y más pegado a la esquina */
@@ -1017,6 +1283,7 @@ body {
     .footer {
         grid-column: 1 / -1;
         grid-row: 3;
+        padding: var(--spacing-lg) var(--spacing-xl);
     }
 
     /* Turnos siempre full width arriba dentro de main */

@@ -1,0 +1,11 @@
+<svg width="290" height="52" viewBox="0 0 290 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="NUESTRA Calculadora de Nómina" role="img">
+  <!-- Isotipo: N monoline dentro de círculo -->
+  <circle cx="26" cy="26" r="20" stroke="currentColor" stroke-width="2.2"/>
+  <path d="M16.5 38.5 L16.5 13.5 L37.5 38.5 L37.5 13.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Separador vertical -->
+  <line x1="58" y1="9" x2="58" y2="43" stroke="currentColor" stroke-opacity="0.2" stroke-width="1"/>
+  <!-- Wordmark: NUESTRA -->
+  <text x="70" y="23" font-family="Inter, system-ui, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="3" fill="currentColor">NUESTRA</text>
+  <!-- Descriptor: Calculadora de Nómina -->
+  <text x="71" y="38" font-family="Inter, system-ui, Arial, sans-serif" font-size="9.5" font-weight="300" letter-spacing="1.5" fill="currentColor" opacity="0.65">Calculadora de Nómina</text>
+</svg>
