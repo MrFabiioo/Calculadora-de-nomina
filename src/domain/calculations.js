@@ -123,8 +123,8 @@ export const calcularNomina = (input) => {
     // Guardar turnos liquidados
     turnosLiquidados = turnosLiquidadosRaw;
     
-    // Calcular subsidio
-    const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales);
+    // Calcular subsidio — los días de descanso también cuentan para el auxilio
+    const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales + diasDescanso);
     
     // Devengado total con subsidio (para nómina del empleado)
     const devengadoTotal = totalTurnos + subsidioTransporte;
