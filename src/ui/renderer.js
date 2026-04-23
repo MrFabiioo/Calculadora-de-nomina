@@ -32,6 +32,7 @@ export const inicializarElementos = () => {
         turnosLabel: document.getElementById('turnos-count'),
         horasLabel: document.getElementById('horas-count'),
         subsidioTransporteLabel: document.getElementById('subsidio-transporte'),
+        subsidioTransportePanel: document.getElementById('subsidio-transporte-panel'),
         totalDevengado: document.getElementById('total-devengado'),
         totalDeducciones: document.getElementById('total-deducciones'),
         netoAPagar: document.getElementById('neto-a-pagar'),
@@ -276,6 +277,9 @@ export const renderizarResultados = (resultados) => {
     // Subsidio de transporte
     if (elementos.subsidioTransporteLabel) {
         elementos.subsidioTransporteLabel.innerText = formatearMoneda(resultados.subsidioTransporte);
+    }
+    if (elementos.subsidioTransportePanel) {
+        elementos.subsidioTransportePanel.innerText = formatearMoneda(resultados.subsidioTransporte);
     }
     
     // Total devengado

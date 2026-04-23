@@ -443,7 +443,8 @@ body {
 
 .summary-panel__details {
     display: flex;
-    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
 }
 
 .summary-panel__item {
