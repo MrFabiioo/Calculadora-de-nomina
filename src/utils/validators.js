@@ -64,11 +64,25 @@ export const validarFecha = (fecha) => {
     if (!fecha) {
         return { valid: true }; // Permitir vacío
     }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        return { valid: false, message: 'Fecha inválida' };
+    }
     
     // Usar toLocalDate para evitar timezone issues
     const fechaObj = toLocalDate(fecha);
     
     if (isNaN(fechaObj.getTime())) {
+        return { valid: false, message: 'Fecha inválida' };
+    }
+
+    const [year, month, day] = fecha.split('-').map(Number);
+    const mismaFecha =
+        fechaObj.getFullYear() === year &&
+        fechaObj.getMonth() + 1 === month &&
+        fechaObj.getDate() === day;
+
+    if (!mismaFecha) {
         return { valid: false, message: 'Fecha inválida' };
     }
     
