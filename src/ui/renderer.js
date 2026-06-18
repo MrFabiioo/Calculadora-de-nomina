@@ -33,6 +33,11 @@ export const inicializarElementos = () => {
         horasLabel: document.getElementById('horas-count'),
         subsidioTransporteLabel: document.getElementById('subsidio-transporte'),
         subsidioTransportePanel: document.getElementById('subsidio-transporte-panel'),
+        premiumTriweeklyLabel: document.getElementById('premium-triweekly-total'),
+        premiumTriweeklyHours: document.getElementById('premium-triweekly-hours'),
+        premiumTriweeklyPeriods: document.getElementById('premium-triweekly-periods'),
+        festiveExtraValue: document.getElementById('festive-extra-value'),
+        festiveExtraHours: document.getElementById('festive-extra-hours'),
         totalDevengado: document.getElementById('total-devengado'),
         totalDeducciones: document.getElementById('total-deducciones'),
         netoAPagar: document.getElementById('neto-a-pagar'),
@@ -306,6 +311,22 @@ export const renderizarResultados = (resultados) => {
     }
     if (elementos.subsidioTransportePanel) {
         elementos.subsidioTransportePanel.innerText = formatearMoneda(resultados.subsidioTransporte);
+    }
+
+    if (elementos.premiumTriweeklyLabel) {
+        elementos.premiumTriweeklyLabel.innerText = formatearMoneda(resultados.premiumTriweeklyTotal || 0);
+    }
+    if (elementos.premiumTriweeklyHours) {
+        elementos.premiumTriweeklyHours.innerText = `${(resultados.premiumTriweeklySummary?.excessHours || 0).toFixed(2)} h`;
+    }
+    if (elementos.premiumTriweeklyPeriods) {
+        elementos.premiumTriweeklyPeriods.innerText = resultados.premiumTriweeklySummary?.periodsCount || 0;
+    }
+    if (elementos.festiveExtraValue) {
+        elementos.festiveExtraValue.innerText = formatearMoneda(resultados.festiveExtraSummary?.totalValue || 0);
+    }
+    if (elementos.festiveExtraHours) {
+        elementos.festiveExtraHours.innerText = `${(resultados.festiveExtraSummary?.totalHours || 0).toFixed(2)} h`;
     }
     
     // Total devengado

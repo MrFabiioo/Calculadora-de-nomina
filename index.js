@@ -7,7 +7,7 @@
  * Los ES modules no funcionan con file:// en algunos navegadores por CORS
  */
 
-import { store, getState, setState } from './src/state/store.js';
+import { store, getState, setState, resultadosIniciales } from './src/state/store.js';
 import { calcularTurno } from './src/domain/shifts.js';
 import { calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
@@ -113,6 +113,7 @@ const obtenerDeduccionesDelDOM = () => ({
 const calcularNominaCompleta = () => {
     const turnos = obtenerTurnosDelDOM();
     const deducciones = obtenerDeduccionesDelDOM();
+    const triweeklyConfig = getState().configuracion?.triweekly;
 
     // Actualizar estilos de filas de descanso (responsabilidad visual que queda en index)
     turnos.forEach((turno, index) => {
@@ -131,7 +132,8 @@ const calcularNominaCompleta = () => {
         turnos,
         deduccionNomina: deducciones.nomina,
         deduccionEMI: deducciones.emi,
-        otrasDeducciones: deducciones.otras
+        otrasDeducciones: deducciones.otras,
+        triweeklyConfig
     });
 
     // ============================================
@@ -205,7 +207,12 @@ const calcularNominaCompleta = () => {
             cantidadTurnos: resultados.cantidadTurnos,
             cantidadHoras: resultados.cantidadHoras,
             totalTurnos: resultados.totalTurnos,
-            diasDescanso: resultados.diasDescanso
+            diasDescanso: resultados.diasDescanso,
+            premiumTriweeklyTotal: resultados.premiumTriweeklyTotal,
+            baseTurnosSinPremio: resultados.baseTurnosSinPremio,
+            baseDeducciones: resultados.baseDeducciones,
+            premiumTriweeklySummary: resultados.premiumTriweeklySummary,
+            festiveExtraSummary: resultados.festiveExtraSummary
         },
         // Guardar breakdown para auditoría (Task 5.1)
         turnosLiquidados: turnosLiquidados
@@ -445,34 +452,14 @@ const limpiarTodosLosCampos = () => {
         turnos: [],
         deducciones: { nomina: 0, emi: 0, otras: 0 },
         resultados: {
-            devengadoTotal: 0,
-            totalDeducciones: 0,
-            netoPagar: 0,
-            subsidioTransporte: 0,
-            saludEmpleado: 0,
-            pensionEmpleado: 0,
-            saludEmpresa: 0,
-            pensionEmpresa: 0,
-            cantidadTurnos: 0,
-            cantidadHoras: 0,
-            totalTurnos: 0,
-            diasDescanso: 0
+            ...structuredClone(resultadosIniciales)
         },
         turnosLiquidados: []
     });
     
     // 4. Renderizar resultados en cero
     renderer.renderizarResultados({
-        cantidadTurnos: 0,
-        cantidadHoras: 0,
-        devengadoTotal: 0,
-        totalDeducciones: 0,
-        netoPagar: 0,
-        subsidioTransporte: 0,
-        saludEmpleado: 0,
-        pensionEmpleado: 0,
-        saludEmpresa: 0,
-        pensionEmpresa: 0
+        ...structuredClone(resultadosIniciales)
     });
     
     // 5. Agregar una fila vacía inicial (para que no quede la tabla vacía del todo)
@@ -588,7 +575,6 @@ const preCargarDesdeStore = () => {
 const inicializarApp = () => {
     inicializarElementos();
     renderer.inicializarElementos();
-    setupRangoFechas();
 
     // Pre-cargar formulario con datos persistidos en localStorage
     preCargarDesdeStore();
@@ -601,6 +587,7 @@ const inicializarApp = () => {
     setupBotonExportar();
     setupBotonLimpiar();
     setupBannerNovedades();
+    setupRangoFechas();
     setupEventDelegation();
 
     // Agregar primera fila vacía

@@ -4,36 +4,68 @@
  * Persiste el estado en localStorage
  */
 
+import { DEFAULT_TRIWEEKLY_CONFIG } from '../domain/triweekly-premiums.js';
+
 // Constantes de persistencia
 const STORAGE_KEY = 'calculadora-nomina-state';
 const DEBOUNCE_DELAY = 300;
 
-// Estado inicial
-const estadoInicial = {
+const resultadosIniciales = {
+    devengadoTotal: 0,
+    totalDeducciones: 0,
+    netoPagar: 0,
+    subsidioTransporte: 0,
+    saludEmpleado: 0,
+    pensionEmpleado: 0,
+    saludEmpresa: 0,
+    pensionEmpresa: 0,
+    cantidadTurnos: 0,
+    cantidadHoras: 0,
+    totalTurnos: 0,
+    diasDescanso: 0,
+    premiumTriweeklyTotal: 0,
+    baseTurnosSinPremio: 0,
+    baseDeducciones: 0,
+    premiumTriweeklySummary: {
+        periodsCount: 0,
+        ordinaryHours: 0,
+        excessHours: 0,
+        dayExcessHours: 0,
+        nightExcessHours: 0,
+        dayPremiumValue: 0,
+        nightPremiumValue: 0,
+        premiumValue: 0,
+        periods: []
+    },
+    festiveExtraSummary: {
+        dayHours: 0,
+        nightHours: 0,
+        totalHours: 0,
+        dayValue: 0,
+        nightValue: 0,
+        totalValue: 0
+    }
+};
+
+const configuracionInicial = {
+    tema: 'light',
+    triweekly: { ...DEFAULT_TRIWEEKLY_CONFIG }
+};
+
+const crearEstadoInicial = () => ({
     turnos: [],
     deducciones: {
         nomina: 0,
         emi: 0,
         otras: 0
     },
-    resultados: {
-        devengadoTotal: 0,
-        totalDeducciones: 0,
-        netoPagar: 0,
-        subsidioTransporte: 0,
-        saludEmpleado: 0,
-        pensionEmpleado: 0,
-        saludEmpresa: 0,
-        pensionEmpresa: 0,
-        cantidadTurnos: 0,
-        cantidadHoras: 0,
-        totalTurnos: 0,
-        diasDescanso: 0
-    },
-    configuracion: {
-        tema: 'light'
-    }
-};
+    resultados: structuredClone(resultadosIniciales),
+    configuracion: structuredClone(configuracionInicial),
+    turnosLiquidados: []
+});
+
+// Estado inicial
+const estadoInicial = crearEstadoInicial();
 
 /**
  * Guarda el estado en localStorage
@@ -92,9 +124,26 @@ class Store {
     constructor() {
         // Cargar estado desde localStorage si existe
         const estadoGuardado = cargarDesdeStorage();
-        this.estado = estadoGuardado 
-            ? { ...estadoInicial, ...estadoGuardado }
-            : { ...estadoInicial };
+        const baseState = crearEstadoInicial();
+        this.estado = estadoGuardado
+            ? {
+                ...baseState,
+                ...estadoGuardado,
+                resultados: {
+                    ...baseState.resultados,
+                    ...(estadoGuardado.resultados || {})
+                },
+                configuracion: {
+                    ...baseState.configuracion,
+                    ...(estadoGuardado.configuracion || {}),
+                    triweekly: {
+                        ...baseState.configuracion.triweekly,
+                        ...(estadoGuardado.configuracion?.triweekly || {})
+                    }
+                },
+                turnosLiquidados: estadoGuardado.turnosLiquidados || []
+            }
+            : baseState;
         this.suscriptores = [];
     }
 
@@ -154,7 +203,7 @@ class Store {
      * Reinicia el estado a su valor inicial
      */
     resetState() {
-        this.estado = { ...estadoInicial };
+        this.estado = crearEstadoInicial();
         this.notificarSuscriptores();
     }
 
@@ -219,6 +268,7 @@ class Store {
 
 // Exportar instancia única del store
 export const store = new Store();
+export { resultadosIniciales, configuracionInicial, estadoInicial };
 
 // Exportar funciones helper para uso externo
 export const getState = () => store.getState();

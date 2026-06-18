@@ -53,13 +53,53 @@ const obtenerDatosReporte = () => {
     };
 };
 
+export const buildExportSummaryLineItems = (resultados = {}) => {
+    const festiveExtraValue = resultados.festiveExtraSummary?.totalValue || 0;
+    const turnosSubtotal = Math.max(0, (resultados.baseTurnosSinPremio || 0) - festiveExtraValue);
+
+    const lineItems = [
+        {
+            label: 'Subtotal Turnos Base',
+            value: turnosSubtotal
+        }
+    ];
+
+    if ((resultados.premiumTriweeklyTotal || 0) > 0) {
+        lineItems.push({
+            label: 'Prima Trisemanal',
+            value: resultados.premiumTriweeklyTotal || 0
+        });
+    }
+
+    if (festiveExtraValue > 0) {
+        lineItems.push({
+            label: 'Festivo Extra',
+            value: festiveExtraValue
+        });
+    }
+
+    lineItems.push({
+        label: 'Subsidio Transporte',
+        value: resultados.subsidioTransporte || 0
+    });
+
+    return lineItems;
+};
+
 /**
  * Construye el contenido de la hoja única de nómina
+ * @param {Object} datos - Datos completos del reporte
  * @returns {Array} - Array de arrays con datos paraSheetJS
  */
-const construirContenidoHoja = () => {
-    const datos = obtenerDatosReporte();
+export const buildPayrollSheetContent = (datos) => {
     const { turnos, deducciones, resultados, turnosLiquidados, breakdownAgregado, fechaGeneracion } = datos;
+    const summaryLineItems = buildExportSummaryLineItems(resultados);
+    const breakdownConDefaults = {
+        ordinario: { horasDia: 0, horasNoche: 0, valor: 0, ...(breakdownAgregado?.ordinario || {}) },
+        festivo: { horasDia: 0, horasNoche: 0, valor: 0, ...(breakdownAgregado?.festivo || {}) },
+        festivoExtra: { horasDia: 0, horasNoche: 0, valor: 0, ...(breakdownAgregado?.festivoExtra || {}) },
+        total: { horas: 0, valor: 0, ...(breakdownAgregado?.total || {}) }
+    };
     
     const hoja = [];
     
@@ -78,12 +118,28 @@ const construirContenidoHoja = () => {
     hoja.push(['Turnos Trabajados', resultados.cantidadTurnos || 0]);
     hoja.push(['Horas Totales', resultados.cantidadHoras || 0]);
     hoja.push(['Días de Descanso', resultados.diasDescanso || 0]);
-    hoja.push(['Subtotal Turnos', formatearMoneda(resultados.totalTurnos || 0)]);
-    hoja.push(['Subsidio Transporte', formatearMoneda(resultados.subsidioTransporte || 0)]);
+    summaryLineItems.forEach(({ label, value }) => {
+        hoja.push([label, formatearMoneda(value)]);
+    });
+    hoja.push(['Total Turnos + Prima', formatearMoneda(resultados.totalTurnos || 0)]);
     hoja.push(['TOTAL DEVENGADO', formatearMoneda(resultados.devengadoTotal || 0)]);
     hoja.push(['Deducciones', formatearMoneda(resultados.totalDeducciones || 0)]);
     hoja.push(['SALARIO NETO A PAGAR', formatearMoneda(resultados.netoPagar || 0)]);
     hoja.push([]);  // Fila vacía
+
+    if ((resultados.premiumTriweeklySummary?.periodsCount || 0) > 0) {
+        hoja.push(['🔺 RESUMEN PRIMA TRISEMANAL']);
+        hoja.push(['Concepto', 'Valor']);
+        hoja.push(['Períodos Evaluados', resultados.premiumTriweeklySummary.periodsCount || 0]);
+        hoja.push(['Horas Ordinarias', (resultados.premiumTriweeklySummary.ordinaryHours || 0).toFixed(2)]);
+        hoja.push(['Horas en Exceso', (resultados.premiumTriweeklySummary.excessHours || 0).toFixed(2)]);
+        hoja.push(['Horas Exceso Diurno', (resultados.premiumTriweeklySummary.dayExcessHours || 0).toFixed(2)]);
+        hoja.push(['Horas Exceso Nocturno', (resultados.premiumTriweeklySummary.nightExcessHours || 0).toFixed(2)]);
+        hoja.push(['Prima Diurna', formatearMoneda(resultados.premiumTriweeklySummary.dayPremiumValue || 0)]);
+        hoja.push(['Prima Nocturna', formatearMoneda(resultados.premiumTriweeklySummary.nightPremiumValue || 0)]);
+        hoja.push(['TOTAL PRIMA TRISEMANAL', formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)]);
+        hoja.push([]);
+    }
     
     // ============================================
     // BLOQUE 3: DEDUCCIONES
@@ -138,10 +194,10 @@ const construirContenidoHoja = () => {
     hoja.push(['Categoría', 'Horas Diurnas', 'Horas Nocturnas', 'Total Horas', 'Valor']);
     
     // Ordinario
-    const ordHorasDia = breakdownAgregado.ordinario.horasDia;
-    const ordHorasNoche = breakdownAgregado.ordinario.horasNoche;
+    const ordHorasDia = breakdownConDefaults.ordinario.horasDia;
+    const ordHorasNoche = breakdownConDefaults.ordinario.horasNoche;
     const ordTotalHoras = ordHorasDia + ordHorasNoche;
-    const ordValor = breakdownAgregado.ordinario.valor;
+    const ordValor = breakdownConDefaults.ordinario.valor;
     
     hoja.push([
         'Ordinario',
@@ -152,10 +208,10 @@ const construirContenidoHoja = () => {
     ]);
     
     // Festivo
-    const festHorasDia = breakdownAgregado.festivo.horasDia;
-    const festHorasNoche = breakdownAgregado.festivo.horasNoche;
+    const festHorasDia = breakdownConDefaults.festivo.horasDia;
+    const festHorasNoche = breakdownConDefaults.festivo.horasNoche;
     const festTotalHoras = festHorasDia + festHorasNoche;
-    const festValor = breakdownAgregado.festivo.valor;
+    const festValor = breakdownConDefaults.festivo.valor;
     
     hoja.push([
         'Festivo',
@@ -164,10 +220,23 @@ const construirContenidoHoja = () => {
         festTotalHoras.toFixed(2),
         formatearMoneda(festValor)
     ]);
+
+    const festExtraHorasDia = breakdownConDefaults.festivoExtra.horasDia;
+    const festExtraHorasNoche = breakdownConDefaults.festivoExtra.horasNoche;
+    const festExtraTotalHoras = festExtraHorasDia + festExtraHorasNoche;
+    const festExtraValor = breakdownConDefaults.festivoExtra.valor;
+
+    hoja.push([
+        'Festivo extra',
+        festExtraHorasDia.toFixed(2),
+        festExtraHorasNoche.toFixed(2),
+        festExtraTotalHoras.toFixed(2),
+        formatearMoneda(festExtraValor)
+    ]);
     
     // TOTAL
-    const totalHoras = breakdownAgregado.total.horas;
-    const totalValor = breakdownAgregado.total.valor;
+    const totalHoras = breakdownConDefaults.total.horas;
+    const totalValor = breakdownConDefaults.total.valor;
     
     hoja.push([
         'TOTAL',
@@ -176,9 +245,28 @@ const construirContenidoHoja = () => {
         totalHoras.toFixed(2),
         formatearMoneda(totalValor)
     ]);
+
+    if ((resultados.premiumTriweeklyTotal || 0) > 0) {
+        hoja.push([
+            'Prima trisemanal',
+            '',
+            '',
+            (resultados.premiumTriweeklySummary?.excessHours || 0).toFixed(2),
+            formatearMoneda(resultados.premiumTriweeklyTotal || 0)
+        ]);
+        hoja.push([
+            'TOTAL + prima',
+            '',
+            '',
+            totalHoras.toFixed(2),
+            formatearMoneda((totalValor || 0) + (resultados.premiumTriweeklyTotal || 0))
+        ]);
+    }
     
     return hoja;
 };
+
+const construirContenidoHoja = () => buildPayrollSheetContent(obtenerDatosReporte());
 
 /**
  * Aplica formato a la hoja de trabajo

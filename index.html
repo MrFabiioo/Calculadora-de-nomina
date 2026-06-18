@@ -218,6 +218,14 @@
                 <!-- Stats row -->
                 <div class="stats-row">
                     <div class="stat-card">
+                        <span class="stat-card__label">🔺 Prima Trisemanal</span>
+                        <span id="premium-triweekly-total" class="stat-card__value">$0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">🎉 Festivo Extra</span>
+                        <span id="festive-extra-value" class="stat-card__value">$0</span>
+                    </div>
+                    <div class="stat-card">
                         <span class="stat-card__label">🚚 Subsidio Transporte</span>
                         <span id="subsidio-transporte" class="stat-card__value">$0</span>
                     </div>
@@ -229,6 +237,25 @@
                         <span class="stat-card__label">⏱️ Horas</span>
                         <span id="horas-count" class="stat-card__value">0</span>
                     </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" aria-label="Resumen de prima trisemanal">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Horas en exceso</th>
+                                <td id="premium-triweekly-hours">0.00 h</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Períodos evaluados</th>
+                                <td id="premium-triweekly-periods">0</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Horas festivo extra</th>
+                                <td id="festive-extra-hours">0.00 h</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 
                 <!-- Tabla de salud y pensión -->
