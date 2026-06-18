@@ -48,24 +48,65 @@ export const MEDIA_HORA = {
     nocturnaFestiva: TARIFAS_HORA.nocturnaFestiva / 2
 };
 
+const SPECIAL_SHIFT_OPTIONS = ['Selecciona un horario', 'Descanso'];
+
+const formatShiftOptionLabel = (hora, minutos) => {
+    const minutosLabel = minutos.toString().padStart(2, '0');
+
+    if (hora === 24) {
+        return '24:00 Pm';
+    }
+
+    if (hora === 12) {
+        return `12:${minutosLabel} m`;
+    }
+
+    if (hora === 0) {
+        return `00:${minutosLabel} Am`;
+    }
+
+    const suffix = hora < 12 ? 'Am' : 'Pm';
+    return `${hora}:${minutosLabel} ${suffix}`;
+};
+
+const generateShiftTimeOptions = () => {
+    const opciones = [...SPECIAL_SHIFT_OPTIONS];
+
+    for (let minutosTotales = 30; minutosTotales <= 1440; minutosTotales += 30) {
+        const hora = Math.floor(minutosTotales / 60);
+        const minutos = minutosTotales % 60;
+        opciones.push(formatShiftOptionLabel(hora, minutos));
+    }
+
+    return opciones;
+};
+
 /**
  * Convierte un string de hora del formato de la app a número decimal.
- * Formatos soportados: "5:00 Am", "5:30 Am", "12:00 m", "13:00 Pm", "24:00 Pm", "Descanso"
+ * Formatos soportados: "00:30 Am", "5:00 Am", "12:00 m", "13:30 Pm", "24:00 Pm", "Descanso"
  * @param {string} horaStr
  * @returns {number|null} - Hora decimal (ej: 5.5) o null si es "Descanso" / inválido
  */
 export const parseHora = (horaStr) => {
     if (!horaStr || horaStr === 'Descanso' || horaStr === 'Selecciona un horario') return null;
 
-    // Extraer la parte "HH:MM" antes del espacio
-    const partes = horaStr.trim().split(' ');
-    const horaminuto = partes[0]; // "HH:MM"
-    const [hStr, mStr] = horaminuto.split(':');
+    const match = horaStr.trim().match(/^(\d{1,2}):(\d{2})(?:\s*(Am|Pm|m))?$/i);
+    if (!match) return null;
 
-    const hora = parseInt(hStr, 10);
-    const minutos = parseInt(mStr, 10);
+    let hora = parseInt(match[1], 10);
+    const minutos = parseInt(match[2], 10);
+    const suffix = match[3]?.toLowerCase();
 
-    return hora + (minutos === 30 ? 0.5 : 0);
+    if (Number.isNaN(hora) || Number.isNaN(minutos)) return null;
+    if (minutos < 0 || minutos >= 60) return null;
+    if (hora < 0 || hora > 24) return null;
+    if (hora === 24 && minutos !== 0) return null;
+
+    if (suffix === 'am' && hora === 12) {
+        hora = 0;
+    }
+
+    return hora + (minutos / 60);
 };
 
 /**
@@ -124,19 +165,9 @@ export const calcularTurno = (horaInicioStr, horaSalidaStr) => {
 };
 
 // Lista de turnos para select
-export const TURNOS_INICIO = [
-    "Selecciona un horario", "Descanso", "5:00 Am", "5:30 Am", "6:00 Am", "7:00 Am", 
-    "8:00 Am", "9:00 Am", "10:00 Am", "12:00 m", "13:00 Pm", "13:30 Pm", 
-    "14:00 Pm", "15:00 Pm", "16:00 Pm", "17:00 Pm", "18:00 Pm", "19:00 Pm", 
-    "21:00 Pm", "22:00 Pm", "23:00 Pm", "24:00 Pm"
-];
+export const TURNOS_INICIO = generateShiftTimeOptions();
 
-export const TURNOS_SALIDA = [
-    "Selecciona un horario", "Descanso", "5:00 Am", "5:30 Am", "6:00 Am", "7:00 Am", 
-    "8:00 Am", "9:00 Am", "10:00 Am", "12:00 m", "13:00 Pm", "13:30 Pm", 
-    "14:00 Pm", "15:00 Pm", "16:00 Pm", "17:00 Pm", "18:00 Pm", "19:00 Pm", 
-    "20:00 Pm", "21:00 Pm", "21:30 Pm", "22:00 Pm", "23:00 Pm", "24:00 Pm"
-];
+export const TURNOS_SALIDA = generateShiftTimeOptions();
 
 // ============================================
 // HELPERS REUTILIZABLES PARA MOTOR NUEVO
