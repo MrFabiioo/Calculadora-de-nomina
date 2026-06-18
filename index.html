@@ -129,6 +129,31 @@
                     </button>
                 </div>
             </div>
+
+            <div class="date-range-panel" aria-labelledby="date-range-title">
+                <div class="date-range-panel__header">
+                    <h3 id="date-range-title" class="date-range-panel__title">Completar fechas por rango</h3>
+                    <p class="date-range-panel__description">Completá automáticamente las fechas del rango sin cambiar horas ni incapacidades.</p>
+                </div>
+
+                <div class="date-range-panel__controls">
+                    <div class="input-group">
+                        <label for="date-range-start" class="input-group__label">Fecha inicial</label>
+                        <input type="date" id="date-range-start" class="input-group__input">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="date-range-end" class="input-group__label">Fecha final</label>
+                        <input type="date" id="date-range-end" class="input-group__input">
+                    </div>
+
+                    <button id="btn-apply-date-range" class="btn btn--secondary date-range-panel__button" disabled>
+                        Aplicar rango
+                    </button>
+                </div>
+
+                <p id="date-range-status" class="date-range-panel__status" role="status" aria-live="polite"></p>
+            </div>
             
             <div class="table-container">
                 <table class="table table--turnos" aria-label="Tabla de turnos">

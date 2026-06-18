@@ -500,6 +500,62 @@ body {
     gap: var(--spacing-sm);
 }
 
+.date-range-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg);
+}
+
+.date-range-panel__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.date-range-panel__title {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+}
+
+.date-range-panel__description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.date-range-panel__controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+    align-items: end;
+}
+
+.date-range-panel__button {
+    min-height: 46px;
+}
+
+.date-range-panel__status {
+    min-height: 1.5em;
+    font-size: var(--font-size-sm);
+}
+
+.date-range-panel__status--info {
+    color: var(--color-text-secondary);
+}
+
+.date-range-panel__status--success {
+    color: var(--color-success);
+}
+
+.date-range-panel__status--error {
+    color: var(--color-danger);
+}
+
 /* ----------------------
    Botones
    ---------------------- */
@@ -531,6 +587,19 @@ body {
     box-shadow: none;
 }
 
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn:disabled:hover {
+    background-color: var(--color-surface);
+    transform: none;
+    box-shadow: none;
+}
+
 .btn--add {
     background-color: var(--color-success);
     color: white;
@@ -549,6 +618,16 @@ body {
 
 .btn--remove:hover {
     background-color: #dc2626;
+}
+
+.btn--secondary {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-primary-hover);
 }
 
 .btn--icon {

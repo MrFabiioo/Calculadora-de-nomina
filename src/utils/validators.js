@@ -76,6 +76,37 @@ export const validarFecha = (fecha) => {
 };
 
 /**
+ * Valida un rango de fechas inclusivo
+ * @param {string} fechaInicio - Fecha inicial YYYY-MM-DD
+ * @param {string} fechaFin - Fecha final YYYY-MM-DD
+ * @returns {Object} - { valid: boolean, message?: string }
+ */
+export const validarRangoFechas = (fechaInicio, fechaFin) => {
+    if (!fechaInicio || !fechaFin) {
+        return { valid: false, message: 'Seleccioná fecha inicial y fecha final' };
+    }
+
+    const validacionInicio = validarFecha(fechaInicio);
+    if (!validacionInicio.valid) {
+        return validacionInicio;
+    }
+
+    const validacionFin = validarFecha(fechaFin);
+    if (!validacionFin.valid) {
+        return validacionFin;
+    }
+
+    const inicio = toLocalDate(fechaInicio);
+    const fin = toLocalDate(fechaFin);
+
+    if (inicio.getTime() > fin.getTime()) {
+        return { valid: false, message: 'La fecha inicial no puede ser posterior a la fecha final' };
+    }
+
+    return { valid: true };
+};
+
+/**
  * Valida rango de horas trabajadas
  * @param {number} horas - Horas a validar
  * @param {number} maximo - Máximo de horas permitidas (default 24)

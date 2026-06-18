@@ -13,10 +13,12 @@ import { calcularNomina } from './src/domain/calculations.js';
 import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
 import * as renderer from './src/ui/renderer.js';
+import { createDateRangeController } from './src/ui/date-range-controller.js';
 import { exportarExcel, estaDisponiblExportacion } from './src/utils/exporter.js';
 
 // Elementos del DOM
 let elementos = {};
+let dateRangeController = null;
 
 /**
  * Inicializa las referencias a elementos del DOM (nuevos IDs de Fase 3)
@@ -31,6 +33,12 @@ const inicializarElementos = () => {
         deduccionesNomina: document.getElementById('deduccion-nomina'),
         deduccionesEMI: document.getElementById('deduccion-emi'),
         otrasDeducciones: document.getElementById('otras-deducciones'),
+
+        // Rango de fechas
+        rangoFechaInicio: document.getElementById('date-range-start'),
+        rangoFechaFin: document.getElementById('date-range-end'),
+        botonAplicarRango: document.getElementById('btn-apply-date-range'),
+        estadoRangoFechas: document.getElementById('date-range-status'),
         
         // Resultados - NUEVOS IDs del sticky summary y section
         turnosLabel: document.getElementById('turnos-count'),
@@ -206,6 +214,10 @@ const calcularNominaCompleta = () => {
     return resultados;
 };
 
+const resetearControlesRangoFechas = () => {
+    dateRangeController?.reset();
+};
+
 /**
  * Event handlers
  */
@@ -329,6 +341,26 @@ const setupBotonQuitar = () => {
     }
 };
 
+const setupRangoFechas = () => {
+    dateRangeController = createDateRangeController({
+        elements: {
+            startInput: elementos.rangoFechaInicio,
+            endInput: elementos.rangoFechaFin,
+            applyButton: elementos.botonAplicarRango,
+            statusElement: elementos.estadoRangoFechas
+        },
+        collaborators: {
+            getExistingRowCount: () => renderer.obtenerCantidadFilasTurno(),
+            ensureRowCount: (requiredRowCount) => renderer.asegurarCantidadFilasTurno(requiredRowCount),
+            applyDateToRow: (rowIndex, date) => renderer.aplicarFechaEnFila(rowIndex, date),
+            recalculate: calcularNominaCompleta,
+            updateClearButton: actualizarBotonLimpiar
+        }
+    });
+
+    dateRangeController.setup();
+};
+
 // Botón exportar a Excel
 const setupBotonExportar = () => {
     if (elementos.botonExportar) {
@@ -402,6 +434,7 @@ const limpiarTodosLosCampos = () => {
     if (elementos.deduccionesNomina) elementos.deduccionesNomina.value = '';
     if (elementos.deduccionesEMI) elementos.deduccionesEMI.value = '';
     if (elementos.otrasDeducciones) elementos.otrasDeducciones.value = '';
+    resetearControlesRangoFechas();
     
     // 3. Resetear el store al estado inicial (manteniendo el tema)
     const estadoActual = getState();
@@ -555,6 +588,7 @@ const preCargarDesdeStore = () => {
 const inicializarApp = () => {
     inicializarElementos();
     renderer.inicializarElementos();
+    setupRangoFechas();
 
     // Pre-cargar formulario con datos persistidos en localStorage
     preCargarDesdeStore();

@@ -108,6 +108,32 @@ export const agregarFilaTurno = () => {
     return totalFilas;
 };
 
+export const obtenerCantidadFilasTurno = () => {
+    return elementos.tbody?.querySelectorAll('tr').length || 0;
+};
+
+export const asegurarCantidadFilasTurno = (cantidadObjetivo) => {
+    while (obtenerCantidadFilasTurno() < cantidadObjetivo) {
+        agregarFilaTurno();
+    }
+
+    return obtenerCantidadFilasTurno();
+};
+
+export const aplicarFechaEnFila = (indice, fecha) => {
+    const fechaInput = document.getElementById(`fecha_${indice}`);
+    const diaLabel = document.getElementById(`dia_${indice}`);
+    const fila = document.getElementById(`fila_${indice}`);
+
+    if (!fechaInput || !diaLabel || !fila) {
+        return false;
+    }
+
+    fechaInput.value = fecha;
+    actualizarDiaYEstilo(fecha, diaLabel, fila);
+    return true;
+};
+
 /**
  * Elimina la última fila de turno
  */
