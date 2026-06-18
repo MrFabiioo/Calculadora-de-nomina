@@ -4,7 +4,8 @@
  */
 
 import { TARIFAS_HORA } from './shifts.js';
-import { liquidarTurnoPorTramos } from './payroll-breakdown.js';
+import { aggregateShiftBreakdown, liquidarTurnoPorTramos } from './payroll-breakdown.js';
+import { calculateTriweeklyPremiums, DEFAULT_TRIWEEKLY_CONFIG } from './triweekly-premiums.js';
 
 // Constantes para deducciones
 // 66.67% según normativa laboral colombiana (Art. 227 CST): incapacidad se paga a 2/3 del salario
@@ -77,7 +78,8 @@ export const calcularNomina = (input) => {
         turnos = [],
         deduccionNomina = 0,
         deduccionEMI = 0,
-        otrasDeducciones = 0
+        otrasDeducciones = 0,
+        triweeklyConfig = DEFAULT_TRIWEEKLY_CONFIG
     } = input;
     
     // Calcular turnos con pipeline segmentado
@@ -122,7 +124,28 @@ export const calcularNomina = (input) => {
     
     // Guardar turnos liquidados
     turnosLiquidados = turnosLiquidadosRaw;
-    
+    const breakdownAgregado = aggregateShiftBreakdown(turnosLiquidados.map(item => item.liquidacion));
+    const festiveExtraSummary = {
+        dayHours: breakdownAgregado.festivoExtra.horasDia,
+        nightHours: breakdownAgregado.festivoExtra.horasNoche,
+        totalHours: breakdownAgregado.festivoExtra.horasDia + breakdownAgregado.festivoExtra.horasNoche,
+        dayValue: breakdownAgregado.festivoExtra.horasDia * TARIFAS_HORA.festivaExtraDiurna,
+        nightValue: breakdownAgregado.festivoExtra.horasNoche * TARIFAS_HORA.festivaExtraNocturna,
+        totalValue: breakdownAgregado.festivoExtra.valor
+    };
+
+    const baseTurnosSinPremio = totalTurnos;
+    const triweeklyPremiums = calculateTriweeklyPremiums({
+        turnosLiquidados,
+        config: triweeklyConfig
+    });
+    const premiumTriweeklyTotal = triweeklyPremiums.premiumValue;
+    const premiumTriweeklySummary = {
+        ...triweeklyPremiums.summary,
+        periods: triweeklyPremiums.periods
+    };
+    totalTurnos = baseTurnosSinPremio + premiumTriweeklyTotal;
+
     // Calcular subsidio — los días de descanso también cuentan para el auxilio
     const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales + diasDescanso);
     
@@ -157,7 +180,12 @@ export const calcularNomina = (input) => {
         
         // Componentes
         totalTurnos,
+        baseTurnosSinPremio,
+        premiumTriweeklyTotal,
+        premiumTriweeklySummary,
+        festiveExtraSummary,
         subsidioTransporte,
+        baseDeducciones,
         
         // Salud y pensión
         saludEmpleado: deduccionesSaludPension.saludEmpleado,

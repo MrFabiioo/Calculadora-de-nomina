@@ -8,6 +8,7 @@
 
 import { TARIFAS_HORA, MEDIA_HORA } from './shifts.js';
 import { processShift } from './segments.js';
+import { applyFestiveExtraPremiums } from './festive-extra-premiums.js';
 
 // ============================================
 // MAPA DE TARIFAS POR CATEGORÍA
@@ -17,7 +18,9 @@ const TARIFAS_POR_CATEGORIA = {
     'ordinario-dia': TARIFAS_HORA.diurna,
     'ordinario-noche': TARIFAS_HORA.nocturna,
     'festivo-dia': TARIFAS_HORA.diurnaFestiva,
-    'festivo-noche': TARIFAS_HORA.nocturnaFestiva
+    'festivo-noche': TARIFAS_HORA.nocturnaFestiva,
+    'festivo-dia-extra': TARIFAS_HORA.festivaExtraDiurna,
+    'festivo-noche-extra': TARIFAS_HORA.festivaExtraNocturna
 };
 
 // ============================================
@@ -45,7 +48,7 @@ export const liquidarTurnoPorTramos = (turno, boundaries = ['midnight', '06:00',
     
     // Usar pipeline de segments.js
     const result = processShift(turno, boundaries);
-    const { segmentos } = result;
+    const segmentos = applyFestiveExtraPremiums(result.segmentos);
     
     // Calcular breakdown por segmento
     const breakdown = segmentos.map(segment => {
@@ -96,6 +99,7 @@ export const aggregateShiftBreakdown = (turnosLiquidados) => {
     const resultado = {
         ordinario: { horasDia: 0, horasNoche: 0, valor: 0 },
         festivo: { horasDia: 0, horasNoche: 0, valor: 0 },
+        festivoExtra: { horasDia: 0, horasNoche: 0, valor: 0 },
         total: { horas: 0, valor: 0 }
     };
     
@@ -115,14 +119,21 @@ export const aggregateShiftBreakdown = (turnosLiquidados) => {
             } else if (seg.categoria === 'festivo-noche') {
                 resultado.festivo.horasNoche += seg.minutos / 60;
                 resultado.festivo.valor += seg.valor;
+            } else if (seg.categoria === 'festivo-dia-extra') {
+                resultado.festivoExtra.horasDia += seg.minutos / 60;
+                resultado.festivoExtra.valor += seg.valor;
+            } else if (seg.categoria === 'festivo-noche-extra') {
+                resultado.festivoExtra.horasNoche += seg.minutos / 60;
+                resultado.festivoExtra.valor += seg.valor;
             }
         });
     });
     
     // Calcular totales
     resultado.total.horas = resultado.ordinario.horasDia + resultado.ordinario.horasNoche +
-                           resultado.festivo.horasDia + resultado.festivo.horasNoche;
-    resultado.total.valor = resultado.ordinario.valor + resultado.festivo.valor;
+                           resultado.festivo.horasDia + resultado.festivo.horasNoche +
+                           resultado.festivoExtra.horasDia + resultado.festivoExtra.horasNoche;
+    resultado.total.valor = resultado.ordinario.valor + resultado.festivo.valor + resultado.festivoExtra.valor;
     
     return resultado;
 };

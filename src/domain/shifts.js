@@ -35,7 +35,9 @@ export const TARIFAS_HORA = {
     diurna: 12210,
     nocturna: 16483.5,
     diurnaFestiva: 21978,
-    nocturnaFestiva: 26251.6666667
+    nocturnaFestiva: 26251.6666667,
+    festivaExtraDiurna: 24420,
+    festivaExtraNocturna: 30525
 };
 
 // Valor media hora
