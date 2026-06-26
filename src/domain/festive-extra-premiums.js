@@ -5,7 +5,7 @@ const FESTIVE_EXTRA_CATEGORY_MAP = {
 };
 
 const DAILY_FESTIVE_THRESHOLD_MINUTES = 480;
-const FESTIVE_DAY_END_HOUR = 21;
+const FESTIVE_DAY_END_HOUR = 19;
 
 const buildAbsoluteHour = (segment, dayOffset) => {
     const hour = segment.inicio;

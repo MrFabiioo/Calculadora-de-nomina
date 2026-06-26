@@ -69,14 +69,13 @@ test('reclassifies nighttime festive overflow chronologically', () => {
         buildSegment({ categoria: 'festivo-noche', inicio: 19, fin: 23 })
     ]);
 
-    assertEq(result.length, 4, 'should split the festive span at day/night and threshold boundaries');
+    assertEq(result.length, 3, 'should split the festive span at day/night and threshold boundaries');
+    assertEq(result[0].categoria, 'festivo-dia', 'should keep the first 5 hours as festive day');
     assertEq(result[0].minutos, 300, 'should keep first 5 daytime hours');
-    assertEq(result[1].categoria, 'festivo-dia', 'should keep the next 2 hours as festive day');
-    assertEq(result[1].minutos, 120, 'should keep 2 more daytime base hours before night starts');
-    assertEq(result[2].categoria, 'festivo-noche', 'should keep threshold-reaching night hour as base');
-    assertEq(result[2].minutos, 60, 'should keep 1 night hour as base before overflow');
-    assertEq(result[3].categoria, 'festivo-noche-extra', 'should classify final hour as festive night extra');
-    assertEq(result[3].minutos, 60, 'should leave 1 overflow hour');
+    assertEq(result[1].categoria, 'festivo-noche', 'should keep the next 3 hours as festive night base');
+    assertEq(result[1].minutos, 180, 'should keep 3 night hours as base before overflow');
+    assertEq(result[2].categoria, 'festivo-noche-extra', 'should classify final hour as festive night extra');
+    assertEq(result[2].minutos, 60, 'should leave 1 overflow hour');
 });
 
 test('splits a segment exactly at the threshold boundary', () => {
@@ -128,13 +127,27 @@ test('Maria Jose scenario keeps triweekly premium isolated', () => {
         liquidacion.breakdown
             .filter(seg => seg.categoria === 'festivo-dia-extra')
             .reduce((sum, seg) => sum + (seg.minutos / 60), 0),
-        4,
+        3,
         0.01,
-        'should add 4 festive day extra hours'
+        'should add 3 festive day extra hours after the 19:00 cutoff'
+    );
+    assertClose(
+        liquidacion.breakdown
+            .filter(seg => seg.categoria === 'festivo-noche-extra')
+            .reduce((sum, seg) => sum + (seg.minutos / 60), 0),
+        1,
+        0.01,
+        'should add 1 festive night extra hour after the 19:00 cutoff'
     );
     assertClose(breakdownAgregado.festivo.horasDia, 8, 0.01, 'should keep 8 base festive day hours');
-    assertClose(breakdownAgregado.festivoExtra.horasDia, 4, 0.01, 'should expose 4 festive extra day hours');
-    assertClose(breakdownAgregado.festivoExtra.valor, 4 * TARIFAS_HORA.festivaExtraDiurna, 0.01, 'should price festive extra day correctly');
+    assertClose(breakdownAgregado.festivoExtra.horasDia, 3, 0.01, 'should expose 3 festive extra day hours');
+    assertClose(breakdownAgregado.festivoExtra.horasNoche, 1, 0.01, 'should expose 1 festive extra night hour');
+    assertClose(
+        breakdownAgregado.festivoExtra.valor,
+        (3 * TARIFAS_HORA.festivaExtraDiurna) + TARIFAS_HORA.festivaExtraNocturna,
+        0.01,
+        'should price festive extra day and night correctly'
+    );
 
     const nomina = calcularNomina({ turnos: [{ fecha: '2026-01-04', horaInicio: '8:00 Am', horaSalida: '20:00 Pm' }] });
     assertClose(nomina.premiumTriweeklyTotal, 0, 0.01, 'should not interfere with triweekly premium');
@@ -157,8 +170,14 @@ test('calcularNomina exposes festive extra summary and export reconciles', () =>
         turnos: [{ fecha: '2026-01-04', horaInicio: '8:00 Am', horaSalida: '20:00 Pm' }]
     });
 
-    assertClose(resultados.festiveExtraSummary.dayHours, 4, 0.01, 'should expose festive extra day hours');
-    assertClose(resultados.festiveExtraSummary.totalValue, 4 * TARIFAS_HORA.festivaExtraDiurna, 0.01, 'should expose festive extra total');
+    assertClose(resultados.festiveExtraSummary.dayHours, 3, 0.01, 'should expose festive extra day hours');
+    assertClose(resultados.festiveExtraSummary.nightHours, 1, 0.01, 'should expose festive extra night hours');
+    assertClose(
+        resultados.festiveExtraSummary.totalValue,
+        (3 * TARIFAS_HORA.festivaExtraDiurna) + TARIFAS_HORA.festivaExtraNocturna,
+        0.01,
+        'should expose festive extra total'
+    );
 
     const lineItems = buildExportSummaryLineItems(resultados);
     const festiveExtraItem = lineItems.find(item => item.label === 'Festivo Extra');

@@ -1,18 +1,33 @@
 import { TARIFAS_HORA } from './shifts.js';
 import { toLocalDate } from './holidays.js';
 
-const TRIWEEKLY_PERIOD_DAYS = 21;
+const DEFAULT_PERIOD_DAYS = 7;
 const DAY_PREMIUM_RATE = 0.25;
 const NIGHT_PREMIUM_RATE = 0.75;
 const ORDINARY_CATEGORIES = new Set(['ordinario-dia', 'ordinario-noche']);
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const CALCULATION_MODE = 'estimated-experimental';
+const CALCULATION_STATUS = 'experimental';
+const ALLOCATION_STRATEGY = 'latest-ordinary-segments-first';
 
 export const DEFAULT_TRIWEEKLY_CONFIG = {
-    anchorDate: '2025-12-28',
+    anchorDate: null,
+    periodDays: DEFAULT_PERIOD_DAYS,
     thresholds: [
-        { effectiveUntil: '2026-07-15', maxOrdinaryHours: 132 },
-        { effectiveFrom: '2026-07-16', maxOrdinaryHours: 126 }
+        { effectiveUntil: '2026-07-15', maxOrdinaryHours: 44 },
+        { effectiveFrom: '2026-07-16', maxOrdinaryHours: 42 }
     ]
+};
+
+export const DEFAULT_TRIWEEKLY_METADATA = {
+    calculationMode: CALCULATION_MODE,
+    status: CALCULATION_STATUS,
+    modelLabel: 'EXC estimado (experimental)',
+    periodDays: DEFAULT_PERIOD_DAYS,
+    anchorDate: null,
+    thresholds: DEFAULT_TRIWEEKLY_CONFIG.thresholds,
+    allocationStrategy: ALLOCATION_STRATEGY,
+    includedCategories: [...ORDINARY_CATEGORIES]
 };
 
 const startOfDay = (dateInput) => {
@@ -38,18 +53,19 @@ const diffInDays = (a, b) => Math.floor((startOfDay(a).getTime() - startOfDay(b)
 
 const normalizeConfig = (config = {}) => ({
     anchorDate: config.anchorDate || DEFAULT_TRIWEEKLY_CONFIG.anchorDate,
+    periodDays: config.periodDays || DEFAULT_TRIWEEKLY_CONFIG.periodDays,
     thresholds: Array.isArray(config.thresholds) && config.thresholds.length > 0
         ? config.thresholds
         : DEFAULT_TRIWEEKLY_CONFIG.thresholds
 });
 
-const resolvePeriodBounds = (dateInput, anchorDate) => {
+const resolvePeriodBounds = (dateInput, anchorDate, periodDays) => {
     const anchor = startOfDay(anchorDate);
     const date = startOfDay(dateInput);
     const dayOffset = diffInDays(date, anchor);
-    const periodIndex = Math.floor(dayOffset / TRIWEEKLY_PERIOD_DAYS);
-    const startDate = addDays(anchor, periodIndex * TRIWEEKLY_PERIOD_DAYS);
-    const endDate = addDays(startDate, TRIWEEKLY_PERIOD_DAYS - 1);
+    const periodIndex = Math.floor(dayOffset / periodDays);
+    const startDate = addDays(anchor, periodIndex * periodDays);
+    const endDate = addDays(startDate, periodDays - 1);
 
     return {
         startDate: toDateKey(startDate),
@@ -93,6 +109,24 @@ const collectOrdinarySegments = (turnosLiquidados = []) => {
     });
 };
 
+const resolveAnchorDate = (turnosLiquidados = [], configuredAnchorDate) => {
+    if (configuredAnchorDate) {
+        return configuredAnchorDate;
+    }
+
+    const fechas = turnosLiquidados
+        .flatMap(({ turno, liquidacion }) => {
+            const fechasBreakdown = (liquidacion?.breakdown || [])
+                .map((segment) => segment.fechaNominal)
+                .filter(Boolean);
+
+            return [...fechasBreakdown, turno?.fecha].filter(Boolean);
+        })
+        .sort();
+
+    return fechas[0] || null;
+};
+
 const buildPremiumSummary = (periods) => periods.reduce((summary, period) => ({
     periodsCount: summary.periodsCount + 1,
     ordinaryHours: summary.ordinaryHours + period.ordinaryHours,
@@ -113,22 +147,60 @@ const buildPremiumSummary = (periods) => periods.reduce((summary, period) => ({
     premiumValue: 0
 });
 
+const buildDiagnostics = ({ normalizedConfig, anchorDate }) => ({
+    calculationMode: CALCULATION_MODE,
+    status: CALCULATION_STATUS,
+    modelLabel: 'EXC estimado (experimental)',
+    periodDays: normalizedConfig.periodDays,
+    anchorDate,
+    thresholds: normalizedConfig.thresholds,
+    allocationStrategy: ALLOCATION_STRATEGY,
+    includedCategories: [...ORDINARY_CATEGORIES]
+});
+
 export const calculateTriweeklyPremiums = ({ turnosLiquidados = [], config = {} } = {}) => {
     const normalizedConfig = normalizeConfig(config);
     const ordinarySegments = collectOrdinarySegments(turnosLiquidados);
+    const emptyDiagnostics = buildDiagnostics({ normalizedConfig, anchorDate: null });
 
     if (ordinarySegments.length === 0) {
+        const summary = buildPremiumSummary([]);
         return {
             premiumValue: 0,
             periods: [],
-            summary: buildPremiumSummary([])
+            summary: {
+                ...summary,
+                diagnostics: emptyDiagnostics
+            },
+            diagnostics: emptyDiagnostics
         };
     }
+
+    const anchorDate = resolveAnchorDate(turnosLiquidados, normalizedConfig.anchorDate);
+
+    if (!anchorDate) {
+        const summary = buildPremiumSummary([]);
+        return {
+            premiumValue: 0,
+            periods: [],
+            summary: {
+                ...summary,
+                diagnostics: emptyDiagnostics
+            },
+            diagnostics: emptyDiagnostics
+        };
+    }
+
+    const diagnostics = buildDiagnostics({ normalizedConfig, anchorDate });
 
     const periodsMap = new Map();
 
     ordinarySegments.forEach((segment) => {
-        const { startDate, endDate } = resolvePeriodBounds(segment.fechaNominal, normalizedConfig.anchorDate);
+        const { startDate, endDate } = resolvePeriodBounds(
+            segment.fechaNominal,
+            anchorDate,
+            normalizedConfig.periodDays
+        );
         const key = `${startDate}:${endDate}`;
 
         if (!periodsMap.has(key)) {
@@ -170,7 +242,7 @@ export const calculateTriweeklyPremiums = ({ turnosLiquidados = [], config = {} 
             });
 
             const dayPremiumValue = dayExcessHours * TARIFAS_HORA.diurna * DAY_PREMIUM_RATE;
-            const nightPremiumValue = nightExcessHours * TARIFAS_HORA.nocturna * NIGHT_PREMIUM_RATE;
+            const nightPremiumValue = nightExcessHours * TARIFAS_HORA.diurna * NIGHT_PREMIUM_RATE;
             const premiumValue = dayPremiumValue + nightPremiumValue;
 
             return {
@@ -192,6 +264,10 @@ export const calculateTriweeklyPremiums = ({ turnosLiquidados = [], config = {} 
     return {
         premiumValue: summary.premiumValue,
         periods,
-        summary
+        summary: {
+            ...summary,
+            diagnostics
+        },
+        diagnostics
     };
 };

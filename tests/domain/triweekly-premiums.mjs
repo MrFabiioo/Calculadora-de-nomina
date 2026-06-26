@@ -54,7 +54,7 @@ const buildShift = ({ fecha, breakdown }) => ({
 
 console.log('\n--- Tests: triweekly premiums ---');
 
-test('groups dates into anchored 21-day periods', () => {
+test('groups dates into dynamic 7-day periods by default', () => {
     const result = calculateTriweeklyPremiums({
         turnosLiquidados: [
             buildShift({
@@ -65,8 +65,8 @@ test('groups dates into anchored 21-day periods', () => {
     });
 
     assertEq(result.periods.length, 1, 'should create one period');
-    assertEq(result.periods[0].startDate, '2025-12-28', 'should use anchored period start');
-    assertEq(result.periods[0].endDate, '2026-01-17', 'should use anchored period end');
+    assertEq(result.periods[0].startDate, '2026-01-05', 'should use first worked date as dynamic period start');
+    assertEq(result.periods[0].endDate, '2026-01-11', 'should use 7-day period end');
 });
 
 test('resolves thresholds before and after schedule transition', () => {
@@ -98,15 +98,15 @@ test('resolves thresholds before and after schedule transition', () => {
         config: {
             ...DEFAULT_TRIWEEKLY_CONFIG,
             thresholds: [
-                { effectiveUntil: '2026-07-15', maxOrdinaryHours: 132 },
-                { effectiveFrom: '2026-07-16', maxOrdinaryHours: 129 }
+                { effectiveUntil: '2026-07-15', maxOrdinaryHours: 44 },
+                { effectiveFrom: '2026-07-16', maxOrdinaryHours: 40 }
             ]
         }
     });
 
-    assertEq(preReduction.periods[0].threshold, 132, 'should use 132 hours before transition');
-    assertEq(postReduction.periods[0].threshold, 126, 'should use 126 hours after transition');
-    assertEq(customThreshold.periods[0].threshold, 129, 'should support custom transition threshold');
+    assertEq(preReduction.periods[0].threshold, 44, 'should use 44 hours before transition');
+    assertEq(postReduction.periods[0].threshold, 42, 'should use 42 hours after transition');
+    assertEq(customThreshold.periods[0].threshold, 40, 'should support custom transition threshold');
 });
 
 test('returns no premium when ordinary hours stay within threshold', () => {
@@ -114,7 +114,7 @@ test('returns no premium when ordinary hours stay within threshold', () => {
         turnosLiquidados: [
             buildShift({
                 fecha: '2026-01-05',
-                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 120 })]
+                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 44 })]
             })
         ]
     });
@@ -128,14 +128,14 @@ test('calculates daytime-only excess at 25%', () => {
         turnosLiquidados: [
             buildShift({
                 fecha: '2026-01-05',
-                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 140 })]
+                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 50 })]
             })
         ]
     });
 
-    assertEq(result.periods[0].dayExcessHours, 8, 'should allocate 8 excess day hours');
+    assertEq(result.periods[0].dayExcessHours, 6, 'should allocate 6 excess day hours');
     assertEq(result.periods[0].nightExcessHours, 0, 'should allocate no excess night hours');
-    assertClose(result.premiumValue, 8 * TARIFAS_HORA.diurna * 0.25, 0.01, 'should calculate 25% day premium');
+    assertClose(result.premiumValue, 6 * TARIFAS_HORA.diurna * 0.25, 0.01, 'should calculate 25% day premium');
 });
 
 test('allocates mixed excess from latest ordinary segments first', () => {
@@ -143,11 +143,11 @@ test('allocates mixed excess from latest ordinary segments first', () => {
         turnosLiquidados: [
             buildShift({
                 fecha: '2026-01-10',
-                breakdown: [buildSegment({ fechaNominal: '2026-01-10', categoria: 'ordinario-dia', horas: 100, inicio: 6 })]
+                breakdown: [buildSegment({ fechaNominal: '2026-01-10', categoria: 'ordinario-dia', horas: 40, inicio: 6 })]
             }),
             buildShift({
                 fecha: '2026-01-14',
-                breakdown: [buildSegment({ fechaNominal: '2026-01-14', categoria: 'ordinario-dia', horas: 34, inicio: 8 })]
+                breakdown: [buildSegment({ fechaNominal: '2026-01-14', categoria: 'ordinario-dia', horas: 6, inicio: 8 })]
             }),
             buildShift({
                 fecha: '2026-01-16',
@@ -160,8 +160,23 @@ test('allocates mixed excess from latest ordinary segments first', () => {
     assertEq(result.periods[0].dayExcessHours, 2, 'should allocate latest day hours after latest night hours');
     assertEq(result.periods[0].nightExcessHours, 6, 'should allocate latest night segment first');
 
-    const expected = (2 * TARIFAS_HORA.diurna * 0.25) + (6 * TARIFAS_HORA.nocturna * 0.75);
+    const expected = (2 * TARIFAS_HORA.diurna * 0.25) + (6 * TARIFAS_HORA.diurna * 0.75);
     assertClose(result.premiumValue, expected, 0.01, 'should mix day and night premium values');
+});
+
+test('calculates EXC NOC premium from base day rate at 75%', () => {
+    const result = calculateTriweeklyPremiums({
+        turnosLiquidados: [
+            buildShift({
+                fecha: '2026-01-05',
+                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-noche', horas: 50, inicio: 20 })]
+            })
+        ]
+    });
+
+    const expected = 6 * TARIFAS_HORA.diurna * 0.75;
+    assertEq(result.periods[0].nightExcessHours, 6, 'should allocate night excess hours');
+    assertClose(result.premiumValue, expected, 0.01, 'EXC NOC should use day base rate, not nocturnal rate');
 });
 
 test('returns empty summary for zero-shift input', () => {
@@ -172,12 +187,22 @@ test('returns empty summary for zero-shift input', () => {
     assertEq(result.premiumValue, 0, 'should return zero premium');
 });
 
+test('default EXC metadata documents experimental weekly ordinary-only model', () => {
+    const result = calculateTriweeklyPremiums({ turnosLiquidados: [] });
+
+    assertEq(result.diagnostics.status, 'experimental', 'default model should be explicitly experimental');
+    assertEq(result.diagnostics.modelLabel, 'EXC estimado (experimental)', 'default model should use estimated EXC label');
+    assertEq(result.diagnostics.periodDays, 7, 'default model should use weekly blocks');
+    assertEq(result.diagnostics.allocationStrategy, 'latest-ordinary-segments-first', 'default model should document latest-segment allocation');
+    assertEq(result.diagnostics.includedCategories.join(','), 'ordinario-dia,ordinario-noche', 'default model should include only ordinary categories');
+});
+
 test('exposes an audit-friendly premium summary contract', () => {
     const result = calculateTriweeklyPremiums({
         turnosLiquidados: [
             buildShift({
                 fecha: '2026-01-05',
-                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 140 })]
+                breakdown: [buildSegment({ fechaNominal: '2026-01-05', categoria: 'ordinario-dia', horas: 50 })]
             })
         ]
     });
@@ -187,6 +212,11 @@ test('exposes an audit-friendly premium summary contract', () => {
     assertEq(typeof result.summary.dayPremiumValue, 'number', 'dayPremiumValue should be numeric');
     assertEq(typeof result.summary.nightPremiumValue, 'number', 'nightPremiumValue should be numeric');
     assertEq(typeof result.summary.premiumValue, 'number', 'premiumValue should be numeric');
+    assertEq(result.diagnostics.status, 'experimental', 'diagnostics should label the EXC model as experimental');
+    assertEq(result.diagnostics.periodDays, 7, 'diagnostics should expose default weekly block size');
+    assertEq(result.diagnostics.anchorDate, '2026-01-05', 'diagnostics should expose the actual anchor date used');
+    assertEq(result.diagnostics.allocationStrategy, 'latest-ordinary-segments-first', 'diagnostics should expose allocation strategy');
+    assertEq(result.diagnostics.includedCategories.join(','), 'ordinario-dia,ordinario-noche', 'diagnostics should expose ordinary-only categories');
 });
 
 console.log('\n--- Tests: payroll integration ---');
@@ -245,7 +275,7 @@ test('export summary line items include triweekly premium and reconcile with dev
     });
 
     assertEq(lineItems.length, 3, 'should emit base, premium and subsidy line items');
-    assertEq(lineItems[1].label, 'Prima Trisemanal', 'should expose triweekly premium as a distinct export line item');
+    assertEq(lineItems[1].label, 'EXC estimado (experimental)', 'should expose estimated EXC as a distinct export line item');
     assertEq(lineItems[1].value, 25000, 'should preserve premium numeric value for reconciliation');
     assertEq(
         lineItems.reduce((sum, item) => sum + item.value, 0),
@@ -289,8 +319,8 @@ test('payroll sheet content renders premium summary rows when premiums exist', (
         fechaGeneracion: new Date('2026-01-20T00:00:00Z')
     });
 
-    const premiumRow = sheet.find((row) => row[0] === 'Prima Trisemanal');
-    const breakdownPremiumRow = sheet.find((row) => row[0] === 'Prima trisemanal');
+    const premiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)');
+    const breakdownPremiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)' && row.length === 5);
     const totalEarnedRow = sheet.find((row) => row[0] === 'TOTAL DEVENGADO');
 
     assertEq(Boolean(premiumRow), true, 'should render premium row in summary section');

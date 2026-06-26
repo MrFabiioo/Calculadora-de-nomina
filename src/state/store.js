@@ -4,7 +4,7 @@
  * Persiste el estado en localStorage
  */
 
-import { DEFAULT_TRIWEEKLY_CONFIG } from '../domain/triweekly-premiums.js';
+import { DEFAULT_TRIWEEKLY_CONFIG, DEFAULT_TRIWEEKLY_METADATA } from '../domain/triweekly-premiums.js';
 
 // Constantes de persistencia
 const STORAGE_KEY = 'calculadora-nomina-state';
@@ -35,6 +35,7 @@ const resultadosIniciales = {
         dayPremiumValue: 0,
         nightPremiumValue: 0,
         premiumValue: 0,
+        diagnostics: { ...DEFAULT_TRIWEEKLY_METADATA },
         periods: []
     },
     festiveExtraSummary: {
@@ -50,6 +51,30 @@ const resultadosIniciales = {
 const configuracionInicial = {
     tema: 'light',
     triweekly: { ...DEFAULT_TRIWEEKLY_CONFIG }
+};
+
+const isLegacyTriweeklyConfig = (triweekly = {}) => {
+    const thresholds = triweekly.thresholds || [];
+
+    return triweekly.anchorDate === '2025-12-28'
+        && !('periodDays' in triweekly)
+        && thresholds.length === 2
+        && thresholds[0]?.maxOrdinaryHours === 132
+        && thresholds[1]?.maxOrdinaryHours === 126;
+};
+
+const normalizeTriweeklyConfig = (triweekly = {}) => {
+    if (isLegacyTriweeklyConfig(triweekly)) {
+        return { ...DEFAULT_TRIWEEKLY_CONFIG };
+    }
+
+    return {
+        ...DEFAULT_TRIWEEKLY_CONFIG,
+        ...triweekly,
+        thresholds: Array.isArray(triweekly.thresholds) && triweekly.thresholds.length > 0
+            ? triweekly.thresholds
+            : DEFAULT_TRIWEEKLY_CONFIG.thresholds
+    };
 };
 
 const crearEstadoInicial = () => ({
@@ -136,10 +161,7 @@ class Store {
                 configuracion: {
                     ...baseState.configuracion,
                     ...(estadoGuardado.configuracion || {}),
-                    triweekly: {
-                        ...baseState.configuracion.triweekly,
-                        ...(estadoGuardado.configuracion?.triweekly || {})
-                    }
+                    triweekly: normalizeTriweeklyConfig(estadoGuardado.configuracion?.triweekly || {})
                 },
                 turnosLiquidados: estadoGuardado.turnosLiquidados || []
             }

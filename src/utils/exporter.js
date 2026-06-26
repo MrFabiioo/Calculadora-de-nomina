@@ -66,7 +66,7 @@ export const buildExportSummaryLineItems = (resultados = {}) => {
 
     if ((resultados.premiumTriweeklyTotal || 0) > 0) {
         lineItems.push({
-            label: 'Prima Trisemanal',
+            label: 'EXC estimado (experimental)',
             value: resultados.premiumTriweeklyTotal || 0
         });
     }
@@ -121,23 +121,23 @@ export const buildPayrollSheetContent = (datos) => {
     summaryLineItems.forEach(({ label, value }) => {
         hoja.push([label, formatearMoneda(value)]);
     });
-    hoja.push(['Total Turnos + Prima', formatearMoneda(resultados.totalTurnos || 0)]);
+    hoja.push(['Total Turnos + EXC estimado', formatearMoneda(resultados.totalTurnos || 0)]);
     hoja.push(['TOTAL DEVENGADO', formatearMoneda(resultados.devengadoTotal || 0)]);
     hoja.push(['Deducciones', formatearMoneda(resultados.totalDeducciones || 0)]);
     hoja.push(['SALARIO NETO A PAGAR', formatearMoneda(resultados.netoPagar || 0)]);
     hoja.push([]);  // Fila vacía
 
     if ((resultados.premiumTriweeklySummary?.periodsCount || 0) > 0) {
-        hoja.push(['🔺 RESUMEN PRIMA TRISEMANAL']);
+        hoja.push(['🔺 RESUMEN EXC ESTIMADO (EXPERIMENTAL)']);
         hoja.push(['Concepto', 'Valor']);
         hoja.push(['Períodos Evaluados', resultados.premiumTriweeklySummary.periodsCount || 0]);
         hoja.push(['Horas Ordinarias', (resultados.premiumTriweeklySummary.ordinaryHours || 0).toFixed(2)]);
         hoja.push(['Horas en Exceso', (resultados.premiumTriweeklySummary.excessHours || 0).toFixed(2)]);
         hoja.push(['Horas Exceso Diurno', (resultados.premiumTriweeklySummary.dayExcessHours || 0).toFixed(2)]);
         hoja.push(['Horas Exceso Nocturno', (resultados.premiumTriweeklySummary.nightExcessHours || 0).toFixed(2)]);
-        hoja.push(['Prima Diurna', formatearMoneda(resultados.premiumTriweeklySummary.dayPremiumValue || 0)]);
-        hoja.push(['Prima Nocturna', formatearMoneda(resultados.premiumTriweeklySummary.nightPremiumValue || 0)]);
-        hoja.push(['TOTAL PRIMA TRISEMANAL', formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)]);
+        hoja.push(['EXC Diurno', formatearMoneda(resultados.premiumTriweeklySummary.dayPremiumValue || 0)]);
+        hoja.push(['EXC Nocturno', formatearMoneda(resultados.premiumTriweeklySummary.nightPremiumValue || 0)]);
+        hoja.push(['TOTAL EXC ESTIMADO', formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)]);
         hoja.push([]);
     }
     
@@ -248,14 +248,14 @@ export const buildPayrollSheetContent = (datos) => {
 
     if ((resultados.premiumTriweeklyTotal || 0) > 0) {
         hoja.push([
-            'Prima trisemanal',
+            'EXC estimado (experimental)',
             '',
             '',
             (resultados.premiumTriweeklySummary?.excessHours || 0).toFixed(2),
             formatearMoneda(resultados.premiumTriweeklyTotal || 0)
         ]);
         hoja.push([
-            'TOTAL + prima',
+            'TOTAL + EXC estimado',
             '',
             '',
             totalHoras.toFixed(2),
