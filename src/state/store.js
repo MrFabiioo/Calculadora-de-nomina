@@ -5,6 +5,7 @@
  */
 
 import { DEFAULT_TRIWEEKLY_CONFIG, DEFAULT_TRIWEEKLY_METADATA } from '../domain/triweekly-premiums.js';
+import { DEFAULT_PTS_EXCESS_METADATA } from '../domain/pts-excess-premiums.js';
 
 // Constantes de persistencia
 const STORAGE_KEY = 'calculadora-nomina-state';
@@ -38,6 +39,21 @@ const resultadosIniciales = {
         diagnostics: { ...DEFAULT_TRIWEEKLY_METADATA },
         periods: []
     },
+    ptsExcessExperimentalTotal: 0,
+    ptsExcessExperimentalSummary: {
+        periodsCount: 0,
+        ordinaryHours: 0,
+        thresholdHours: 0,
+        excessHours: 0,
+        dayExcessHours: 0,
+        nightExcessHours: 0,
+        dayPremiumValue: 0,
+        nightPremiumValue: 0,
+        premiumValue: 0,
+        diagnostics: { ...DEFAULT_PTS_EXCESS_METADATA },
+        periods: []
+    },
+    ptsExcessExperimentalPeriods: [],
     festiveExtraSummary: {
         dayHours: 0,
         nightHours: 0,

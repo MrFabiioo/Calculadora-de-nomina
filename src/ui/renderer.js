@@ -36,6 +36,10 @@ export const inicializarElementos = () => {
         premiumTriweeklyLabel: document.getElementById('premium-triweekly-total'),
         premiumTriweeklyHours: document.getElementById('premium-triweekly-hours'),
         premiumTriweeklyPeriods: document.getElementById('premium-triweekly-periods'),
+        ptsExcessDiagnosticTotal: document.getElementById('pts-excess-diagnostic-total'),
+        ptsExcessDiagnosticHours: document.getElementById('pts-excess-diagnostic-hours'),
+        ptsExcessDiagnosticThreshold: document.getElementById('pts-excess-diagnostic-threshold'),
+        ptsExcessDiagnosticPeriods: document.getElementById('pts-excess-diagnostic-periods'),
         festiveExtraValue: document.getElementById('festive-extra-value'),
         festiveExtraHours: document.getElementById('festive-extra-hours'),
         totalDevengado: document.getElementById('total-devengado'),
@@ -321,6 +325,18 @@ export const renderizarResultados = (resultados) => {
     }
     if (elementos.premiumTriweeklyPeriods) {
         elementos.premiumTriweeklyPeriods.innerText = resultados.premiumTriweeklySummary?.periodsCount || 0;
+    }
+    if (elementos.ptsExcessDiagnosticTotal) {
+        elementos.ptsExcessDiagnosticTotal.innerText = formatearMoneda(resultados.ptsExcessExperimentalTotal || 0);
+    }
+    if (elementos.ptsExcessDiagnosticHours) {
+        elementos.ptsExcessDiagnosticHours.innerText = `${(resultados.ptsExcessExperimentalSummary?.excessHours || 0).toFixed(2)} h`;
+    }
+    if (elementos.ptsExcessDiagnosticThreshold) {
+        elementos.ptsExcessDiagnosticThreshold.innerText = `${(resultados.ptsExcessExperimentalSummary?.thresholdHours || 0).toFixed(2)} h`;
+    }
+    if (elementos.ptsExcessDiagnosticPeriods) {
+        elementos.ptsExcessDiagnosticPeriods.innerText = resultados.ptsExcessExperimentalSummary?.periodsCount || 0;
     }
     if (elementos.festiveExtraValue) {
         elementos.festiveExtraValue.innerText = formatearMoneda(resultados.festiveExtraSummary?.totalValue || 0);

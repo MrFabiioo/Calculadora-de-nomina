@@ -11,6 +11,10 @@ const elementIds = [
     'premium-triweekly-total',
     'premium-triweekly-hours',
     'premium-triweekly-periods',
+    'pts-excess-diagnostic-total',
+    'pts-excess-diagnostic-hours',
+    'pts-excess-diagnostic-threshold',
+    'pts-excess-diagnostic-periods',
     'festive-extra-value',
     'festive-extra-hours',
     'total-devengado',
@@ -84,6 +88,10 @@ test('renderizarResultados keeps premium widgets aligned with store defaults', (
     assertEqual(elements['premium-triweekly-total'].innerText, formatearMoneda(0), 'Triweekly premium card should start at zero');
     assertEqual(elements['premium-triweekly-hours'].innerText, '0.00 h', 'Triweekly premium hours should start at zero');
     assertEqual(elements['premium-triweekly-periods'].innerText, 0, 'Triweekly premium periods should start at zero');
+    assertEqual(elements['pts-excess-diagnostic-total'].innerText, formatearMoneda(0), 'PTS excess diagnostic should start at zero');
+    assertEqual(elements['pts-excess-diagnostic-hours'].innerText, '0.00 h', 'PTS excess diagnostic hours should start at zero');
+    assertEqual(elements['pts-excess-diagnostic-threshold'].innerText, '0.00 h', 'PTS excess diagnostic threshold should start at zero');
+    assertEqual(elements['pts-excess-diagnostic-periods'].innerText, 0, 'PTS excess diagnostic periods should start at zero');
     assertEqual(elements['festive-extra-value'].innerText, formatearMoneda(0), 'Festive extra card should start at zero');
     assertEqual(elements['festive-extra-hours'].innerText, '0.00 h', 'Festive extra hours should start at zero');
 });
@@ -101,6 +109,13 @@ test('renderizarResultados updates premium widgets with formatted values', () =>
             excessHours: 8,
             periodsCount: 1
         },
+        ptsExcessExperimentalTotal: 18420,
+        ptsExcessExperimentalSummary: {
+            ...structuredClone(resultadosIniciales.ptsExcessExperimentalSummary),
+            excessHours: 6,
+            thresholdHours: 88,
+            periodsCount: 2
+        },
         festiveExtraSummary: {
             ...structuredClone(resultadosIniciales.festiveExtraSummary),
             totalHours: 4,
@@ -111,6 +126,10 @@ test('renderizarResultados updates premium widgets with formatted values', () =>
     assertEqual(elements['premium-triweekly-total'].innerText, formatearMoneda(25000), 'Triweekly premium card should format the premium total');
     assertEqual(elements['premium-triweekly-hours'].innerText, '8.00 h', 'Triweekly premium hours should format excess hours');
     assertEqual(elements['premium-triweekly-periods'].innerText, 1, 'Triweekly premium periods should render the periods count');
+    assertEqual(elements['pts-excess-diagnostic-total'].innerText, formatearMoneda(18420), 'PTS excess diagnostic should format the diagnostic total');
+    assertEqual(elements['pts-excess-diagnostic-hours'].innerText, '6.00 h', 'PTS excess diagnostic should format excess hours');
+    assertEqual(elements['pts-excess-diagnostic-threshold'].innerText, '88.00 h', 'PTS excess diagnostic should format the threshold');
+    assertEqual(elements['pts-excess-diagnostic-periods'].innerText, 2, 'PTS excess diagnostic should render evaluated periods');
     assertEqual(elements['festive-extra-value'].innerText, formatearMoneda(97680), 'Festive extra card should format the extra value');
     assertEqual(elements['festive-extra-hours'].innerText, '4.00 h', 'Festive extra hours should format the extra hours');
 });

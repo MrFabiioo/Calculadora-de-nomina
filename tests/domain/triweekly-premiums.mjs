@@ -308,7 +308,20 @@ test('payroll sheet content renders premium summary rows when premiums exist', (
                 dayPremiumValue: 25000,
                 nightPremiumValue: 0,
                 premiumValue: 25000
-            }
+            },
+            ptsExcessExperimentalTotal: 18420,
+            ptsExcessExperimentalSummary: {
+                periodsCount: 1,
+                ordinaryHours: 104,
+                thresholdHours: 44,
+                excessHours: 60,
+                dayExcessHours: 60,
+                nightExcessHours: 0,
+                dayPremiumValue: 18420,
+                nightPremiumValue: 0,
+                premiumValue: 18420
+            },
+            ptsExcessExperimentalPeriods: [{ code: 'PTS8' }]
         },
         turnosLiquidados: [],
         breakdownAgregado: {
@@ -320,10 +333,12 @@ test('payroll sheet content renders premium summary rows when premiums exist', (
     });
 
     const premiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)');
+    const ptsDiagnosticRow = sheet.find((row) => row[0] === 'TOTAL EXC PTS DIAGNÓSTICO');
     const breakdownPremiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)' && row.length === 5);
     const totalEarnedRow = sheet.find((row) => row[0] === 'TOTAL DEVENGADO');
 
     assertEq(Boolean(premiumRow), true, 'should render premium row in summary section');
+    assertEq(Boolean(ptsDiagnosticRow), true, 'should render persisted PTS diagnostic summary rows');
     assertEq(Boolean(breakdownPremiumRow), true, 'should render premium row in breakdown section');
     assertEq(Boolean(totalEarnedRow), true, 'should keep earned total row for reconciliation');
 });

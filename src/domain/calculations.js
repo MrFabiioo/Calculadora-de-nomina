@@ -6,6 +6,7 @@
 import { TARIFAS_HORA } from './shifts.js';
 import { aggregateShiftBreakdown, liquidarTurnoPorTramos } from './payroll-breakdown.js';
 import { calculateTriweeklyPremiums, DEFAULT_TRIWEEKLY_CONFIG } from './triweekly-premiums.js';
+import { calculatePtsExcessPremiums } from './pts-excess-premiums.js';
 
 // Constantes para deducciones
 // 66.67% según normativa laboral colombiana (Art. 227 CST): incapacidad se paga a 2/3 del salario
@@ -79,6 +80,7 @@ export const calcularNomina = (input) => {
         deduccionNomina = 0,
         deduccionEMI = 0,
         otrasDeducciones = 0,
+        payrollPeriod = null,
         triweeklyConfig = DEFAULT_TRIWEEKLY_CONFIG
     } = input;
     
@@ -144,6 +146,15 @@ export const calcularNomina = (input) => {
         ...triweeklyPremiums.summary,
         periods: triweeklyPremiums.periods
     };
+    const ptsExcessExperimental = calculatePtsExcessPremiums({
+        turnosLiquidados,
+        payrollPeriod
+    });
+    const ptsExcessExperimentalTotal = ptsExcessExperimental.premiumValue;
+    const ptsExcessExperimentalSummary = {
+        ...ptsExcessExperimental.summary,
+        periods: ptsExcessExperimental.periods
+    };
     totalTurnos = baseTurnosSinPremio + premiumTriweeklyTotal;
 
     // Calcular subsidio — los días de descanso también cuentan para el auxilio
@@ -183,6 +194,9 @@ export const calcularNomina = (input) => {
         baseTurnosSinPremio,
         premiumTriweeklyTotal,
         premiumTriweeklySummary,
+        ptsExcessExperimentalTotal,
+        ptsExcessExperimentalSummary,
+        ptsExcessExperimentalPeriods: ptsExcessExperimental.periods,
         festiveExtraSummary,
         subsidioTransporte,
         baseDeducciones,

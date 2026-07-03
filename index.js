@@ -114,6 +114,12 @@ const calcularNominaCompleta = () => {
     const turnos = obtenerTurnosDelDOM();
     const deducciones = obtenerDeduccionesDelDOM();
     const triweeklyConfig = getState().configuracion?.triweekly;
+    const payrollPeriod = elementos.rangoFechaInicio?.value && elementos.rangoFechaFin?.value
+        ? {
+            startDate: elementos.rangoFechaInicio.value,
+            endDate: elementos.rangoFechaFin.value
+        }
+        : null;
 
     // Actualizar estilos de filas de descanso (responsabilidad visual que queda en index)
     turnos.forEach((turno, index) => {
@@ -133,6 +139,7 @@ const calcularNominaCompleta = () => {
         deduccionNomina: deducciones.nomina,
         deduccionEMI: deducciones.emi,
         otrasDeducciones: deducciones.otras,
+        payrollPeriod,
         triweeklyConfig
     });
 
@@ -212,6 +219,9 @@ const calcularNominaCompleta = () => {
             baseTurnosSinPremio: resultados.baseTurnosSinPremio,
             baseDeducciones: resultados.baseDeducciones,
             premiumTriweeklySummary: resultados.premiumTriweeklySummary,
+            ptsExcessExperimentalTotal: resultados.ptsExcessExperimentalTotal,
+            ptsExcessExperimentalSummary: resultados.ptsExcessExperimentalSummary,
+            ptsExcessExperimentalPeriods: resultados.ptsExcessExperimentalPeriods,
             festiveExtraSummary: resultados.festiveExtraSummary
         },
         // Guardar breakdown para auditoría (Task 5.1)

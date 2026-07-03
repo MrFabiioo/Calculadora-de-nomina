@@ -140,6 +140,23 @@ export const buildPayrollSheetContent = (datos) => {
         hoja.push(['TOTAL EXC ESTIMADO', formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)]);
         hoja.push([]);
     }
+
+    if ((resultados.ptsExcessExperimentalSummary?.periodsCount || 0) > 0) {
+        const ptsSummary = resultados.ptsExcessExperimentalSummary;
+        hoja.push(['🧪 RESUMEN EXC POR PORCIÓN DE PTS (EXPERIMENTAL / DIAGNÓSTICO)']);
+        hoja.push(['Concepto', 'Valor']);
+        hoja.push(['Períodos PTS Evaluados', ptsSummary.periodsCount || 0]);
+        hoja.push(['Horas Ordinarias PTS', (ptsSummary.ordinaryHours || 0).toFixed(2)]);
+        hoja.push(['Umbral PTS', (ptsSummary.thresholdHours || 0).toFixed(2)]);
+        hoja.push(['Horas en Exceso PTS', (ptsSummary.excessHours || 0).toFixed(2)]);
+        hoja.push(['Horas Exceso Diurno PTS', (ptsSummary.dayExcessHours || 0).toFixed(2)]);
+        hoja.push(['Horas Exceso Nocturno PTS', (ptsSummary.nightExcessHours || 0).toFixed(2)]);
+        hoja.push(['EXC Diurno PTS', formatearMoneda(ptsSummary.dayPremiumValue || 0)]);
+        hoja.push(['EXC Nocturno PTS', formatearMoneda(ptsSummary.nightPremiumValue || 0)]);
+        hoja.push(['TOTAL EXC PTS DIAGNÓSTICO', formatearMoneda(ptsSummary.premiumValue || 0)]);
+        hoja.push(['Nota', 'Diagnóstico experimental; no suma al devengado.']);
+        hoja.push([]);
+    }
     
     // ============================================
     // BLOQUE 3: DEDUCCIONES
