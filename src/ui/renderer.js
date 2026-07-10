@@ -13,10 +13,89 @@ import { esFestivo, esDomingo } from '../domain/holidays.js';
 // Elementos del DOM (cacheados)
 let elementos = {};
 
+const SEGMENT_ROW_CONFIG = {
+    ordDiu: { prefix: 'segment-ord-diu', category: 'ordinario-dia' },
+    ordNoc: { prefix: 'segment-ord-noc', category: 'ordinario-noche' },
+    fesDiu: { prefix: 'segment-fes-diu', category: 'festivo-dia' },
+    fesNoc: { prefix: 'segment-fes-noc', category: 'festivo-noche' },
+    ordDiuExc: { prefix: 'segment-ord-diu-exc' },
+    ordNocExc: { prefix: 'segment-ord-noc-exc' },
+    fesDiuExc: { prefix: 'segment-fes-diu-exc' },
+    fesNocExc: { prefix: 'segment-fes-noc-exc' }
+};
+
+const formatearHora = (valor) => `${(valor || 0).toFixed(2)} h`;
+
+const actualizarTexto = (elemento, valor) => {
+    if (elemento) {
+        elemento.innerText = valor;
+    }
+};
+
+const crearSegmentoVacio = () => ({ horas: 0, valor: 0 });
+
+const agregarSegmentosTurnos = (turnosLiquidados = []) => {
+    const acumulado = {
+        'ordinario-dia': crearSegmentoVacio(),
+        'ordinario-noche': crearSegmentoVacio(),
+        'festivo-dia': crearSegmentoVacio(),
+        'festivo-noche': crearSegmentoVacio()
+    };
+
+    turnosLiquidados.forEach((item) => {
+        item?.liquidacion?.breakdown?.forEach((segmento) => {
+            const categoria = segmento?.categoria;
+
+            if (!acumulado[categoria]) {
+                return;
+            }
+
+            acumulado[categoria].horas += (segmento.minutos || 0) / 60;
+            acumulado[categoria].valor += segmento.valor || 0;
+        });
+    });
+
+    return acumulado;
+};
+
+const actualizarFilaConcepto = (fila, valores = {}) => {
+    if (!fila) {
+        return;
+    }
+
+    const valorMoneda = (campo) => Object.hasOwn(valores, campo) ? formatearMoneda(valores[campo] || 0) : '';
+
+    actualizarTexto(fila.devengado, valorMoneda('devengado'));
+    actualizarTexto(fila.deduccion, valorMoneda('deduccion'));
+    actualizarTexto(fila.base, valorMoneda('base'));
+    actualizarTexto(fila.saldo, valorMoneda('saldo'));
+    actualizarTexto(
+        fila.horas,
+        Object.hasOwn(valores, 'horasTexto')
+            ? valores.horasTexto
+            : Object.hasOwn(valores, 'horas')
+                ? formatearHora(valores.horas || 0)
+                : ''
+    );
+};
+
 /**
  * Inicializa las referencias a elementos del DOM (nuevos IDs de Fase 3)
  */
 export const inicializarElementos = () => {
+    const segmentos = Object.fromEntries(
+        Object.entries(SEGMENT_ROW_CONFIG).map(([clave, config]) => ([
+            clave,
+            {
+                devengado: document.getElementById(`${config.prefix}-devengado`),
+                deduccion: document.getElementById(`${config.prefix}-deduccion`),
+                base: document.getElementById(`${config.prefix}-base`),
+                saldo: document.getElementById(`${config.prefix}-saldo`),
+                horas: document.getElementById(`${config.prefix}-horas`)
+            }
+        ]))
+    );
+
     elementos = {
         // Tabla de turnos - NUEVOS IDs
         tbody: document.getElementById('turnos-body'),
@@ -31,20 +110,37 @@ export const inicializarElementos = () => {
         // Resultados - NUEVOS IDs
         turnosLabel: document.getElementById('turnos-count'),
         horasLabel: document.getElementById('horas-count'),
+        segmentos,
         subsidioTransporteLabel: document.getElementById('subsidio-transporte'),
         subsidioTransportePanel: document.getElementById('subsidio-transporte-panel'),
-        premiumTriweeklyLabel: document.getElementById('premium-triweekly-total'),
-        premiumTriweeklyHours: document.getElementById('premium-triweekly-hours'),
-        premiumTriweeklyPeriods: document.getElementById('premium-triweekly-periods'),
+        subsidioTransporteDeduccion: document.getElementById('subsidio-transporte-deduccion'),
+        subsidioTransporteHours: document.getElementById('subsidio-transporte-hours'),
         ptsExcessDiagnosticTotal: document.getElementById('pts-excess-diagnostic-total'),
         ptsExcessDiagnosticHours: document.getElementById('pts-excess-diagnostic-hours'),
         ptsExcessDiagnosticThreshold: document.getElementById('pts-excess-diagnostic-threshold'),
         ptsExcessDiagnosticPeriods: document.getElementById('pts-excess-diagnostic-periods'),
-        festiveExtraValue: document.getElementById('festive-extra-value'),
-        festiveExtraHours: document.getElementById('festive-extra-hours'),
         totalDevengado: document.getElementById('total-devengado'),
         totalDeducciones: document.getElementById('total-deducciones'),
         netoAPagar: document.getElementById('neto-a-pagar'),
+        payslipTotalDevengado: document.getElementById('payslip-total-devengado'),
+        payslipTotalDeducciones: document.getElementById('payslip-total-deducciones'),
+        payslipNetoAPagar: document.getElementById('payslip-neto-a-pagar'),
+        payslipSaldoACargo: document.getElementById('payslip-saldo-a-cargo'),
+        saldoACargo: document.getElementById('saldo-a-cargo'),
+        payslipSubsidyBase: document.getElementById('payslip-subsidy-base'),
+        payslipSubsidyBalance: document.getElementById('payslip-subsidy-balance'),
+        payslipSaludDeduction: document.getElementById('payslip-salud-deduction'),
+        payslipSaludBase: document.getElementById('payslip-salud-base'),
+        payslipSaludBalance: document.getElementById('payslip-salud-balance'),
+        payslipPensionDeduction: document.getElementById('payslip-pension-deduction'),
+        payslipPensionBase: document.getElementById('payslip-pension-base'),
+        payslipPensionBalance: document.getElementById('payslip-pension-balance'),
+        payslipDeduccionNomina: document.getElementById('payslip-deduccion-nomina'),
+        payslipDeduccionNominaBalance: document.getElementById('payslip-deduccion-nomina-balance'),
+        payslipDeduccionEmi: document.getElementById('payslip-deduccion-emi'),
+        payslipDeduccionEmiBalance: document.getElementById('payslip-deduccion-emi-balance'),
+        payslipOtrasDeducciones: document.getElementById('payslip-otras-deducciones'),
+        payslipOtrasDeduccionesBalance: document.getElementById('payslip-otras-deducciones-balance'),
         
         // Salud y pensión - NUEVOS IDs de la tabla
         valorSaludEmpleado: document.getElementById('salud-empleado'),
@@ -140,6 +236,23 @@ export const aplicarFechaEnFila = (indice, fecha) => {
 
     fechaInput.value = fecha;
     actualizarDiaYEstilo(fecha, diaLabel, fila);
+    return true;
+};
+
+export const obtenerFechaEnFila = (indice) => {
+    return document.getElementById(`fecha_${indice}`)?.value || '';
+};
+
+export const aplicarHorasEnFila = (indice, horaInicio, horaSalida) => {
+    const horaInicioSelect = document.getElementById(`hora_inicio_${indice}`);
+    const horaSalidaSelect = document.getElementById(`hora_salida_${indice}`);
+
+    if (!horaInicioSelect || !horaSalidaSelect) {
+        return false;
+    }
+
+    horaInicioSelect.value = horaInicio;
+    horaSalidaSelect.value = horaSalida;
     return true;
 };
 
@@ -300,93 +413,95 @@ export const actualizarCeldaTurno = (indice, tipo, valor) => {
  */
 export const renderizarResultados = (resultados) => {
     if (!resultados) return;
+
+    const deduccionesActuales = obtenerDeduccionesDOM();
+    const baseDeducciones = resultados.baseDeducciones || 0;
+    const totalDevengado = resultados.devengadoTotal || 0;
+    const totalDeducciones = resultados.totalDeducciones || 0;
+    const netoPagar = resultados.netoPagar || 0;
+    const segmentosBase = agregarSegmentosTurnos(resultados.turnosLiquidados);
+    const festivoExtra = resultados.festiveExtraSummary || {};
+    const resumenExc = resultados.premiumTriweeklySummary || {};
     
     // Actualizar contadores
-    if (elementos.turnosLabel) {
-        elementos.turnosLabel.innerText = resultados.cantidadTurnos || 0;
-    }
-    if (elementos.horasLabel) {
-        elementos.horasLabel.innerText = resultados.cantidadHoras || 0;
-    }
+    actualizarTexto(elementos.turnosLabel, resultados.cantidadTurnos || 0);
+    actualizarTexto(elementos.horasLabel, resultados.cantidadHoras || 0);
+
+    actualizarFilaConcepto(elementos.segmentos.ordDiu, {
+        devengado: segmentosBase['ordinario-dia'].valor,
+        horas: segmentosBase['ordinario-dia'].horas
+    });
+    actualizarFilaConcepto(elementos.segmentos.ordNoc, {
+        devengado: segmentosBase['ordinario-noche'].valor,
+        horas: segmentosBase['ordinario-noche'].horas
+    });
+    actualizarFilaConcepto(elementos.segmentos.fesDiu, {
+        devengado: segmentosBase['festivo-dia'].valor,
+        horas: segmentosBase['festivo-dia'].horas
+    });
+    actualizarFilaConcepto(elementos.segmentos.fesNoc, {
+        devengado: segmentosBase['festivo-noche'].valor,
+        horas: segmentosBase['festivo-noche'].horas
+    });
+    actualizarFilaConcepto(elementos.segmentos.ordDiuExc, {
+        devengado: resumenExc.dayPremiumValue || 0,
+        horas: resumenExc.dayExcessHours || 0
+    });
+    actualizarFilaConcepto(elementos.segmentos.ordNocExc, {
+        devengado: resumenExc.nightPremiumValue || 0,
+        horas: resumenExc.nightExcessHours || 0
+    });
+    actualizarFilaConcepto(elementos.segmentos.fesDiuExc, {
+        devengado: festivoExtra.dayValue || 0,
+        horas: festivoExtra.dayHours || 0
+    });
+    actualizarFilaConcepto(elementos.segmentos.fesNocExc, {
+        devengado: festivoExtra.nightValue || 0,
+        horas: festivoExtra.nightHours || 0
+    });
     
     // Subsidio de transporte
-    if (elementos.subsidioTransporteLabel) {
-        elementos.subsidioTransporteLabel.innerText = formatearMoneda(resultados.subsidioTransporte);
-    }
-    if (elementos.subsidioTransportePanel) {
-        elementos.subsidioTransportePanel.innerText = formatearMoneda(resultados.subsidioTransporte);
-    }
+    actualizarTexto(elementos.subsidioTransporteLabel, formatearMoneda(resultados.subsidioTransporte));
+    actualizarTexto(elementos.subsidioTransportePanel, formatearMoneda(resultados.subsidioTransporte));
+    actualizarTexto(elementos.subsidioTransporteDeduccion, '');
+    actualizarTexto(elementos.subsidioTransporteHours, '');
+    actualizarTexto(elementos.payslipSubsidyBase, formatearMoneda(resultados.subsidioTransporte || 0));
+    actualizarTexto(elementos.payslipSubsidyBalance, '');
 
-    if (elementos.premiumTriweeklyLabel) {
-        elementos.premiumTriweeklyLabel.innerText = formatearMoneda(resultados.premiumTriweeklyTotal || 0);
-    }
-    if (elementos.premiumTriweeklyHours) {
-        elementos.premiumTriweeklyHours.innerText = `${(resultados.premiumTriweeklySummary?.excessHours || 0).toFixed(2)} h`;
-    }
-    if (elementos.premiumTriweeklyPeriods) {
-        elementos.premiumTriweeklyPeriods.innerText = resultados.premiumTriweeklySummary?.periodsCount || 0;
-    }
-    if (elementos.ptsExcessDiagnosticTotal) {
-        elementos.ptsExcessDiagnosticTotal.innerText = formatearMoneda(resultados.ptsExcessExperimentalTotal || 0);
-    }
-    if (elementos.ptsExcessDiagnosticHours) {
-        elementos.ptsExcessDiagnosticHours.innerText = `${(resultados.ptsExcessExperimentalSummary?.excessHours || 0).toFixed(2)} h`;
-    }
-    if (elementos.ptsExcessDiagnosticThreshold) {
-        elementos.ptsExcessDiagnosticThreshold.innerText = `${(resultados.ptsExcessExperimentalSummary?.thresholdHours || 0).toFixed(2)} h`;
-    }
-    if (elementos.ptsExcessDiagnosticPeriods) {
-        elementos.ptsExcessDiagnosticPeriods.innerText = resultados.ptsExcessExperimentalSummary?.periodsCount || 0;
-    }
-    if (elementos.festiveExtraValue) {
-        elementos.festiveExtraValue.innerText = formatearMoneda(resultados.festiveExtraSummary?.totalValue || 0);
-    }
-    if (elementos.festiveExtraHours) {
-        elementos.festiveExtraHours.innerText = `${(resultados.festiveExtraSummary?.totalHours || 0).toFixed(2)} h`;
-    }
+    actualizarTexto(elementos.ptsExcessDiagnosticTotal, formatearMoneda(resultados.ptsExcessExperimentalTotal || 0));
+    actualizarTexto(elementos.ptsExcessDiagnosticHours, formatearHora(resultados.ptsExcessExperimentalSummary?.excessHours || 0));
+    actualizarTexto(elementos.ptsExcessDiagnosticThreshold, formatearHora(resultados.ptsExcessExperimentalSummary?.thresholdHours || 0));
+    actualizarTexto(elementos.ptsExcessDiagnosticPeriods, resultados.ptsExcessExperimentalSummary?.periodsCount || 0);
     
     // Total devengado
-    if (elementos.totalDevengado) {
-        elementos.totalDevengado.innerText = formatearMoneda(resultados.devengadoTotal);
-    }
+    actualizarTexto(elementos.totalDevengado, formatearMoneda(totalDevengado));
+    actualizarTexto(elementos.payslipTotalDevengado, formatearMoneda(totalDevengado));
     
     // Total deducciones
-    if (elementos.totalDeducciones) {
-        elementos.totalDeducciones.innerText = formatearMoneda(resultados.totalDeducciones);
-    }
+    actualizarTexto(elementos.totalDeducciones, formatearMoneda(totalDeducciones));
+    actualizarTexto(elementos.payslipTotalDeducciones, formatearMoneda(totalDeducciones));
     
     // Neto a pagar
-    if (elementos.netoAPagar) {
-        elementos.netoAPagar.innerText = formatearMoneda(resultados.netoPagar);
-    }
+    actualizarTexto(elementos.netoAPagar, formatearMoneda(netoPagar));
+    actualizarTexto(elementos.payslipNetoAPagar, formatearMoneda(netoPagar));
+    actualizarTexto(elementos.saldoACargo, formatearMoneda(0));
+    actualizarTexto(elementos.payslipSaldoACargo, formatearMoneda(0));
     
     // Salud y pensión empleado
-    if (elementos.valorSaludEmpleado) {
-        elementos.valorSaludEmpleado.innerText = formatearMoneda(resultados.saludEmpleado);
-    }
-    if (elementos.valorPensionEmpleado) {
-        elementos.valorPensionEmpleado.innerText = formatearMoneda(resultados.pensionEmpleado);
-    }
-    
-    // Total empleado
-    if (elementos.totalEmpleado) {
-        const total = (resultados.saludEmpleado || 0) + (resultados.pensionEmpleado || 0);
-        elementos.totalEmpleado.innerText = formatearMoneda(total);
-    }
-    
-    // Salud y pensión empresa
-    if (elementos.valorSaludEmpresa) {
-        elementos.valorSaludEmpresa.innerText = formatearMoneda(resultados.saludEmpresa);
-    }
-    if (elementos.valorPensionEmpresa) {
-        elementos.valorPensionEmpresa.innerText = formatearMoneda(resultados.pensionEmpresa);
-    }
-    
-    // Total empresa
-    if (elementos.totalEmpresa) {
-        const total = (resultados.saludEmpresa || 0) + (resultados.pensionEmpresa || 0);
-        elementos.totalEmpresa.innerText = formatearMoneda(total);
-    }
+    actualizarTexto(elementos.valorSaludEmpleado, formatearMoneda(resultados.saludEmpleado));
+    actualizarTexto(elementos.valorPensionEmpleado, formatearMoneda(resultados.pensionEmpleado));
+    actualizarTexto(elementos.payslipSaludDeduction, formatearMoneda(resultados.saludEmpleado || 0));
+    actualizarTexto(elementos.payslipSaludBase, formatearMoneda(baseDeducciones));
+    actualizarTexto(elementos.payslipSaludBalance, '');
+    actualizarTexto(elementos.payslipPensionDeduction, formatearMoneda(resultados.pensionEmpleado || 0));
+    actualizarTexto(elementos.payslipPensionBase, formatearMoneda(baseDeducciones));
+    actualizarTexto(elementos.payslipPensionBalance, '');
+    actualizarTexto(elementos.payslipDeduccionNomina, formatearMoneda(deduccionesActuales.nomina || 0));
+    actualizarTexto(elementos.payslipDeduccionNominaBalance, '');
+    actualizarTexto(elementos.payslipDeduccionEmi, formatearMoneda(deduccionesActuales.emi || 0));
+    actualizarTexto(elementos.payslipDeduccionEmiBalance, '');
+    actualizarTexto(elementos.payslipOtrasDeducciones, formatearMoneda(deduccionesActuales.otras || 0));
+    actualizarTexto(elementos.payslipOtrasDeduccionesBalance, '');
 };
 
 /**

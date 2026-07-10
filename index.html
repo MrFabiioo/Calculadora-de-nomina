@@ -84,10 +84,25 @@
         <div id="news-banner" class="news-banner news-banner--open" aria-label="Novedades">
             <button id="news-banner-toggle" class="news-banner__toggle" aria-expanded="true" aria-controls="news-banner-content">
                 <span class="news-banner__icon">🎉</span>
-                <span class="news-banner__title">Novedades v1.0.1</span>
+                <span class="news-banner__title">Novedades v1.1.0</span>
                 <span class="news-banner__arrow">▼</span>
             </button>
             <div id="news-banner-content" class="news-banner__content">
+                <div class="news-banner__section">
+                    <h4 class="news-banner__section-title">🧾 Colilla de Nómina</h4>
+                    <ul class="news-banner__list">
+                        <li>Detalle reorganizado como colilla real con conceptos, devengados, deducciones, base, saldo y horas</li>
+                        <li>Filas por tipo de hora, EXC, festivos, subsidio y deducciones</li>
+                        <li>Totales finales en formato de colilla: devengados, deducciones, saldo a cargo y neto a pagar</li>
+                    </ul>
+                </div>
+                <div class="news-banner__section">
+                    <h4 class="news-banner__section-title">⚡ Autocompletar Turnos</h4>
+                    <ul class="news-banner__list">
+                        <li>Nueva secuencia semanal para completar hora inicio y hora salida según el día</li>
+                        <li>Aplicación automática sobre la tabla sin cambiar fechas ni incapacidades</li>
+                    </ul>
+                </div>
                 <div class="news-banner__section">
                     <h4 class="news-banner__section-title">🧮 Cálculos Mejorados</h4>
                     <ul class="news-banner__list">
@@ -130,11 +145,11 @@
                 </div>
             </div>
 
-            <div class="date-range-panel" aria-labelledby="date-range-title">
-                <div class="date-range-panel__header">
-                    <h3 id="date-range-title" class="date-range-panel__title">Completar fechas por rango</h3>
-                    <p class="date-range-panel__description">Completá automáticamente las fechas del rango sin cambiar horas ni incapacidades.</p>
-                </div>
+             <div class="date-range-panel" aria-labelledby="date-range-title">
+                 <div class="date-range-panel__header">
+                     <h3 id="date-range-title" class="date-range-panel__title">Completar fechas por rango</h3>
+                     <p class="date-range-panel__description">Completá automáticamente las fechas del rango sin cambiar horas ni incapacidades.</p>
+                 </div>
 
                 <div class="date-range-panel__controls">
                     <div class="input-group">
@@ -152,11 +167,13 @@
                     </button>
                 </div>
 
-                <p id="date-range-status" class="date-range-panel__status" role="status" aria-live="polite"></p>
-            </div>
-            
-            <div class="table-container">
-                <table class="table table--turnos" aria-label="Tabla de turnos">
+                 <p id="date-range-status" class="date-range-panel__status" role="status" aria-live="polite"></p>
+             </div>
+
+             <div id="weekly-shift-pattern-root"></div>
+
+             <div class="table-container">
+                 <table class="table table--turnos" aria-label="Tabla de turnos">
                     <thead>
                         <tr>
                             <th scope="col">Día</th>
@@ -215,107 +232,77 @@
             <h2 id="resultados-heading" class="section__title">📊 Detalle de Nómina</h2>
             
             <div class="resultados-grid">
-                <!-- Stats row -->
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <span class="stat-card__label">🔺 EXC estimado (experimental)</span>
-                        <span id="premium-triweekly-total" class="stat-card__value">$0</span>
+                <article class="payslip-panel" aria-label="Colilla de pago estimada">
+                    <div class="table-container payslip-table-container">
+                        <table class="table table--payslip" aria-label="Detalle de nómina tipo colilla">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Concepto</th>
+                                    <th scope="col">Devengados</th>
+                                    <th scope="col">Deducciones</th>
+                                    <th scope="col">Base</th>
+                                    <th scope="col">Saldo</th>
+                                    <th scope="col">Nro. Horas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><th scope="row">HORA ORD.DIU.PARAMEDICO</th><td id="segment-ord-diu-devengado">$0</td><td id="segment-ord-diu-deduccion"></td><td id="segment-ord-diu-base"></td><td id="segment-ord-diu-saldo"></td><td id="segment-ord-diu-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA ORD.NOC.PARAMEDICO</th><td id="segment-ord-noc-devengado">$0</td><td id="segment-ord-noc-deduccion"></td><td id="segment-ord-noc-base"></td><td id="segment-ord-noc-saldo"></td><td id="segment-ord-noc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA FES.DIU.PARAMEDICO</th><td id="segment-fes-diu-devengado">$0</td><td id="segment-fes-diu-deduccion"></td><td id="segment-fes-diu-base"></td><td id="segment-fes-diu-saldo"></td><td id="segment-fes-diu-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA FES.NOC.PARAMEDICO</th><td id="segment-fes-noc-devengado">$0</td><td id="segment-fes-noc-deduccion"></td><td id="segment-fes-noc-base"></td><td id="segment-fes-noc-saldo"></td><td id="segment-fes-noc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA EXC.DIU.EXTRA.PARAMEDICO</th><td id="segment-ord-diu-exc-devengado">$0</td><td id="segment-ord-diu-exc-deduccion"></td><td id="segment-ord-diu-exc-base"></td><td id="segment-ord-diu-exc-saldo"></td><td id="segment-ord-diu-exc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA EXC.NOC.EXTRA.PARAMEDICO</th><td id="segment-ord-noc-exc-devengado">$0</td><td id="segment-ord-noc-exc-deduccion"></td><td id="segment-ord-noc-exc-base"></td><td id="segment-ord-noc-exc-saldo"></td><td id="segment-ord-noc-exc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA FES.DIU EXTRA</th><td id="segment-fes-diu-exc-devengado">$0</td><td id="segment-fes-diu-exc-deduccion"></td><td id="segment-fes-diu-exc-base"></td><td id="segment-fes-diu-exc-saldo"></td><td id="segment-fes-diu-exc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">HORA FES.NOC EXTRA</th><td id="segment-fes-noc-exc-devengado">$0</td><td id="segment-fes-noc-exc-deduccion"></td><td id="segment-fes-noc-exc-base"></td><td id="segment-fes-noc-exc-saldo"></td><td id="segment-fes-noc-exc-horas">0.00 h</td></tr>
+                                <tr><th scope="row">Subsidio de transporte</th><td id="subsidio-transporte">$0</td><td id="subsidio-transporte-deduccion"></td><td id="payslip-subsidy-base">$0</td><td id="payslip-subsidy-balance"></td><td id="subsidio-transporte-hours"></td></tr>
+                                <tr><th scope="row">Salud empleado</th><td></td><td id="payslip-salud-deduction">$0</td><td id="payslip-salud-base">$0</td><td id="payslip-salud-balance"></td><td></td></tr>
+                                <tr><th scope="row">Pensión empleado</th><td></td><td id="payslip-pension-deduction">$0</td><td id="payslip-pension-base">$0</td><td id="payslip-pension-balance"></td><td></td></tr>
+                                <tr><th scope="row">Deducción por nómina</th><td></td><td id="payslip-deduccion-nomina">$0</td><td></td><td id="payslip-deduccion-nomina-balance"></td><td></td></tr>
+                                <tr><th scope="row">EMI Familiares</th><td></td><td id="payslip-deduccion-emi">$0</td><td></td><td id="payslip-deduccion-emi-balance"></td><td></td></tr>
+                                <tr><th scope="row">Otras deducciones</th><td></td><td id="payslip-otras-deducciones">$0</td><td></td><td id="payslip-otras-deducciones-balance"></td><td></td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="payslip-totals-row">
+                                    <td colspan="6">
+                                        <div class="payslip-totals-grid" aria-label="Totales de nómina">
+                                            <div class="payslip-total-cell payslip-total-cell--label">Total Devengados</div>
+                                            <div class="payslip-total-cell payslip-total-cell--label">Total Deducciones</div>
+                                            <div class="payslip-total-cell payslip-total-cell--label">Saldo a Cargo</div>
+                                            <div class="payslip-total-cell payslip-total-cell--label">Neto a Pagar</div>
+                                            <div id="payslip-total-devengado" class="payslip-total-cell">$0</div>
+                                            <div id="payslip-total-deducciones" class="payslip-total-cell">$0</div>
+                                            <div id="payslip-saldo-a-cargo" class="payslip-total-cell">$0</div>
+                                            <div id="payslip-neto-a-pagar" class="payslip-total-cell">$0</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">🎉 Festivo Extra</span>
-                        <span id="festive-extra-value" class="stat-card__value">$0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">🚚 Subsidio Transporte</span>
-                        <span id="subsidio-transporte" class="stat-card__value">$0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">📅 Turnos</span>
-                        <span id="turnos-count" class="stat-card__value">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-card__label">⏱️ Horas</span>
-                        <span id="horas-count" class="stat-card__value">0</span>
-                    </div>
-                </div>
 
-                <div class="table-container">
-                    <table class="table" aria-label="Resumen de EXC estimado experimental">
-                        <tbody>
-                            <tr>
-                                <th scope="row">Horas en exceso</th>
-                                <td id="premium-triweekly-hours">0.00 h</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Períodos evaluados</th>
-                                <td id="premium-triweekly-periods">0</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Horas festivo extra</th>
-                                <td id="festive-extra-hours">0.00 h</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">EXC PTS diagnóstico</th>
-                                <td id="pts-excess-diagnostic-total">$0</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Horas EXC PTS</th>
-                                <td id="pts-excess-diagnostic-hours">0.00 h</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Umbral PTS</th>
-                                <td id="pts-excess-diagnostic-threshold">0.00 h</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">PTS evaluadas</th>
-                                <td id="pts-excess-diagnostic-periods">0</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">Diagnóstico experimental; no suma al devengado.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Tabla de salud y pensión -->
-                <div class="table-container">
-                    <table class="table table--salud-pension" aria-label="Aportes a salud y pensión">
-                        <thead>
-                            <tr>
-                                <th scope="col" rowspan="2">Concepto</th>
-                                <th scope="colgroup" colspan="2">Aportes</th>
-                            </tr>
-                            <tr>
-                                <th scope="col">Empleado</th>
-                                <th scope="col">Empresa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">Salud</th>
-                                <td id="salud-empleado">$0</td>
-                                <td id="salud-empresa">$0</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Pensión</th>
-                                <td id="pension-empleado">$0</td>
-                                <td id="pension-empresa">$0</td>
-                            </tr>
-                            <tr class="table__row--total">
-                                <th scope="row">Total</th>
-                                <td id="total-empleado">$0</td>
-                                <td id="total-empresa">$0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Link externo -->
-                <div class="external-link">
+                    <section class="payslip-diagnostic" aria-labelledby="diagnostic-heading">
+                        <div class="payslip-diagnostic__header">
+                            <h4 id="diagnostic-heading" class="payslip-diagnostic__title">Diagnóstico PTS / EXC experimental</h4>
+                            <p class="payslip-diagnostic__note">Solo informativo. No suma al devengado.</p>
+                        </div>
+                        <div class="table-container payslip-diagnostic__table-wrap">
+                            <table class="table table--diagnostic" aria-label="Diagnóstico experimental PTS y EXC">
+                                <tbody>
+                                    <tr><th scope="row">EXC PTS diagnóstico</th><td id="pts-excess-diagnostic-total">$0</td></tr>
+                                    <tr><th scope="row">Horas EXC PTS</th><td id="pts-excess-diagnostic-hours">0.00 h</td></tr>
+                                    <tr><th scope="row">Umbral PTS</th><td id="pts-excess-diagnostic-threshold">0.00 h</td></tr>
+                                    <tr><th scope="row">PTS evaluadas</th><td id="pts-excess-diagnostic-periods">0</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </article>
+
+                <!-- <div class="external-link">
                     <a href="https://kiosko.grupoemi.com/kioskoj/" target="_blank" rel="noopener noreferrer">
                         📰 Link Kiosko
                     </a>
-                </div>
+                </div> -->
             </div>
         </section>
     </main>
@@ -349,7 +336,7 @@
 
             <!-- Versión y crédito -->
             <div class="footer__meta">
-                <span class="footer__version">v1.0.0</span>
+                <span class="footer__version">v1.1.0</span>
                 <span class="footer__divider" aria-hidden="true">·</span>
                 <span class="footer__credit">by Fabio Ortega</span>
             </div>

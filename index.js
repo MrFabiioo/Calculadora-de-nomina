@@ -14,11 +14,13 @@ import { validarNumeroPositivo } from './src/utils/validators.js';
 import { formatearMoneda } from './src/utils/formatters.js';
 import * as renderer from './src/ui/renderer.js';
 import { createDateRangeController } from './src/ui/date-range-controller.js';
+import { createWeeklyShiftPatternController } from './src/ui/weekly-shift-pattern-controller.js';
 import { exportarExcel, estaDisponiblExportacion } from './src/utils/exporter.js';
 
 // Elementos del DOM
 let elementos = {};
 let dateRangeController = null;
+let weeklyShiftPatternController = null;
 
 /**
  * Inicializa las referencias a elementos del DOM (nuevos IDs de Fase 3)
@@ -39,6 +41,7 @@ const inicializarElementos = () => {
         rangoFechaFin: document.getElementById('date-range-end'),
         botonAplicarRango: document.getElementById('btn-apply-date-range'),
         estadoRangoFechas: document.getElementById('date-range-status'),
+        weeklyShiftPatternRoot: document.getElementById('weekly-shift-pattern-root'),
         
         // Resultados - NUEVOS IDs del sticky summary y section
         turnosLabel: document.getElementById('turnos-count'),
@@ -235,6 +238,10 @@ const resetearControlesRangoFechas = () => {
     dateRangeController?.reset();
 };
 
+const resetearControlesSecuenciaSemanal = () => {
+    weeklyShiftPatternController?.reset();
+};
+
 /**
  * Event handlers
  */
@@ -378,6 +385,23 @@ const setupRangoFechas = () => {
     dateRangeController.setup();
 };
 
+const setupSecuenciaSemanalTurnos = () => {
+    weeklyShiftPatternController = createWeeklyShiftPatternController({
+        elements: {
+            root: elementos.weeklyShiftPatternRoot
+        },
+        collaborators: {
+            getExistingRowCount: () => renderer.obtenerCantidadFilasTurno(),
+            getRowDate: (rowIndex) => renderer.obtenerFechaEnFila(rowIndex),
+            applyHoursToRow: (rowIndex, startTime, endTime) => renderer.aplicarHorasEnFila(rowIndex, startTime, endTime),
+            recalculate: calcularNominaCompleta,
+            updateClearButton: actualizarBotonLimpiar
+        }
+    });
+
+    weeklyShiftPatternController.setup();
+};
+
 // Botón exportar a Excel
 const setupBotonExportar = () => {
     if (elementos.botonExportar) {
@@ -452,6 +476,7 @@ const limpiarTodosLosCampos = () => {
     if (elementos.deduccionesEMI) elementos.deduccionesEMI.value = '';
     if (elementos.otrasDeducciones) elementos.otrasDeducciones.value = '';
     resetearControlesRangoFechas();
+    resetearControlesSecuenciaSemanal();
     
     // 3. Resetear el store al estado inicial (manteniendo el tema)
     const estadoActual = getState();
@@ -598,6 +623,7 @@ const inicializarApp = () => {
     setupBotonLimpiar();
     setupBannerNovedades();
     setupRangoFechas();
+    setupSecuenciaSemanalTurnos();
     setupEventDelegation();
 
     // Agregar primera fila vacía
