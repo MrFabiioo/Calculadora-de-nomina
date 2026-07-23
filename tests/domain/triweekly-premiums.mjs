@@ -53,6 +53,14 @@ const buildShift = ({ fecha, breakdown }) => ({
     }
 });
 
+const buildDayShifts = ({ startDay, count, horaInicio = '06:00 Am', horaSalida = '14:00 Pm' }) => {
+    return Array.from({ length: count }, (_, index) => ({
+        fecha: `2026-01-${String(startDay + index).padStart(2, '0')}`,
+        horaInicio,
+        horaSalida
+    }));
+};
+
 console.log('\n--- Tests: triweekly premiums ---');
 
 test('groups dates into dynamic 7-day periods by default', () => {
@@ -265,6 +273,12 @@ test('calcularNomina keeps experimental EXC diagnostic-only by default', () => {
     );
     const expectedDevengadoTotal = expectedTotalTurnos + expectedSubsidy;
     const expectedNeto = expectedDevengadoTotal - expectedTotalDeducciones;
+    const expectedExperimentalBase = expectedBaseDeducciones + expectedPremium;
+    const expectedExperimentalDeducciones = calcularTotalDeducciones(
+        { nomina: 10000, emi: 5000, otras: 2000 },
+        calcularDeducciones(expectedExperimentalBase)
+    );
+    const expectedExperimentalDevengado = expectedDevengadoTotal + expectedPremium;
 
     assertClose(result.premiumTriweeklyTotal, expectedPremium, 0.01, 'should expose premium total');
     assertEq(result.premiumTriweeklyIncluded, false, 'experimental EXC should be excluded from payable totals by default');
@@ -274,7 +288,59 @@ test('calcularNomina keeps experimental EXC diagnostic-only by default', () => {
     assertClose(result.totalDeducciones, expectedTotalDeducciones, 0.01, 'should recompute deductions after premium');
     assertClose(result.devengadoTotal, expectedDevengadoTotal, 0.01, 'should recompute earned total after premium');
     assertClose(result.netoPagar, expectedNeto, 0.01, 'should recompute net after premium');
+    assertClose(result.experimentalExcTotals.devengadoTotal, expectedExperimentalDevengado, 0.01, 'experimental EXC total should add diagnostic EXC to earned total');
+    assertClose(result.experimentalExcTotals.baseDeducciones, expectedExperimentalBase, 0.01, 'experimental EXC total should add diagnostic EXC to deduction base');
+    assertClose(result.experimentalExcTotals.totalDeducciones, expectedExperimentalDeducciones, 0.01, 'experimental EXC total should recompute deductions on projected base');
+    assertClose(result.experimentalExcTotals.netoPagar, expectedExperimentalDevengado - expectedExperimentalDeducciones, 0.01, 'experimental EXC total should estimate net separately');
     assertEq(result.premiumTriweeklySummary.periods.length, 1, 'should attach detailed premium periods');
+});
+
+test('calcularNomina recomputes projected transport subsidy when diagnostic EXC crosses subsidy limit', () => {
+    const turnos = [
+        ...buildDayShifts({ startDay: 1, count: 17, horaInicio: '06:00 Am', horaSalida: '19:00 Pm' }),
+        { fecha: '2026-01-18', horaInicio: '06:00 Am', horaSalida: '08:00 Am' }
+    ];
+    const triweeklyConfig = {
+        anchorDate: '2026-01-01',
+        thresholds: [{ effectiveFrom: '2026-01-01', maxOrdinaryHours: 40 }]
+    };
+    const deduccionesAdicionales = { nomina: 10000, emi: 5000, otras: 2000 };
+
+    const result = calcularNomina({
+        turnos,
+        triweeklyConfig,
+        deduccionNomina: deduccionesAdicionales.nomina,
+        deduccionEMI: deduccionesAdicionales.emi,
+        otrasDeducciones: deduccionesAdicionales.otras
+    });
+    const optInResult = calcularNomina({
+        turnos,
+        triweeklyConfig: { ...triweeklyConfig, includeInPayable: true },
+        deduccionNomina: deduccionesAdicionales.nomina,
+        deduccionEMI: deduccionesAdicionales.emi,
+        otrasDeducciones: deduccionesAdicionales.otras
+    });
+
+    const expectedProjectedBase = result.baseTurnosSinPremio + result.premiumTriweeklyTotal;
+    const expectedProjectedSubsidy = calcularSubsidioTransporte(expectedProjectedBase, result.cantidadTurnos + result.diasDescanso);
+    const expectedProjectedDeductions = calcularTotalDeducciones(
+        deduccionesAdicionales,
+        calcularDeducciones(expectedProjectedBase)
+    );
+    const expectedProjectedDevengado = expectedProjectedBase + expectedProjectedSubsidy;
+
+    assertEq(result.premiumTriweeklyIncluded, false, 'fixture should keep EXC diagnostic-only by default');
+    assertEq(optInResult.premiumTriweeklyIncluded, true, 'fixture should exercise opt-in behavior');
+    assertEq(result.subsidioTransporte > 0, true, 'official default total should still receive transport subsidy');
+    assertEq(expectedProjectedSubsidy, 0, 'diagnostic EXC should push projected base over the subsidy limit');
+    assertClose(result.experimentalExcTotals.baseDeducciones, expectedProjectedBase, 0.01, 'projected deduction base should include diagnostic EXC');
+    assertClose(result.experimentalExcTotals.subsidioTransporte, 0, 0.01, 'projected subsidy should be removed after crossing the limit');
+    assertClose(result.experimentalExcTotals.devengadoTotal, expectedProjectedDevengado, 0.01, 'projected earned total should use recomputed subsidy');
+    assertClose(result.experimentalExcTotals.totalDeducciones, expectedProjectedDeductions, 0.01, 'projected deductions should use projected base');
+    assertClose(result.experimentalExcTotals.netoPagar, expectedProjectedDevengado - expectedProjectedDeductions, 0.01, 'projected net should use recomputed subsidy and deductions');
+    assertClose(result.experimentalExcTotals.devengadoTotal, optInResult.devengadoTotal, 0.01, 'projected earned total should match opt-in calculation');
+    assertClose(result.experimentalExcTotals.totalDeducciones, optInResult.totalDeducciones, 0.01, 'projected deductions should match opt-in calculation');
+    assertClose(result.experimentalExcTotals.netoPagar, optInResult.netoPagar, 0.01, 'projected net should match opt-in calculation');
 });
 
 test('calcularNomina preserves explicit opt-in to include triweekly EXC in payable totals', () => {
@@ -301,6 +367,10 @@ test('calcularNomina preserves explicit opt-in to include triweekly EXC in payab
     assertEq(result.premiumTriweeklyIncluded, true, 'explicit opt-in should be preserved');
     assertClose(result.totalTurnos, result.baseTurnosSinPremio + expectedPremium, 0.01, 'explicit opt-in should include EXC in totalTurnos');
     assertClose(result.baseDeducciones, result.totalTurnos, 0.01, 'explicit opt-in should include EXC in deductions base');
+    assertClose(result.experimentalExcTotals.excDiagnosticoAdicional, 0, 0.01, 'experimental EXC total should avoid double-counting opted-in EXC');
+    assertClose(result.experimentalExcTotals.devengadoTotal, result.devengadoTotal, 0.01, 'experimental earned total should match official total when EXC is already included');
+    assertClose(result.experimentalExcTotals.totalDeducciones, result.totalDeducciones, 0.01, 'experimental deductions should match official deductions when EXC is already included');
+    assertClose(result.experimentalExcTotals.netoPagar, result.netoPagar, 0.01, 'experimental net should match official net when EXC is already included');
 });
 
 console.log('\n--- Tests: export reconciliation ---');

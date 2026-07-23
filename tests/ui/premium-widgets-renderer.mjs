@@ -17,6 +17,13 @@ const elementIds = [
     'pts-excess-diagnostic-hours',
     'pts-excess-diagnostic-threshold',
     'pts-excess-diagnostic-periods',
+    'diagnostic-ord-diu-exc-detail',
+    'diagnostic-ord-noc-exc-detail',
+    'diagnostic-fes-diu-extra-detail',
+    'diagnostic-fes-noc-extra-detail',
+    'diagnostic-exc-total-devengado',
+    'diagnostic-exc-total-deducciones',
+    'diagnostic-exc-neto',
     'total-devengado',
     'total-deducciones',
     'neto-a-pagar',
@@ -164,6 +171,9 @@ test('index.html keeps the visible payslip table contract', () => {
         'Total Deducciones',
         'Saldo a Cargo',
         'Neto a Pagar',
+        'Total devengado con EXC diagnóstico',
+        'Deducciones con EXC diagnóstico',
+        'Neto estimado con EXC diagnóstico',
         'payslip-totals-grid'
     ];
 
@@ -172,7 +182,7 @@ test('index.html keeps the visible payslip table contract', () => {
     });
 
     elementIds
-        .filter((id) => id.startsWith('segment-') || id.startsWith('payslip-') || id.startsWith('subsidio-transporte'))
+        .filter((id) => id.startsWith('segment-') || id.startsWith('payslip-') || id.startsWith('subsidio-transporte') || id.startsWith('diagnostic-'))
         .forEach((id) => {
             assertIncludes(html, `id="${id}"`, 'Payslip table should expose renderer id in real markup');
         });
@@ -267,6 +277,10 @@ test('renderizarResultados aggregates segment rows from result breakdown', () =>
     assertEqual(elements['segment-ord-noc-exc-horas'].innerText, '2.00 h', 'Ordinary night EXC row should use premium hours');
     assertEqual(elements['segment-fes-diu-exc-devengado'].innerText, formatearMoneda(97680), 'Festive day extra row should use festive extra value');
     assertEqual(elements['segment-fes-noc-exc-horas'].innerText, '1.50 h', 'Festive night extra row should use festive extra hours');
+    assertEqual(elements['diagnostic-ord-diu-exc-detail'].innerText, `3.00 h · ${formatearMoneda(27000)}`, 'Diagnostic detail should show ordinary day EXC hours and value');
+    assertEqual(elements['diagnostic-ord-noc-exc-detail'].innerText, `2.00 h · ${formatearMoneda(22000)}`, 'Diagnostic detail should show ordinary night EXC hours and value');
+    assertEqual(elements['diagnostic-fes-diu-extra-detail'].innerText, `4.00 h · ${formatearMoneda(97680)}`, 'Diagnostic detail should show festive day extra hours and value');
+    assertEqual(elements['diagnostic-fes-noc-extra-detail'].innerText, `1.50 h · ${formatearMoneda(50120)}`, 'Diagnostic detail should show festive night extra hours and value');
 });
 
 test('renderizarResultados updates deductions and footer totals', () => {
@@ -297,6 +311,11 @@ test('renderizarResultados updates deductions and footer totals', () => {
         baseDeducciones: 1050000,
         totalDeducciones: 101500,
         netoPagar: 1048500,
+        experimentalExcTotals: {
+            devengadoTotal: 1200000,
+            totalDeducciones: 105500,
+            netoPagar: 1094500
+        },
         saludEmpleado: 42000,
         pensionEmpleado: 42000,
         cantidadHoras: 96,
@@ -317,6 +336,9 @@ test('renderizarResultados updates deductions and footer totals', () => {
     assertEqual(elements['payslip-total-deducciones'].innerText, formatearMoneda(101500), 'Total deducciones should match results');
     assertEqual(elements['payslip-saldo-a-cargo'].innerText, formatearMoneda(0), 'Saldo a cargo should remain an explicit zero total');
     assertEqual(elements['payslip-neto-a-pagar'].innerText, formatearMoneda(1048500), 'Neto a pagar should match results');
+    assertEqual(elements['diagnostic-exc-total-devengado'].innerText, formatearMoneda(1200000), 'Experimental diagnostic total devengado should render separately');
+    assertEqual(elements['diagnostic-exc-total-deducciones'].innerText, formatearMoneda(105500), 'Experimental diagnostic deductions should render separately');
+    assertEqual(elements['diagnostic-exc-neto'].innerText, formatearMoneda(1094500), 'Experimental diagnostic net should render separately');
 });
 
 if (failed > 0) {

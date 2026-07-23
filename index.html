@@ -84,7 +84,7 @@
         <div id="news-banner" class="news-banner news-banner--open" aria-label="Novedades">
             <button id="news-banner-toggle" class="news-banner__toggle" aria-expanded="true" aria-controls="news-banner-content">
                 <span class="news-banner__icon">🎉</span>
-                <span class="news-banner__title">Novedades v1.1.0</span>
+                <span class="news-banner__title">Novedades v1.2.0</span>
                 <span class="news-banner__arrow">▼</span>
             </button>
             <div id="news-banner-content" class="news-banner__content">
@@ -106,9 +106,18 @@
                 <div class="news-banner__section">
                     <h4 class="news-banner__section-title">🧮 Cálculos Mejorados</h4>
                     <ul class="news-banner__list">
-                        <li>Liquidación por tramos horarios (06:00-19:00, 19:00-06:00)</li>
-                        <li>Turnos nocturnos y cruzados calculados correctamente</li>
-                        <li>Corrección en días festivos y cruces de medianoche</li>
+                        <li>Recargo dominical y festivo actualizado al 90% según Ley 2466 de 2025</li>
+                        <li>Jornada máxima semanal alineada a 42 horas desde el 15 de julio de 2026</li>
+                        <li>Corrección del calendario de festivos 2025 y validación de cruces de medianoche</li>
+                        <li>EXC experimental excluido de los totales oficiales por defecto para evitar sobreestimar la nómina</li>
+                    </ul>
+                </div>
+                <div class="news-banner__section">
+                    <h4 class="news-banner__section-title">🧪 Diagnóstico Experimental</h4>
+                    <ul class="news-banner__list">
+                        <li>Nuevo comparativo de total devengado, deducciones y neto estimado con EXC diagnóstico</li>
+                        <li>Detalle visible de horas y valores para EXC diurna, EXC nocturna y extras festivas</li>
+                        <li>El diagnóstico recalcula deducciones y subsidio de transporte para medir mejor la diferencia contra la colilla real</li>
                     </ul>
                 </div>
                 <div class="news-banner__section">
@@ -283,7 +292,7 @@
                     <section class="payslip-diagnostic" aria-labelledby="diagnostic-heading">
                         <div class="payslip-diagnostic__header">
                             <h4 id="diagnostic-heading" class="payslip-diagnostic__title">Diagnóstico PTS / EXC experimental</h4>
-                            <p class="payslip-diagnostic__note">Solo informativo. No suma al devengado.</p>
+                            <p class="payslip-diagnostic__note">Solo informativo. No altera los totales oficiales; las horas festivas extra ya están incluidas en el devengado base.</p>
                         </div>
                         <div class="table-container payslip-diagnostic__table-wrap">
                             <table class="table table--diagnostic" aria-label="Diagnóstico experimental PTS y EXC">
@@ -292,6 +301,13 @@
                                     <tr><th scope="row">Horas EXC PTS</th><td id="pts-excess-diagnostic-hours">0.00 h</td></tr>
                                     <tr><th scope="row">Umbral PTS</th><td id="pts-excess-diagnostic-threshold">0.00 h</td></tr>
                                     <tr><th scope="row">PTS evaluadas</th><td id="pts-excess-diagnostic-periods">0</td></tr>
+                                    <tr><th scope="row">HORA EXC.DIU DIAGNÓSTICO</th><td id="diagnostic-ord-diu-exc-detail">0.00 h · $0</td></tr>
+                                    <tr><th scope="row">HORA EXC.NOC DIAGNÓSTICO</th><td id="diagnostic-ord-noc-exc-detail">0.00 h · $0</td></tr>
+                                    <tr><th scope="row">HORA FES.DIU EXTRA</th><td id="diagnostic-fes-diu-extra-detail">0.00 h · $0</td></tr>
+                                    <tr><th scope="row">HORA FES.NOC EXTRA</th><td id="diagnostic-fes-noc-extra-detail">0.00 h · $0</td></tr>
+                                    <tr><th scope="row">Total devengado con EXC diagnóstico</th><td id="diagnostic-exc-total-devengado">$0</td></tr>
+                                    <tr><th scope="row">Deducciones con EXC diagnóstico</th><td id="diagnostic-exc-total-deducciones">$0</td></tr>
+                                    <tr><th scope="row">Neto estimado con EXC diagnóstico</th><td id="diagnostic-exc-neto">$0</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -336,7 +352,7 @@
 
             <!-- Versión y crédito -->
             <div class="footer__meta">
-                <span class="footer__version">v1.1.0</span>
+                <span class="footer__version">v1.2.0</span>
                 <span class="footer__divider" aria-hidden="true">·</span>
                 <span class="footer__credit">by Fabio Ortega</span>
             </div>

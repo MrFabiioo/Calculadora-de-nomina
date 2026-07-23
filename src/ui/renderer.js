@@ -36,6 +36,7 @@ const TRIWEEKLY_EXC_LABELS = {
 };
 
 const formatearHora = (valor) => `${(valor || 0).toFixed(2)} h`;
+const formatearDetalleHorasValor = ({ horas = 0, valor = 0 } = {}) => `${formatearHora(horas)} · ${formatearMoneda(valor)}`;
 
 const actualizarTexto = (elemento, valor) => {
     if (elemento) {
@@ -131,6 +132,13 @@ export const inicializarElementos = () => {
         ptsExcessDiagnosticHours: document.getElementById('pts-excess-diagnostic-hours'),
         ptsExcessDiagnosticThreshold: document.getElementById('pts-excess-diagnostic-threshold'),
         ptsExcessDiagnosticPeriods: document.getElementById('pts-excess-diagnostic-periods'),
+        diagnosticOrdDiuExcDetail: document.getElementById('diagnostic-ord-diu-exc-detail'),
+        diagnosticOrdNocExcDetail: document.getElementById('diagnostic-ord-noc-exc-detail'),
+        diagnosticFesDiuExtraDetail: document.getElementById('diagnostic-fes-diu-extra-detail'),
+        diagnosticFesNocExtraDetail: document.getElementById('diagnostic-fes-noc-extra-detail'),
+        diagnosticExcTotalDevengado: document.getElementById('diagnostic-exc-total-devengado'),
+        diagnosticExcTotalDeducciones: document.getElementById('diagnostic-exc-total-deducciones'),
+        diagnosticExcNeto: document.getElementById('diagnostic-exc-neto'),
         totalDevengado: document.getElementById('total-devengado'),
         totalDeducciones: document.getElementById('total-deducciones'),
         netoAPagar: document.getElementById('neto-a-pagar'),
@@ -434,6 +442,7 @@ export const renderizarResultados = (resultados) => {
     const segmentosBase = agregarSegmentosTurnos(resultados.turnosLiquidados);
     const festivoExtra = resultados.festiveExtraSummary || {};
     const resumenExc = resultados.premiumTriweeklySummary || {};
+    const totalesExperimentalesExc = resultados.experimentalExcTotals || {};
     const excLabels = resultados.premiumTriweeklyIncluded === true
         ? TRIWEEKLY_EXC_LABELS.included
         : TRIWEEKLY_EXC_LABELS.excluded;
@@ -489,6 +498,25 @@ export const renderizarResultados = (resultados) => {
     actualizarTexto(elementos.ptsExcessDiagnosticHours, formatearHora(resultados.ptsExcessExperimentalSummary?.excessHours || 0));
     actualizarTexto(elementos.ptsExcessDiagnosticThreshold, formatearHora(resultados.ptsExcessExperimentalSummary?.thresholdHours || 0));
     actualizarTexto(elementos.ptsExcessDiagnosticPeriods, resultados.ptsExcessExperimentalSummary?.periodsCount || 0);
+    actualizarTexto(elementos.diagnosticOrdDiuExcDetail, formatearDetalleHorasValor({
+        horas: resumenExc.dayExcessHours || 0,
+        valor: resumenExc.dayPremiumValue || 0
+    }));
+    actualizarTexto(elementos.diagnosticOrdNocExcDetail, formatearDetalleHorasValor({
+        horas: resumenExc.nightExcessHours || 0,
+        valor: resumenExc.nightPremiumValue || 0
+    }));
+    actualizarTexto(elementos.diagnosticFesDiuExtraDetail, formatearDetalleHorasValor({
+        horas: festivoExtra.dayHours || 0,
+        valor: festivoExtra.dayValue || 0
+    }));
+    actualizarTexto(elementos.diagnosticFesNocExtraDetail, formatearDetalleHorasValor({
+        horas: festivoExtra.nightHours || 0,
+        valor: festivoExtra.nightValue || 0
+    }));
+    actualizarTexto(elementos.diagnosticExcTotalDevengado, formatearMoneda(totalesExperimentalesExc.devengadoTotal ?? totalDevengado));
+    actualizarTexto(elementos.diagnosticExcTotalDeducciones, formatearMoneda(totalesExperimentalesExc.totalDeducciones ?? totalDeducciones));
+    actualizarTexto(elementos.diagnosticExcNeto, formatearMoneda(totalesExperimentalesExc.netoPagar ?? netoPagar));
     
     // Total devengado
     actualizarTexto(elementos.totalDevengado, formatearMoneda(totalDevengado));

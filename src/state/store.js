@@ -41,6 +41,13 @@ const resultadosIniciales = {
         diagnostics: { ...DEFAULT_TRIWEEKLY_METADATA },
         periods: []
     },
+    experimentalExcTotals: {
+        devengadoTotal: 0,
+        baseDeducciones: 0,
+        totalDeducciones: 0,
+        netoPagar: 0,
+        excDiagnosticoAdicional: 0
+    },
     ptsExcessExperimentalTotal: 0,
     ptsExcessExperimentalSummary: {
         periodsCount: 0,

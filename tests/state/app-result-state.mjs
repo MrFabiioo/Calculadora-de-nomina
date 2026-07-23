@@ -37,6 +37,32 @@ test('app result state preserves explicit triweekly EXC opt-in for export', () =
     }
 });
 
+test('app result state preserves projected EXC totals for export consumers', () => {
+    store.resetState();
+
+    const experimentalExcTotals = {
+        devengadoTotal: 152000,
+        baseDeducciones: 148000,
+        totalDeducciones: 11840,
+        netoPagar: 140160,
+        excDiagnosticoAdicional: 12000
+    };
+
+    setState({
+        resultados: {
+            ...structuredClone(resultadosIniciales),
+            experimentalExcTotals
+        }
+    });
+
+    if (resultadosIniciales.experimentalExcTotals.netoPagar !== 0) {
+        throw new Error('initial result state should default projected EXC totals to zero');
+    }
+    if (getState().resultados.experimentalExcTotals.netoPagar !== experimentalExcTotals.netoPagar) {
+        throw new Error('stored result state should preserve projected EXC totals for export consumers');
+    }
+});
+
 if (testsFailed > 0) {
     console.log(`\n❌ ${testsFailed} test(s) failed. ${testsPassed} passed.`);
     process.exit(1);

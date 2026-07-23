@@ -223,6 +223,7 @@ const calcularNominaCompleta = () => {
             baseTurnosSinPremio: resultados.baseTurnosSinPremio,
             baseDeducciones: resultados.baseDeducciones,
             premiumTriweeklySummary: resultados.premiumTriweeklySummary,
+            experimentalExcTotals: resultados.experimentalExcTotals,
             ptsExcessExperimentalTotal: resultados.ptsExcessExperimentalTotal,
             ptsExcessExperimentalSummary: resultados.ptsExcessExperimentalSummary,
             ptsExcessExperimentalPeriods: resultados.ptsExcessExperimentalPeriods,

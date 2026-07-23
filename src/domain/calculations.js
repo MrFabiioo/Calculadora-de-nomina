@@ -69,6 +69,36 @@ export const calcularTotalDeducciones = (deducciones, saludPension) => {
     );
 };
 
+const calcularTotalesExperimentalesExc = ({
+    baseDeducciones,
+    premiumTriweeklyTotal,
+    premiumTriweeklyIncluded,
+    cantidadTurnosSubsidio,
+    deduccionesAdicionales
+}) => {
+    const excDiagnosticoAdicional = premiumTriweeklyIncluded ? 0 : premiumTriweeklyTotal;
+    const baseDeduccionesExperimental = baseDeducciones + excDiagnosticoAdicional;
+    const subsidioTransporteExperimental = calcularSubsidioTransporte(
+        baseDeduccionesExperimental,
+        cantidadTurnosSubsidio
+    );
+    const deduccionesSaludPensionExperimental = calcularDeducciones(baseDeduccionesExperimental);
+    const totalDeduccionesExperimental = calcularTotalDeducciones(
+        deduccionesAdicionales,
+        deduccionesSaludPensionExperimental
+    );
+    const devengadoTotalExperimental = baseDeduccionesExperimental + subsidioTransporteExperimental;
+
+    return {
+        devengadoTotal: devengadoTotalExperimental,
+        subsidioTransporte: subsidioTransporteExperimental,
+        baseDeducciones: baseDeduccionesExperimental,
+        totalDeducciones: totalDeduccionesExperimental,
+        netoPagar: devengadoTotalExperimental - totalDeduccionesExperimental,
+        excDiagnosticoAdicional
+    };
+};
+
 /**
  * Calcula la nómina completa
  * @param {Object} input - Datos de entrada de la nómina
@@ -183,6 +213,13 @@ export const calcularNomina = (input) => {
     
     // Neto a pagar
     const netoPagar = devengadoTotal - totalDeducciones;
+    const experimentalExcTotals = calcularTotalesExperimentalesExc({
+        baseDeducciones,
+        premiumTriweeklyTotal,
+        premiumTriweeklyIncluded,
+        cantidadTurnosSubsidio: contadorTurnosReales + diasDescanso,
+        deduccionesAdicionales
+    });
     
     const resultado = {
         // Totales
@@ -196,6 +233,7 @@ export const calcularNomina = (input) => {
         premiumTriweeklyTotal,
         premiumTriweeklyIncluded,
         premiumTriweeklySummary,
+        experimentalExcTotals,
         ptsExcessExperimentalTotal,
         ptsExcessExperimentalSummary,
         ptsExcessExperimentalPeriods: ptsExcessExperimental.periods,
