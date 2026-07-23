@@ -142,6 +142,7 @@ export const calcularNomina = (input) => {
         config: triweeklyConfig
     });
     const premiumTriweeklyTotal = triweeklyPremiums.premiumValue;
+    const premiumTriweeklyIncluded = triweeklyConfig?.includeInPayable === true;
     const premiumTriweeklySummary = {
         ...triweeklyPremiums.summary,
         periods: triweeklyPremiums.periods
@@ -155,7 +156,7 @@ export const calcularNomina = (input) => {
         ...ptsExcessExperimental.summary,
         periods: ptsExcessExperimental.periods
     };
-    totalTurnos = baseTurnosSinPremio + premiumTriweeklyTotal;
+    totalTurnos = baseTurnosSinPremio + (premiumTriweeklyIncluded ? premiumTriweeklyTotal : 0);
 
     // Calcular subsidio — los días de descanso también cuentan para el auxilio
     const subsidioTransporte = calcularSubsidioTransporte(totalTurnos, contadorTurnosReales + diasDescanso);
@@ -193,6 +194,7 @@ export const calcularNomina = (input) => {
         totalTurnos,
         baseTurnosSinPremio,
         premiumTriweeklyTotal,
+        premiumTriweeklyIncluded,
         premiumTriweeklySummary,
         ptsExcessExperimentalTotal,
         ptsExcessExperimentalSummary,

@@ -219,6 +219,7 @@ const calcularNominaCompleta = () => {
             totalTurnos: resultados.totalTurnos,
             diasDescanso: resultados.diasDescanso,
             premiumTriweeklyTotal: resultados.premiumTriweeklyTotal,
+            premiumTriweeklyIncluded: resultados.premiumTriweeklyIncluded,
             baseTurnosSinPremio: resultados.baseTurnosSinPremio,
             baseDeducciones: resultados.baseDeducciones,
             premiumTriweeklySummary: resultados.premiumTriweeklySummary,

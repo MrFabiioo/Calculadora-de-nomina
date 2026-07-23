@@ -39,9 +39,9 @@ const FESTIVOS = [
     "2024-05-01", "2024-06-02", "2024-06-03", "2024-07-01", "2024-07-20",
     "2024-08-07", "2024-08-19", "2024-10-14", "2024-11-04", "2024-11-11",
     "2024-12-08", "2024-12-25",
-    "2025-01-01", "2025-01-06", "2025-03-24", "2025-04-13", "2025-04-14",
+    "2025-01-01", "2025-01-06", "2025-03-24",
     "2025-04-17", "2025-04-18", "2025-05-01", "2025-06-02", "2025-06-23",
-    "2025-07-20", "2025-08-07", "2025-08-18", "2025-10-13", "2025-11-03",
+    "2025-06-30", "2025-07-20", "2025-08-07", "2025-08-18", "2025-10-13", "2025-11-03",
     "2025-11-17", "2025-12-08", "2025-12-25",
     "2026-01-01", "2026-01-05", "2026-01-06", "2026-03-23", "2026-03-24",
     "2026-04-02", "2026-04-03", "2026-05-01", "2026-06-08", "2026-06-15",
@@ -471,6 +471,14 @@ const FIXTURES = [
     }
 ];
 
+const ACCEPTED_DIVERGENCES = new Map([
+    [3, 'Accepted: segmented engine correctly prices 00:00-06:00 on Sunday as Sunday/festive; legacy prices whole shift from Saturday start date.'],
+    [4, 'Accepted: segmented engine correctly prices only 22:00-00:00 as Sunday/festive; legacy prices whole shift from Sunday start date.'],
+    [5, 'Accepted: fixture label is legacy-era; 2026-04-06 is ordinary, so segmented output matches date/time law and diverges from start-date legacy pricing.'],
+    [6, 'Accepted: segmented engine correctly prices only 22:00-00:00 as holiday/festive; legacy prices whole cross-midnight shift from holiday start date.'],
+    [7, 'Accepted: fixture label is legacy-era; 2026-04-04 is ordinary, so segmented output matches date/time law and diverges from start-date legacy pricing.']
+]);
+
 // ============================================
 // EJECUCIÓN
 // ============================================
@@ -517,8 +525,10 @@ const resultados = FIXTURES.map(fixture => {
 const totalLegacy = resultados.reduce((sum, r) => sum + r.comparacion.legacy, 0);
 const totalSegmentado = resultados.reduce((sum, r) => sum + r.comparacion.segmentado, 0);
 const diffTotal = Math.abs(totalLegacy - totalSegmentado);
+const aceptados = resultados.filter(r => !r.comparacion.esperado && ACCEPTED_DIVERGENCES.has(r.fixture.id)).length;
+const divergenciasInesperadas = resultados.filter(r => !r.comparacion.esperado && !ACCEPTED_DIVERGENCES.has(r.fixture.id));
 const esperados = resultados.filter(r => r.comparacion.esperado).length;
-const noEsperados = resultados.filter(r => !r.comparacion.esperado).length;
+const noEsperados = divergenciasInesperadas.length;
 
 console.log('='.repeat(80));
 console.log('RESUMEN');
@@ -528,17 +538,27 @@ console.log(`Total Segmentado: ${formatearMoneda(totalSegmentado)}`);
 console.log(`Diff Total:       ${formatearMoneda(diffTotal)}`);
 console.log('');
 console.log(`Casos esperados:   ${esperados}/${resultados.length}`);
-console.log(`Casos NO esperados: ${noEsperados}/${resultados.length}`);
+console.log(`Divergencias aceptadas: ${aceptados}/${resultados.length}`);
+console.log(`Divergencias NO esperadas: ${noEsperados}/${resultados.length}`);
 console.log('');
+
+if (aceptados > 0) {
+    console.log('DIVERGENCIAS ACEPTADAS:');
+    resultados.filter(r => !r.comparacion.esperado && ACCEPTED_DIVERGENCES.has(r.fixture.id)).forEach(r => {
+        console.log(`  - Caso ${r.fixture.id}: ${ACCEPTED_DIVERGENCES.get(r.fixture.id)}`);
+    });
+    console.log('');
+}
 
 if (noEsperados > 0) {
     console.log('CASOS CON DIVERGENCIA NO ESPERADA:');
-    resultados.filter(r => !r.comparacion.esperado).forEach(r => {
+    divergenciasInesperadas.forEach(r => {
         console.log(`  - Caso ${r.fixture.id}: ${r.fixture.descripcion}`);
         console.log(`    Diff: ${formatearMoneda(r.comparacion.diff)} (${r.comparacion.diffPct.toFixed(2)}%)`);
     });
     console.log('');
     console.log('⚠️  ATENCIÓN: Estos casos requieren investigación.');
+    process.exitCode = 1;
 } else {
-    console.log('✓ TODOS LOS CASOS ESPERADOS - Regresión OK');
+    console.log('✓ Sin divergencias inesperadas - Regresión OK');
 }

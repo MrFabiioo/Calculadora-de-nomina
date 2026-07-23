@@ -64,7 +64,7 @@ export const buildExportSummaryLineItems = (resultados = {}) => {
         }
     ];
 
-    if ((resultados.premiumTriweeklyTotal || 0) > 0) {
+    if ((resultados.premiumTriweeklyTotal || 0) > 0 && resultados.premiumTriweeklyIncluded === true) {
         lineItems.push({
             label: 'EXC estimado (experimental)',
             value: resultados.premiumTriweeklyTotal || 0
@@ -121,7 +121,7 @@ export const buildPayrollSheetContent = (datos) => {
     summaryLineItems.forEach(({ label, value }) => {
         hoja.push([label, formatearMoneda(value)]);
     });
-    hoja.push(['Total Turnos + EXC estimado', formatearMoneda(resultados.totalTurnos || 0)]);
+    hoja.push(['Total Turnos Pagables', formatearMoneda(resultados.totalTurnos || 0)]);
     hoja.push(['TOTAL DEVENGADO', formatearMoneda(resultados.devengadoTotal || 0)]);
     hoja.push(['Deducciones', formatearMoneda(resultados.totalDeducciones || 0)]);
     hoja.push(['SALARIO NETO A PAGAR', formatearMoneda(resultados.netoPagar || 0)]);
@@ -137,7 +137,11 @@ export const buildPayrollSheetContent = (datos) => {
         hoja.push(['Horas Exceso Nocturno', (resultados.premiumTriweeklySummary.nightExcessHours || 0).toFixed(2)]);
         hoja.push(['EXC Diurno', formatearMoneda(resultados.premiumTriweeklySummary.dayPremiumValue || 0)]);
         hoja.push(['EXC Nocturno', formatearMoneda(resultados.premiumTriweeklySummary.nightPremiumValue || 0)]);
-        hoja.push(['TOTAL EXC ESTIMADO', formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)]);
+        hoja.push([
+            resultados.premiumTriweeklyIncluded === true ? 'TOTAL EXC ESTIMADO INCLUIDO' : 'TOTAL EXC ESTIMADO DIAGNÓSTICO',
+            formatearMoneda(resultados.premiumTriweeklySummary.premiumValue || 0)
+        ]);
+        hoja.push(['Nota', resultados.premiumTriweeklyIncluded === true ? 'Incluido explícitamente en el devengado.' : 'Diagnóstico experimental; no suma al devengado.']);
         hoja.push([]);
     }
 
@@ -265,19 +269,21 @@ export const buildPayrollSheetContent = (datos) => {
 
     if ((resultados.premiumTriweeklyTotal || 0) > 0) {
         hoja.push([
-            'EXC estimado (experimental)',
+            resultados.premiumTriweeklyIncluded === true ? 'EXC estimado (experimental)' : 'EXC estimado diagnóstico (no incluido)',
             '',
             '',
             (resultados.premiumTriweeklySummary?.excessHours || 0).toFixed(2),
             formatearMoneda(resultados.premiumTriweeklyTotal || 0)
         ]);
-        hoja.push([
-            'TOTAL + EXC estimado',
-            '',
-            '',
-            totalHoras.toFixed(2),
-            formatearMoneda((totalValor || 0) + (resultados.premiumTriweeklyTotal || 0))
-        ]);
+        if (resultados.premiumTriweeklyIncluded === true) {
+            hoja.push([
+                'TOTAL + EXC estimado',
+                '',
+                '',
+                totalHoras.toFixed(2),
+                formatearMoneda((totalValor || 0) + (resultados.premiumTriweeklyTotal || 0))
+            ]);
+        }
     }
     
     return hoja;

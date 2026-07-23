@@ -13,6 +13,7 @@ const ALLOCATION_STRATEGY = 'latest-ordinary-segments-first';
 export const DEFAULT_TRIWEEKLY_CONFIG = {
     anchorDate: null,
     periodDays: DEFAULT_PERIOD_DAYS,
+    includeInPayable: false,
     thresholds: [
         { effectiveUntil: '2026-07-14', maxOrdinaryHours: 44 },
         { effectiveFrom: '2026-07-15', maxOrdinaryHours: 42 }
@@ -23,6 +24,7 @@ export const DEFAULT_TRIWEEKLY_METADATA = {
     calculationMode: CALCULATION_MODE,
     status: CALCULATION_STATUS,
     modelLabel: 'EXC estimado (experimental)',
+    payableDefault: 'excluded',
     periodDays: DEFAULT_PERIOD_DAYS,
     anchorDate: null,
     thresholds: DEFAULT_TRIWEEKLY_CONFIG.thresholds,
@@ -54,6 +56,7 @@ const diffInDays = (a, b) => Math.floor((startOfDay(a).getTime() - startOfDay(b)
 const normalizeConfig = (config = {}) => ({
     anchorDate: config.anchorDate || DEFAULT_TRIWEEKLY_CONFIG.anchorDate,
     periodDays: config.periodDays || DEFAULT_TRIWEEKLY_CONFIG.periodDays,
+    includeInPayable: config.includeInPayable === true,
     thresholds: Array.isArray(config.thresholds) && config.thresholds.length > 0
         ? config.thresholds
         : DEFAULT_TRIWEEKLY_CONFIG.thresholds
@@ -151,6 +154,8 @@ const buildDiagnostics = ({ normalizedConfig, anchorDate }) => ({
     calculationMode: CALCULATION_MODE,
     status: CALCULATION_STATUS,
     modelLabel: 'EXC estimado (experimental)',
+    payableDefault: 'excluded',
+    includeInPayable: normalizedConfig.includeInPayable,
     periodDays: normalizedConfig.periodDays,
     anchorDate,
     thresholds: normalizedConfig.thresholds,

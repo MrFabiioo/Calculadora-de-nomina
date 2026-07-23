@@ -68,11 +68,13 @@ const elementIds = [
     'segment-fes-noc-saldo',
     'segment-fes-noc-horas',
     'segment-ord-diu-exc-devengado',
+    'segment-ord-diu-exc-label',
     'segment-ord-diu-exc-deduccion',
     'segment-ord-diu-exc-base',
     'segment-ord-diu-exc-saldo',
     'segment-ord-diu-exc-horas',
     'segment-ord-noc-exc-devengado',
+    'segment-ord-noc-exc-label',
     'segment-ord-noc-exc-deduccion',
     'segment-ord-noc-exc-base',
     'segment-ord-noc-exc-saldo',
@@ -153,8 +155,8 @@ test('index.html keeps the visible payslip table contract', () => {
         'HORA ORD.NOC.PARAMEDICO',
         'HORA FES.DIU.PARAMEDICO',
         'HORA FES.NOC.PARAMEDICO',
-        'HORA EXC.DIU.EXTRA.PARAMEDICO',
-        'HORA EXC.NOC.EXTRA.PARAMEDICO',
+        'HORA EXC.DIU DIAGNÓSTICO',
+        'HORA EXC.NOC DIAGNÓSTICO',
         'HORA FES.DIU EXTRA',
         'HORA FES.NOC EXTRA',
         'Subsidio de transporte',
@@ -192,6 +194,22 @@ test('renderizarResultados keeps zero-value EXC rows visible', () => {
     assertEqual(elements['segment-fes-diu-exc-devengado'].innerText, formatearMoneda(0), 'Festive day extra row should stay at zero');
     assertEqual(elements['segment-fes-noc-exc-devengado'].innerText, formatearMoneda(0), 'Festive night extra row should stay at zero');
     assertEqual(elements['segment-ord-diu-exc-horas'].innerText, '0.00 h', 'Ordinary day EXC hours should stay at zero');
+    assertEqual(elements['segment-ord-diu-exc-label'].innerText, 'HORA EXC.DIU DIAGNÓSTICO', 'Default day EXC label should stay diagnostic-only');
+    assertEqual(elements['segment-ord-noc-exc-label'].innerText, 'HORA EXC.NOC DIAGNÓSTICO', 'Default night EXC label should stay diagnostic-only');
+});
+
+test('renderizarResultados changes EXC labels when triweekly premium is included', () => {
+    const { document, elements } = buildDocument();
+    globalThis.document = document;
+
+    renderer.inicializarElementos();
+    renderer.renderizarResultados({
+        ...structuredClone(resultadosIniciales),
+        premiumTriweeklyIncluded: true
+    });
+
+    assertEqual(elements['segment-ord-diu-exc-label'].innerText, 'HORA EXC.DIU INCLUIDA', 'Included day EXC label should not say diagnostic-only');
+    assertEqual(elements['segment-ord-noc-exc-label'].innerText, 'HORA EXC.NOC INCLUIDA', 'Included night EXC label should not say diagnostic-only');
 });
 
 test('renderizarResultados aggregates segment rows from result breakdown', () => {

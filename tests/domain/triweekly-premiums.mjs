@@ -2,6 +2,7 @@ import { TARIFAS_HORA } from '../../src/domain/shifts.js';
 import { calculateTriweeklyPremiums, DEFAULT_TRIWEEKLY_CONFIG } from '../../src/domain/triweekly-premiums.js';
 import { calcularNomina, calcularSubsidioTransporte, calcularDeducciones, calcularTotalDeducciones } from '../../src/domain/calculations.js';
 import { buildExportSummaryLineItems, buildPayrollSheetContent } from '../../src/utils/exporter.js';
+import { formatearMoneda } from '../../src/utils/formatters.js';
 
 let testsPassed = 0;
 let testsFailed = 0;
@@ -232,7 +233,7 @@ test('exposes an audit-friendly premium summary contract', () => {
 
 console.log('\n--- Tests: payroll integration ---');
 
-test('calcularNomina adds triweekly premium into earned base, deductions, subsidy and net', () => {
+test('calcularNomina keeps experimental EXC diagnostic-only by default', () => {
     const turnos = [
         { fecha: '2026-01-05', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
         { fecha: '2026-01-06', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
@@ -254,7 +255,7 @@ test('calcularNomina adds triweekly premium into earned base, deductions, subsid
     });
 
     const expectedPremium = 8 * TARIFAS_HORA.diurna * 0.25;
-    const expectedTotalTurnos = result.baseTurnosSinPremio + expectedPremium;
+    const expectedTotalTurnos = result.baseTurnosSinPremio;
     const expectedSubsidy = calcularSubsidioTransporte(expectedTotalTurnos, 6);
     const expectedBaseDeducciones = expectedTotalTurnos;
     const expectedDeducciones = calcularDeducciones(expectedBaseDeducciones);
@@ -266,32 +267,90 @@ test('calcularNomina adds triweekly premium into earned base, deductions, subsid
     const expectedNeto = expectedDevengadoTotal - expectedTotalDeducciones;
 
     assertClose(result.premiumTriweeklyTotal, expectedPremium, 0.01, 'should expose premium total');
-    assertClose(result.totalTurnos, expectedTotalTurnos, 0.01, 'should include premium in totalTurnos');
-    assertClose(result.subsidioTransporte, expectedSubsidy, 0.01, 'should evaluate subsidy with premium-adjusted base');
-    assertClose(result.baseDeducciones, expectedBaseDeducciones, 0.01, 'should use premium-adjusted deductions base');
+    assertEq(result.premiumTriweeklyIncluded, false, 'experimental EXC should be excluded from payable totals by default');
+    assertClose(result.totalTurnos, expectedTotalTurnos, 0.01, 'should not include experimental EXC in totalTurnos by default');
+    assertClose(result.subsidioTransporte, expectedSubsidy, 0.01, 'should evaluate subsidy without diagnostic EXC by default');
+    assertClose(result.baseDeducciones, expectedBaseDeducciones, 0.01, 'should use payable base without diagnostic EXC by default');
     assertClose(result.totalDeducciones, expectedTotalDeducciones, 0.01, 'should recompute deductions after premium');
     assertClose(result.devengadoTotal, expectedDevengadoTotal, 0.01, 'should recompute earned total after premium');
     assertClose(result.netoPagar, expectedNeto, 0.01, 'should recompute net after premium');
     assertEq(result.premiumTriweeklySummary.periods.length, 1, 'should attach detailed premium periods');
 });
 
+test('calcularNomina preserves explicit opt-in to include triweekly EXC in payable totals', () => {
+    const turnos = [
+        { fecha: '2026-01-05', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+        { fecha: '2026-01-06', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+        { fecha: '2026-01-07', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+        { fecha: '2026-01-08', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+        { fecha: '2026-01-09', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+        { fecha: '2026-01-10', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' }
+    ];
+
+    const result = calcularNomina({
+        turnos,
+        triweeklyConfig: {
+            anchorDate: '2025-12-28',
+            includeInPayable: true,
+            thresholds: [{ effectiveFrom: '2025-12-28', maxOrdinaryHours: 40 }]
+        }
+    });
+
+    const expectedPremium = 8 * TARIFAS_HORA.diurna * 0.25;
+
+    assertEq(result.premiumTriweeklyIncluded, true, 'explicit opt-in should be preserved');
+    assertClose(result.totalTurnos, result.baseTurnosSinPremio + expectedPremium, 0.01, 'explicit opt-in should include EXC in totalTurnos');
+    assertClose(result.baseDeducciones, result.totalTurnos, 0.01, 'explicit opt-in should include EXC in deductions base');
+});
+
 console.log('\n--- Tests: export reconciliation ---');
 
-test('export summary line items include triweekly premium and reconcile with devengadoTotal', () => {
+test('export summary line items exclude diagnostic triweekly premium by default and reconcile with devengadoTotal', () => {
     const lineItems = buildExportSummaryLineItems({
         baseTurnosSinPremio: 100000,
         premiumTriweeklyTotal: 25000,
         subsidioTransporte: 12000,
-        devengadoTotal: 137000
+        devengadoTotal: 112000,
+        premiumTriweeklyIncluded: false
     });
 
-    assertEq(lineItems.length, 3, 'should emit base, premium and subsidy line items');
-    assertEq(lineItems[1].label, 'EXC estimado (experimental)', 'should expose estimated EXC as a distinct export line item');
-    assertEq(lineItems[1].value, 25000, 'should preserve premium numeric value for reconciliation');
+    assertEq(lineItems.length, 2, 'should emit base and subsidy payable line items');
+    assertEq(lineItems.some((item) => item.label.includes('EXC')), false, 'diagnostic EXC should not be a payable summary line item by default');
     assertEq(
         lineItems.reduce((sum, item) => sum + item.value, 0),
-        137000,
+        112000,
         'should reconcile exported summary line items with devengadoTotal'
+    );
+});
+
+test('export summary line items include payable triweekly EXC when explicitly opted in and reconcile with devengadoTotal', () => {
+    const result = calcularNomina({
+        turnos: [
+            { fecha: '2026-01-05', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-06', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-07', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-08', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-09', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-10', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' }
+        ],
+        triweeklyConfig: {
+            anchorDate: '2025-12-28',
+            includeInPayable: true,
+            thresholds: [{ effectiveFrom: '2025-12-28', maxOrdinaryHours: 40 }]
+        }
+    });
+
+    const lineItems = buildExportSummaryLineItems(result);
+    const excLineItem = lineItems.find((item) => item.label.includes('EXC'));
+
+    assertEq(result.premiumTriweeklyIncluded, true, 'fixture should exercise the payable EXC opt-in path');
+    assertEq(Boolean(excLineItem), true, 'payable EXC should be exported as a summary line item');
+    assertClose(excLineItem.value, result.premiumTriweeklyTotal, 0.01, 'payable EXC line item should use the calculated premium');
+    assertClose(
+        lineItems.reduce((sum, item) => sum + item.value, 0),
+        result.devengadoTotal,
+        0.01,
+        'payable summary line items should reconcile with devengadoTotal'
     );
 });
 
@@ -305,11 +364,12 @@ test('payroll sheet content renders premium summary rows when premiums exist', (
             diasDescanso: 0,
             baseTurnosSinPremio: 100000,
             premiumTriweeklyTotal: 25000,
-            totalTurnos: 125000,
+            premiumTriweeklyIncluded: false,
+            totalTurnos: 100000,
             subsidioTransporte: 12000,
-            devengadoTotal: 137000,
+            devengadoTotal: 112000,
             totalDeducciones: 0,
-            netoPagar: 137000,
+            netoPagar: 112000,
             premiumTriweeklySummary: {
                 periodsCount: 1,
                 ordinaryHours: 140,
@@ -343,15 +403,68 @@ test('payroll sheet content renders premium summary rows when premiums exist', (
         fechaGeneracion: new Date('2026-01-20T00:00:00Z')
     });
 
-    const premiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)');
+    const premiumRow = sheet.find((row) => row[0] === 'TOTAL EXC ESTIMADO DIAGNÓSTICO');
     const ptsDiagnosticRow = sheet.find((row) => row[0] === 'TOTAL EXC PTS DIAGNÓSTICO');
-    const breakdownPremiumRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)' && row.length === 5);
+    const breakdownPremiumRow = sheet.find((row) => row[0] === 'EXC estimado diagnóstico (no incluido)' && row.length === 5);
     const totalEarnedRow = sheet.find((row) => row[0] === 'TOTAL DEVENGADO');
+    const netPayRow = sheet.find((row) => row[0] === 'SALARIO NETO A PAGAR');
 
     assertEq(Boolean(premiumRow), true, 'should render premium row in summary section');
     assertEq(Boolean(ptsDiagnosticRow), true, 'should render persisted PTS diagnostic summary rows');
     assertEq(Boolean(breakdownPremiumRow), true, 'should render premium row in breakdown section');
     assertEq(Boolean(totalEarnedRow), true, 'should keep earned total row for reconciliation');
+    assertEq(totalEarnedRow[1], netPayRow[1], 'fixture with zero deductions should reconcile earned total and net pay');
+});
+
+test('payroll sheet content exports explicitly included triweekly EXC as payable and reconciles totals', () => {
+    const result = calcularNomina({
+        turnos: [
+            { fecha: '2026-01-05', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-06', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-07', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-08', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-09', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' },
+            { fecha: '2026-01-10', horaInicio: '06:00 Am', horaSalida: '14:00 Pm' }
+        ],
+        triweeklyConfig: {
+            anchorDate: '2025-12-28',
+            includeInPayable: true,
+            thresholds: [{ effectiveFrom: '2025-12-28', maxOrdinaryHours: 40 }]
+        }
+    });
+
+    const sheet = buildPayrollSheetContent({
+        turnos: [],
+        deducciones: {},
+        resultados: result,
+        turnosLiquidados: result.turnosLiquidados,
+        breakdownAgregado: {
+            ordinario: { horasDia: 48, horasNoche: 0, valor: result.baseTurnosSinPremio },
+            festivo: { horasDia: 0, horasNoche: 0, valor: 0 },
+            total: { horas: 48, valor: result.baseTurnosSinPremio }
+        },
+        fechaGeneracion: new Date('2026-01-20T00:00:00Z')
+    });
+
+    const exportedExcLineItem = sheet.find((row) => row[0] === 'EXC estimado (experimental)' && row.length === 2);
+    const includedPremiumSummaryRow = sheet.find((row) => row[0] === 'TOTAL EXC ESTIMADO INCLUIDO');
+    const diagnosticPremiumSummaryRow = sheet.find((row) => row[0] === 'TOTAL EXC ESTIMADO DIAGNÓSTICO');
+    const includedBreakdownRow = sheet.find((row) => row[0] === 'EXC estimado (experimental)' && row.length === 5);
+    const diagnosticBreakdownRow = sheet.find((row) => row[0] === 'EXC estimado diagnóstico (no incluido)');
+    const totalWithExcRow = sheet.find((row) => row[0] === 'TOTAL + EXC estimado');
+    const totalEarnedRow = sheet.find((row) => row[0] === 'TOTAL DEVENGADO');
+    const netPayRow = sheet.find((row) => row[0] === 'SALARIO NETO A PAGAR');
+
+    assertEq(result.premiumTriweeklyIncluded, true, 'fixture should exercise the payable EXC opt-in path');
+    assertEq(Boolean(exportedExcLineItem), true, 'summary section should export EXC as a payable line item');
+    assertEq(exportedExcLineItem[1], formatearMoneda(result.premiumTriweeklyTotal), 'summary EXC line should export the premium value');
+    assertEq(Boolean(includedPremiumSummaryRow), true, 'premium summary should label opted-in EXC as included');
+    assertEq(Boolean(diagnosticPremiumSummaryRow), false, 'premium summary should not label opted-in EXC as diagnostic-only');
+    assertEq(Boolean(includedBreakdownRow), true, 'breakdown section should label opted-in EXC as payable');
+    assertEq(Boolean(diagnosticBreakdownRow), false, 'breakdown section should not label opted-in EXC as no incluido');
+    assertEq(totalWithExcRow[4], formatearMoneda(result.totalTurnos), 'breakdown total with EXC should reconcile with totalTurnos');
+    assertEq(totalEarnedRow[1], formatearMoneda(result.devengadoTotal), 'earned total should export devengadoTotal');
+    assertEq(netPayRow[1], formatearMoneda(result.netoPagar), 'net pay should export netoPagar');
 });
 
 if (testsFailed > 0) {

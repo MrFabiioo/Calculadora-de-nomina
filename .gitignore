@@ -1,6 +1,9 @@
 # Claude artifacts
 .claude/
 
+# Local agent artifacts
+.atl/
+
 # Backups
 backup/
 

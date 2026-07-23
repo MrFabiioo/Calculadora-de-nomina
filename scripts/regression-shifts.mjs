@@ -16,7 +16,6 @@
 
 import { TARIFAS_HORA, MEDIA_HORA } from '../src/domain/shifts.js';
 import { FESTIVOS, esFestivo, esDomingo } from '../src/domain/holidays.js';
-import { compararCalculos, generarReporteRegresion } from '../src/domain/calculations.js';
 import { liquidarTurnoPorTramos } from '../src/domain/payroll-breakdown.js';
 
 // ============================================
@@ -33,6 +32,26 @@ const formatearMoneda = (valor) => {
 
 const formatearHoras = (horas) => horas.toFixed(2);
 
+const compararContraEsperado = (fixture) => {
+    const resultadoSegmentado = liquidarTurnoPorTramos(fixture.turno);
+    const segmentado = resultadoSegmentado ? resultadoSegmentado.total : 0;
+    const horasSegmentado = resultadoSegmentado ? resultadoSegmentado.horas : 0;
+    const esperadoValor = fixture.esperado.valorAproximado;
+    const diff = Math.abs(esperadoValor - segmentado);
+    const diffPct = esperadoValor > 0 ? (diff / esperadoValor) * 100 : 0;
+
+    return {
+        esperadoValor,
+        segmentado,
+        diff,
+        diffPct,
+        esperado: diffPct < 1 && Math.abs((fixture.esperado.horas || 0) - horasSegmentado) < 0.01,
+        horasEsperadas: fixture.esperado.horas || 0,
+        horasSegmentado,
+        breakdown: resultadoSegmentado?.breakdown || []
+    };
+};
+
 // ============================================
 // FIXTURES DE TURNOS
 // ============================================
@@ -44,7 +63,7 @@ const FIXTURES_TURNOS_REGRESION = [
         turno: {
             fecha: '2026-04-07', // Martes normal
             horaInicio: '08:00 Am',
-            horaSalida: '06:00 Pm',
+            horaSalida: '18:00 Pm',
             incapacidad: false
         },
         esperado: {
@@ -58,7 +77,7 @@ const FIXTURES_TURNOS_REGRESION = [
         descripcion: 'Normal nocturno 22:00-06:00',
         turno: {
             fecha: '2026-04-07', // Martes normal
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false
         },
@@ -73,7 +92,7 @@ const FIXTURES_TURNOS_REGRESION = [
         descripcion: 'Sábado 22:00 → domingo 06:00 (2h nocturnas normales + 6h nocturnas festivas)',
         turno: {
             fecha: '2026-04-04', // Sábado
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false
         },
@@ -89,7 +108,7 @@ const FIXTURES_TURNOS_REGRESION = [
         descripcion: 'Domingo 22:00 → lunes normal 06:00 (2h nocturnas festivas + 6h nocturnas normales)',
         turno: {
             fecha: '2026-04-05', // Domingo
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false
         },
@@ -102,10 +121,10 @@ const FIXTURES_TURNOS_REGRESION = [
     },
     {
         id: 5,
-        descripcion: 'Domingo 22:00 → lunes festivo 06:00 (2h nocturnas festivas + 6h nocturnas festivas)',
+        descripcion: 'Domingo 22:00 → lunes ordinario 06:00 (2h nocturnas festivas + 6h nocturnas ordinarias)',
         turno: {
             fecha: '2026-04-05', // Domingo
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false,
             // Forzar que lunes 06/04 sea festivo (si está en FESTIVOS)
@@ -113,9 +132,8 @@ const FIXTURES_TURNOS_REGRESION = [
         },
         esperado: {
             horas: 8,
-            // 2h nocturnas festivas + 6h nocturnas festivas (si el lunes es festivo)
-            tipo: 'festivo-noche',
-            valorAproximado: 8 * TARIFAS_HORA.nocturnaFestiva
+            tipo: 'mixto',
+            valorAproximado: (2 * TARIFAS_HORA.nocturnaFestiva) + (6 * TARIFAS_HORA.nocturna)
         }
     },
     {
@@ -123,7 +141,7 @@ const FIXTURES_TURNOS_REGRESION = [
         descripcion: 'Festivo 22:00 → día normal 06:00 (2h nocturnas festivas + 6h nocturnas normales)',
         turno: {
             fecha: '2026-04-03', // Jueves festivo (Viernes Santo)
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false
         },
@@ -136,18 +154,18 @@ const FIXTURES_TURNOS_REGRESION = [
     },
     {
         id: 7,
-        descripcion: 'Festivo 22:00 → siguiente festivo 06:00 (8h nocturnas festivas)',
+        descripcion: 'Festivo 22:00 → día ordinario 06:00 (2h nocturnas festivas + 6h nocturnas ordinarias)',
         turno: {
             fecha: '2026-04-03', // Jueves festivo (Viernes Santo)
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '06:00 Am',
             incapacidad: false,
             // Asumiendo que 04/04/2026 también es festivo (Sábado Santo)
         },
         esperado: {
             horas: 8,
-            tipo: 'festivo-noche',
-            valorAproximado: 8 * TARIFAS_HORA.nocturnaFestiva
+            tipo: 'mixto',
+            valorAproximado: (2 * TARIFAS_HORA.nocturnaFestiva) + (6 * TARIFAS_HORA.nocturna)
         }
     },
     {
@@ -156,7 +174,7 @@ const FIXTURES_TURNOS_REGRESION = [
         turno: {
             fecha: '2026-04-07', // Martes normal
             horaInicio: '06:00 Am',
-            horaSalida: '02:00 Pm',
+            horaSalida: '14:00 Pm',
             incapacidad: false
         },
         esperado: {
@@ -170,7 +188,7 @@ const FIXTURES_TURNOS_REGRESION = [
         descripcion: 'Turno en límite exacto 00:00',
         turno: {
             fecha: '2026-04-07', // Martes normal
-            horaInicio: '10:00 Pm',
+            horaInicio: '22:00 Pm',
             horaSalida: '12:00 Am',
             incapacidad: false
         },
@@ -186,13 +204,13 @@ const FIXTURES_TURNOS_REGRESION = [
         turno: {
             fecha: '2026-04-03', // Viernes Santo - festivo
             horaInicio: '06:00 Am',
-            horaSalida: '06:00 Pm',
+            horaSalida: '18:00 Pm',
             incapacidad: false
         },
         esperado: {
             horas: 12,
             tipo: 'festivo-dia',
-            valorAproximado: 12 * TARIFAS_HORA.diurnaFestiva
+            valorAproximado: (8 * TARIFAS_HORA.diurnaFestiva) + (4 * TARIFAS_HORA.festivaExtraDiurna)
         }
     }
 ];
@@ -202,7 +220,7 @@ const FIXTURES_TURNOS_REGRESION = [
 // ============================================
 
 console.log('='.repeat(80));
-console.log('REGRESIÓN: Comparación Legacy vs Segmentado');
+console.log('REGRESIÓN: Segmentado vs contrato esperado');
 console.log('='.repeat(80));
 console.log('');
 
@@ -220,9 +238,9 @@ const resultados = FIXTURES_TURNOS_REGRESION.map(fixture => {
     console.log(`Es domingo: ${esDomingo(fixture.turno.fecha)}`);
     
     // Ejecutar comparación
-    const comparacion = compararCalculos(fixture.turno);
+    const comparacion = compararContraEsperado(fixture);
     
-    console.log(`Legacy:     ${formatearMoneda(comparacion.legacy)} (${comparacion.horasLegacy}h)`);
+    console.log(`Esperado:   ${formatearMoneda(comparacion.esperadoValor)} (${comparacion.horasEsperadas}h)`);
     console.log(`Segmentado: ${formatearMoneda(comparacion.segmentado)} (${comparacion.horasSegmentado}h)`);
     console.log(`Diff:       ${formatearMoneda(comparacion.diff)} (${comparacion.diffPct.toFixed(2)}%)`);
     console.log(`Esperado:   ${comparacion.esperado ? '✓ SÍ' : '✗ NO'}`);
@@ -245,16 +263,16 @@ const resultados = FIXTURES_TURNOS_REGRESION.map(fixture => {
 });
 
 // Resumen
-const totalLegacy = resultados.reduce((sum, r) => sum + r.comparacion.legacy, 0);
+const totalEsperado = resultados.reduce((sum, r) => sum + r.comparacion.esperadoValor, 0);
 const totalSegmentado = resultados.reduce((sum, r) => sum + r.comparacion.segmentado, 0);
-const diffTotal = Math.abs(totalLegacy - totalSegmentado);
+const diffTotal = Math.abs(totalEsperado - totalSegmentado);
 const esperados = resultados.filter(r => r.comparacion.esperado).length;
 const noEsperados = resultados.filter(r => !r.comparacion.esperado).length;
 
 console.log('='.repeat(80));
 console.log('RESUMEN');
 console.log('='.repeat(80));
-console.log(`Total Legacy:     ${formatearMoneda(totalLegacy)}`);
+console.log(`Total Esperado:   ${formatearMoneda(totalEsperado)}`);
 console.log(`Total Segmentado: ${formatearMoneda(totalSegmentado)}`);
 console.log(`Diff Total:       ${formatearMoneda(diffTotal)}`);
 console.log('');
@@ -270,7 +288,7 @@ if (noEsperados > 0) {
     });
     console.log('');
     console.log('⚠️  ATENCIÓN: Estos casos requieren investigación.');
-    console.log('    El motor segmentado debe alinearse con legacy o documentar divergencias aceptadas.');
+    process.exitCode = 1;
 } else {
     console.log('✓ TODOS LOS CASOS ESPERADOS - Regresión OK');
 }

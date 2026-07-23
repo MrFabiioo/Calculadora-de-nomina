@@ -34,6 +34,12 @@ const assertEq = (actual, expected, message) => {
     }
 };
 
+const assert = (condition, message) => {
+    if (!condition) {
+        throw new Error(message || 'Assertion failed');
+    }
+};
+
 const assertClose = (actual, expected, tolerance = 0.01, message) => {
     const diff = Math.abs(actual - expected);
     if (diff > tolerance) {
@@ -140,10 +146,10 @@ test('segmentShift - turno cruza medianoche', () => {
     
     assertArrayLength(result, 2, 'should have 2 segments (before and after midnight)');
     
-    // Primer segmento: 22:00 a 24:00 (2 horas)
+    // Primer segmento: 22:00 a 00:00 (2 horas). Producción normaliza medianoche como 0.
     assertEq(result[0].minutos, 120, 'first segment should have 120 min');
     assertEq(result[0].inicio, 22, 'first segment start');
-    assertEq(result[0].fin, 24, 'first segment end');
+    assertEq(result[0].fin, 0, 'first segment end');
     
     // Segundo segmento: 00:00 a 06:00 (6 horas)
     assertEq(result[1].minutos, 360, 'second segment should have 360 min');
@@ -328,10 +334,11 @@ test('liquidarTurnoPorTramos - turno festivo', () => {
         horaSalida: '18:00'
     });
     
-    const expectedValue = 10 * TARIFAS_HORA.diurnaFestiva;
-    assertClose(result.total, expectedValue, 1, 'total should match festivo rate');
+    const expectedValue = (8 * TARIFAS_HORA.diurnaFestiva) + (2 * TARIFAS_HORA.festivaExtraDiurna);
+    assertClose(result.total, expectedValue, 1, 'total should match festive base plus festive extra rate after 8 hours');
     
     assertEq(result.breakdown[0].categoria, 'festivo-dia', 'should be festivo-dia');
+    assertEq(result.breakdown[1].categoria, 'festivo-dia-extra', 'should classify festive overtime after 8 hours');
 });
 
 test('liquidarTurnoPorTramos - turno domingo', () => {
@@ -341,10 +348,11 @@ test('liquidarTurnoPorTramos - turno domingo', () => {
         horaSalida: '18:00'
     });
     
-    const expectedValue = 10 * TARIFAS_HORA.diurnaFestiva;
-    assertClose(result.total, expectedValue, 1, 'total should match festivo rate');
+    const expectedValue = (8 * TARIFAS_HORA.diurnaFestiva) + (2 * TARIFAS_HORA.festivaExtraDiurna);
+    assertClose(result.total, expectedValue, 1, 'total should match festive base plus festive extra rate after 8 hours');
     
     assertEq(result.breakdown[0].categoria, 'festivo-dia', 'domingo should use festivo rate');
+    assertEq(result.breakdown[1].categoria, 'festivo-dia-extra', 'domingo should classify festive overtime after 8 hours');
 });
 
 test('liquidarTurnoPorTramos - turno nocturno', () => {

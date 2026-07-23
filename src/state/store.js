@@ -25,6 +25,7 @@ const resultadosIniciales = {
     totalTurnos: 0,
     diasDescanso: 0,
     premiumTriweeklyTotal: 0,
+    premiumTriweeklyIncluded: false,
     baseTurnosSinPremio: 0,
     baseDeducciones: 0,
     premiumTriweeklySummary: {
@@ -36,6 +37,7 @@ const resultadosIniciales = {
         dayPremiumValue: 0,
         nightPremiumValue: 0,
         premiumValue: 0,
+        includeInPayable: false,
         diagnostics: { ...DEFAULT_TRIWEEKLY_METADATA },
         periods: []
     },
@@ -87,6 +89,7 @@ const normalizeTriweeklyConfig = (triweekly = {}) => {
     return {
         ...DEFAULT_TRIWEEKLY_CONFIG,
         ...triweekly,
+        includeInPayable: triweekly.includeInPayable === true,
         thresholds: Array.isArray(triweekly.thresholds) && triweekly.thresholds.length > 0
             ? triweekly.thresholds
             : DEFAULT_TRIWEEKLY_CONFIG.thresholds

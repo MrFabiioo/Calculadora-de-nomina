@@ -24,6 +24,17 @@ const SEGMENT_ROW_CONFIG = {
     fesNocExc: { prefix: 'segment-fes-noc-exc' }
 };
 
+const TRIWEEKLY_EXC_LABELS = {
+    excluded: {
+        day: 'HORA EXC.DIU DIAGNÓSTICO',
+        night: 'HORA EXC.NOC DIAGNÓSTICO'
+    },
+    included: {
+        day: 'HORA EXC.DIU INCLUIDA',
+        night: 'HORA EXC.NOC INCLUIDA'
+    }
+};
+
 const formatearHora = (valor) => `${(valor || 0).toFixed(2)} h`;
 
 const actualizarTexto = (elemento, valor) => {
@@ -91,7 +102,8 @@ export const inicializarElementos = () => {
                 deduccion: document.getElementById(`${config.prefix}-deduccion`),
                 base: document.getElementById(`${config.prefix}-base`),
                 saldo: document.getElementById(`${config.prefix}-saldo`),
-                horas: document.getElementById(`${config.prefix}-horas`)
+                horas: document.getElementById(`${config.prefix}-horas`),
+                label: document.getElementById(`${config.prefix}-label`)
             }
         ]))
     );
@@ -422,6 +434,9 @@ export const renderizarResultados = (resultados) => {
     const segmentosBase = agregarSegmentosTurnos(resultados.turnosLiquidados);
     const festivoExtra = resultados.festiveExtraSummary || {};
     const resumenExc = resultados.premiumTriweeklySummary || {};
+    const excLabels = resultados.premiumTriweeklyIncluded === true
+        ? TRIWEEKLY_EXC_LABELS.included
+        : TRIWEEKLY_EXC_LABELS.excluded;
     
     // Actualizar contadores
     actualizarTexto(elementos.turnosLabel, resultados.cantidadTurnos || 0);
@@ -443,6 +458,8 @@ export const renderizarResultados = (resultados) => {
         devengado: segmentosBase['festivo-noche'].valor,
         horas: segmentosBase['festivo-noche'].horas
     });
+    actualizarTexto(elementos.segmentos.ordDiuExc?.label, excLabels.day);
+    actualizarTexto(elementos.segmentos.ordNocExc?.label, excLabels.night);
     actualizarFilaConcepto(elementos.segmentos.ordDiuExc, {
         devengado: resumenExc.dayPremiumValue || 0,
         horas: resumenExc.dayExcessHours || 0
