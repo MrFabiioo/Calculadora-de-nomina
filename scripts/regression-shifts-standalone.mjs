@@ -24,8 +24,8 @@
 const TARIFAS_HORA = {
     diurna: 12210,
     nocturna: 16483.5,
-    diurnaFestiva: 21978,
-    nocturnFestiva: 26251.6666667
+    diurnaFestiva: 23199,
+    nocturnaFestiva: 27472.5
 };
 
 const MEDIA_HORA = TARIFAS_HORA.diurna / 2;

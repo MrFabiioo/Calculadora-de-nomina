@@ -48,6 +48,21 @@ const assertArrayLength = (arr, len, message) => {
 };
 
 // ============================================
+// Tests: tarifa festiva legal 90%
+// ============================================
+
+console.log('\n--- Tests: tarifa festiva legal 90% ---');
+
+test('TARIFAS_HORA - tarifas festivas usan recargo dominical/festivo legal del 90%', () => {
+    const base = TARIFAS_HORA.diurna;
+
+    assertClose(TARIFAS_HORA.diurnaFestiva, base * 1.90, 0.01, 'festive day rate should be base + 90%');
+    assertClose(TARIFAS_HORA.nocturnaFestiva, base * 2.25, 0.01, 'festive night rate should be base + 90% + 35% night surcharge');
+    assertClose(TARIFAS_HORA.festivaExtraDiurna, base * 2.15, 0.01, 'festive day overtime rate should be base + 90% + 25% overtime surcharge');
+    assertClose(TARIFAS_HORA.festivaExtraNocturna, base * 2.65, 0.01, 'festive night overtime rate should be base + 90% + 75% night overtime surcharge');
+});
+
+// ============================================
 // Tests: normalizeShiftInput
 // ============================================
 

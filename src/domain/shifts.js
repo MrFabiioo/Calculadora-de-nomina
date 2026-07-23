@@ -34,10 +34,10 @@ export const BOUNDARIES = {
 export const TARIFAS_HORA = {
     diurna: 12210,
     nocturna: 16483.5,
-    diurnaFestiva: 21978,
-    nocturnaFestiva: 26251.6666667,
-    festivaExtraDiurna: 24420,
-    festivaExtraNocturna: 30525
+    diurnaFestiva: 23199,
+    nocturnaFestiva: 27472.5,
+    festivaExtraDiurna: 26251.5,
+    festivaExtraNocturna: 32356.5
 };
 
 // Valor media hora
