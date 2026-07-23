@@ -79,11 +79,20 @@ test('resolves thresholds before and after schedule transition', () => {
         ]
     });
 
-    const postReduction = calculateTriweeklyPremiums({
+    const transitionDay = calculateTriweeklyPremiums({
         turnosLiquidados: [
             buildShift({
-                fecha: '2026-07-16',
-                breakdown: [buildSegment({ fechaNominal: '2026-07-16', categoria: 'ordinario-dia', horas: 8 })]
+                fecha: '2026-07-15',
+                breakdown: [buildSegment({ fechaNominal: '2026-07-15', categoria: 'ordinario-dia', horas: 8 })]
+            })
+        ]
+    });
+
+    const periodEndingOnTransitionDay = calculateTriweeklyPremiums({
+        turnosLiquidados: [
+            buildShift({
+                fecha: '2026-07-09',
+                breakdown: [buildSegment({ fechaNominal: '2026-07-09', categoria: 'ordinario-dia', horas: 8 })]
             })
         ]
     });
@@ -98,14 +107,16 @@ test('resolves thresholds before and after schedule transition', () => {
         config: {
             ...DEFAULT_TRIWEEKLY_CONFIG,
             thresholds: [
-                { effectiveUntil: '2026-07-15', maxOrdinaryHours: 44 },
-                { effectiveFrom: '2026-07-16', maxOrdinaryHours: 40 }
+                { effectiveUntil: '2026-07-14', maxOrdinaryHours: 44 },
+                { effectiveFrom: '2026-07-15', maxOrdinaryHours: 40 }
             ]
         }
     });
 
     assertEq(preReduction.periods[0].threshold, 44, 'should use 44 hours before transition');
-    assertEq(postReduction.periods[0].threshold, 42, 'should use 42 hours after transition');
+    assertEq(transitionDay.periods[0].threshold, 42, 'should use 42 hours on the transition date');
+    assertEq(periodEndingOnTransitionDay.periods[0].endDate, '2026-07-15', 'fixture should end on the transition date');
+    assertEq(periodEndingOnTransitionDay.periods[0].threshold, 42, 'periods ending on the transition date should use 42 hours');
     assertEq(customThreshold.periods[0].threshold, 40, 'should support custom transition threshold');
 });
 

@@ -72,6 +72,33 @@ test('official 2026 PTS calendar uses validated 21-day PTS6-PTS9 windows', () =>
     });
 });
 
+test('PTS thresholds use 42h weekly caps starting on July 15 2026', () => {
+    const calendar = [
+        { code: 'ONE_WEEK_AFTER_REDUCTION', startDate: '2026-07-15', endDate: '2026-07-21' },
+        { code: 'TWO_WEEKS_AFTER_REDUCTION', startDate: '2026-07-22', endDate: '2026-08-04' },
+        { code: 'THREE_WEEKS_AFTER_REDUCTION', startDate: '2026-08-05', endDate: '2026-08-25' }
+    ];
+    const result = calculatePtsExcessPremiums({
+        payrollPeriod: { startDate: '2026-07-15', endDate: '2026-08-25' },
+        calendar,
+        turnosLiquidados: calendar.map((period) => buildShift({
+            fecha: period.startDate,
+            breakdown: [buildSegment({ fechaNominal: period.startDate, categoria: 'ordinario-dia', horas: 1 })]
+        }))
+    });
+
+    const oneWeek = result.periods.find((period) => period.code === 'ONE_WEEK_AFTER_REDUCTION');
+    const twoWeeks = result.periods.find((period) => period.code === 'TWO_WEEKS_AFTER_REDUCTION');
+    const threeWeeks = result.periods.find((period) => period.code === 'THREE_WEEKS_AFTER_REDUCTION');
+
+    assertEq(oneWeek.weeklyThreshold, 42, 'one full week at/after July 15 should use a 42h weekly threshold');
+    assertEq(oneWeek.thresholdHours, 42, 'one full week at/after July 15 should allow 42h');
+    assertEq(twoWeeks.weeklyThreshold, 42, 'two full weeks at/after July 15 should use a 42h weekly threshold');
+    assertEq(twoWeeks.thresholdHours, 84, 'two full weeks at/after July 15 should allow 84h');
+    assertEq(threeWeeks.weeklyThreshold, 42, 'three full weeks at/after July 15 should use a 42h weekly threshold');
+    assertEq(threeWeeks.thresholdHours, 126, 'three full weeks at/after July 15 should allow 126h');
+});
+
 test('María José synthetic PTS8 fixture yields 22h excess split as 19 day and 3 night', () => {
     const result = calculatePtsExcessPremiums({
         payrollPeriod: { startDate: '2026-05-31', endDate: '2026-06-30' },

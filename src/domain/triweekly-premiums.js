@@ -14,8 +14,8 @@ export const DEFAULT_TRIWEEKLY_CONFIG = {
     anchorDate: null,
     periodDays: DEFAULT_PERIOD_DAYS,
     thresholds: [
-        { effectiveUntil: '2026-07-15', maxOrdinaryHours: 44 },
-        { effectiveFrom: '2026-07-16', maxOrdinaryHours: 42 }
+        { effectiveUntil: '2026-07-14', maxOrdinaryHours: 44 },
+        { effectiveFrom: '2026-07-15', maxOrdinaryHours: 42 }
     ]
 };
 

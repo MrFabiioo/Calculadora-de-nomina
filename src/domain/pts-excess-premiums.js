@@ -7,8 +7,8 @@ const DAY_PREMIUM_RATE = 0.25;
 const NIGHT_PREMIUM_RATE = 0.75;
 const DEFAULT_WEEKLY_THRESHOLD = 44;
 const DEFAULT_THRESHOLDS = [
-    { effectiveUntil: '2026-07-15', maxOrdinaryHours: 44 },
-    { effectiveFrom: '2026-07-16', maxOrdinaryHours: 42 }
+    { effectiveUntil: '2026-07-14', maxOrdinaryHours: 44 },
+    { effectiveFrom: '2026-07-15', maxOrdinaryHours: 42 }
 ];
 
 export const DEFAULT_PTS_EXCESS_METADATA = {
