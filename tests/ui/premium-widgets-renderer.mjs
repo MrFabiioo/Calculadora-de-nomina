@@ -192,6 +192,29 @@ test('index.html keeps the visible payslip table contract', () => {
     assertIncludes(css, 'grid-template-columns: repeat(4, minmax(150px, 1fr));', 'Footer totals should render as four horizontal columns');
 });
 
+test('index.html preserves accessible payslip headers on mobile', () => {
+    const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+    const css = readFileSync(new URL('../../styles.css', import.meta.url), 'utf8');
+
+    [
+        'id="payslip-col-devengados"',
+        'id="payslip-col-deducciones"',
+        'id="payslip-col-base"',
+        'id="payslip-col-saldo"',
+        'id="payslip-col-horas"',
+        'headers="payslip-row-ord-diu payslip-col-devengados"',
+        'headers="segment-ord-diu-exc-label payslip-col-devengados"',
+        'headers="payslip-row-subsidio payslip-col-base"',
+        'headers="payslip-row-salud payslip-col-deducciones"',
+        'headers="payslip-row-otras-deducciones payslip-col-saldo"'
+    ].forEach((text) => {
+        assertIncludes(html, text, 'Payslip cells should keep semantic row/column associations');
+    });
+
+    assertIncludes(css, '.table--payslip thead {', 'Mobile payslip styles should keep a dedicated thead rule');
+    assertIncludes(css, 'clip: rect(0, 0, 0, 0);', 'Mobile payslip thead should be visually hidden instead of removed');
+});
+
 test('renderizarResultados keeps zero-value EXC rows visible', () => {
     const { document, elements } = buildDocument();
     globalThis.document = document;

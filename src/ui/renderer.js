@@ -190,15 +190,15 @@ export const renderizarFilaTurno = (indice) => {
                 <label id='dia_${indice}' class='cajas'></label>
             </td>
             <td data-label='Fecha'>
-                <input id='fecha_${indice}' class='cajas' type='date'>
+                <input id='fecha_${indice}' class='cajas' type='date' aria-label='Fecha del turno ${indice}'>
             </td>
             <td class='list-1' data-label='Inicio'>
-                <select id='hora_inicio_${indice}' class='opciones'>
+                <select id='hora_inicio_${indice}' class='opciones' aria-label='Hora de inicio del turno ${indice}'>
                     ${TURNOS_INICIO.map(hora => `<option class='opciones'>${hora}</option>`).join('')}
                 </select>
             </td>
             <td class='list-1' data-label='Salida'>
-                <select id='hora_salida_${indice}' class='opciones'>
+                <select id='hora_salida_${indice}' class='opciones' aria-label='Hora de salida del turno ${indice}'>
                     ${TURNOS_SALIDA.map(hora => `<option class='opciones'>${hora}</option>`).join('')}
                 </select>
             </td>
@@ -206,7 +206,7 @@ export const renderizarFilaTurno = (indice) => {
             <td id='horas_${indice}' class='Horas' data-label='Horas'></td>
             <td id='numero_${indice}' class='numero' data-label='#'></td>
             <td data-label='Inc.'>
-                <input id='incapacidad_${indice}' type='checkbox' value='incapacidad'>
+                <input id='incapacidad_${indice}' type='checkbox' value='incapacidad' aria-label='Marcar incapacidad del turno ${indice}'>
             </td>
         </tr>
     `;
@@ -555,10 +555,14 @@ export const renderizarResultados = (resultados) => {
 export const mostrarErrorInput = (inputId, mensaje) => {
     const input = document.getElementById(inputId);
     if (input) {
-        input.style.borderColor = 'red';
-        input.style.borderWidth = '2px';
-        // Guardar el mensaje para mostrarlo
+        input.classList.add('input-group__input--error', 'input-group__input--invalid');
+        input.setAttribute('aria-invalid', 'true');
         input.setAttribute('data-error', mensaje);
+
+        const errorElement = input.parentElement?.querySelector('.input-group__error');
+        if (errorElement) {
+            errorElement.textContent = mensaje;
+        }
     }
 };
 
@@ -568,9 +572,14 @@ export const mostrarErrorInput = (inputId, mensaje) => {
 export const limpiarErrorInput = (inputId) => {
     const input = document.getElementById(inputId);
     if (input) {
-        input.style.borderColor = '';
-        input.style.borderWidth = '';
+        input.classList.remove('input-group__input--error', 'input-group__input--invalid');
+        input.removeAttribute('aria-invalid');
         input.removeAttribute('data-error');
+
+        const errorElement = input.parentElement?.querySelector('.input-group__error');
+        if (errorElement) {
+            errorElement.textContent = '';
+        }
     }
 };
 

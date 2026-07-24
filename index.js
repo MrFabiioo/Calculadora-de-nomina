@@ -128,9 +128,9 @@ const calcularNominaCompleta = () => {
     turnos.forEach((turno, index) => {
         const fila = document.getElementById(`fila_${index + 1}`);
         if (turno.horaInicio === "Descanso" && turno.horaSalida === "Descanso") {
-            if (fila) fila.style.opacity = "0.4";
+            if (fila) fila.classList.add('turno-row--rest');
         } else {
-            if (fila) fila.style.opacity = "";
+            if (fila) fila.classList.remove('turno-row--rest');
         }
     });
 
@@ -302,11 +302,21 @@ const setupValidaciones = () => {
 // Botón tema - sincronizado con el store para persistencia
 const setupBotonTema = () => {
     if (elementos.botonTema) {
+        const syncThemeToggle = (theme) => {
+            const isDark = theme === 'dark';
+            elementos.botonTema.setAttribute('aria-pressed', String(isDark));
+            elementos.botonTema.setAttribute('aria-label', isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+            elementos.botonTema.setAttribute('title', isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+        };
+
+        syncThemeToggle(document.documentElement.getAttribute('data-theme') || 'light');
+
         elementos.botonTema.addEventListener('click', () => {
             const html = document.documentElement;
             const actual = html.getAttribute('data-theme');
             const nuevo = actual === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', nuevo);
+            syncThemeToggle(nuevo);
             // Persistir el tema en el store
             store.cambiarTema(nuevo);
         });
@@ -508,7 +518,6 @@ const limpiarTodosLosCampos = () => {
     // 7. Actualizar estado del botón limpiar
     actualizarBotonLimpiar();
     
-    console.log('✅ Todos los campos han sido limpiados');
 };
 
 // Botón limpiar todos los campos
@@ -528,22 +537,21 @@ const setupBotonLimpiar = () => {
 const setupBannerNovedades = () => {
     const banner = document.getElementById('news-banner');
     const toggle = document.getElementById('news-banner-toggle');
+    const content = document.getElementById('news-banner-content');
     
-    if (banner && toggle) {
+    if (banner && toggle && content) {
+        const syncBannerState = (isOpen) => {
+            banner.classList.toggle('news-banner--open', isOpen);
+            banner.classList.toggle('news-banner--closed', !isOpen);
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            content.hidden = !isOpen;
+        };
+
+        syncBannerState(banner.classList.contains('news-banner--open'));
+
         toggle.addEventListener('click', () => {
             const estaAbierto = banner.classList.contains('news-banner--open');
-            
-            if (estaAbierto) {
-                // Cerrar
-                banner.classList.remove('news-banner--open');
-                banner.classList.add('news-banner--closed');
-                toggle.setAttribute('aria-expanded', 'false');
-            } else {
-                // Abrir
-                banner.classList.remove('news-banner--closed');
-                banner.classList.add('news-banner--open');
-                toggle.setAttribute('aria-expanded', 'true');
-            }
+            syncBannerState(!estaAbierto);
         });
     }
 };

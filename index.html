@@ -40,15 +40,13 @@
             </h1>
             <div class="header__actions">
                 <button id="btn-limpiar" class="btn btn--clear" aria-label="Limpiar todos los campos" title="Limpiar todo">
-                    <span class="btn__icon" aria-hidden="true">🗑️</span>
                     <span class="btn__label">Limpiar</span>
                 </button>
                 <button id="btn-exportar" class="btn btn--export" aria-label="Exportar a Excel" title="Exportar a Excel">
-                    <span class="btn__icon" aria-hidden="true">📥</span>
                     <span class="btn__label">Excel</span>
                 </button>
-                <button id="theme-toggle" class="btn btn--icon" aria-label="Cambiar tema claro/oscuro" title="Cambiar tema">
-                    🌗
+                <button id="theme-toggle" class="btn btn--icon" aria-label="Cambiar tema claro/oscuro" aria-pressed="false" title="Cambiar tema">
+                    <span class="btn__icon" aria-hidden="true">◐</span>
                 </button>
             </div>
         </div>
@@ -73,8 +71,20 @@
                         <span id="total-deducciones" class="summary-panel__subvalue">$0</span>
                     </div>
                     <div class="summary-panel__item">
-                        <span class="summary-panel__label">🚚 Subsidio Transp.</span>
+                        <span class="summary-panel__label">Subsidio transp.</span>
                         <span id="subsidio-transporte-panel" class="summary-panel__subvalue">$0</span>
+                    </div>
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Turnos</span>
+                        <span id="turnos-count" class="summary-panel__subvalue">0</span>
+                    </div>
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Horas</span>
+                        <span id="horas-count" class="summary-panel__subvalue">0</span>
+                    </div>
+                    <div class="summary-panel__item">
+                        <span class="summary-panel__label">Saldo a cargo</span>
+                        <span id="saldo-a-cargo" class="summary-panel__subvalue">$0</span>
                     </div>
                 </div>
             </div>
@@ -83,13 +93,13 @@
         <!-- Banner de Novedades (toggleable) -->
         <div id="news-banner" class="news-banner news-banner--open" aria-label="Novedades">
             <button id="news-banner-toggle" class="news-banner__toggle" aria-expanded="true" aria-controls="news-banner-content">
-                <span class="news-banner__icon">🎉</span>
+                <span class="news-banner__icon" aria-hidden="true"></span>
                 <span class="news-banner__title">Novedades v1.2.0</span>
-                <span class="news-banner__arrow">▼</span>
+                <span class="news-banner__arrow" aria-hidden="true">▼</span>
             </button>
-            <div id="news-banner-content" class="news-banner__content">
+            <div id="news-banner-content" class="news-banner__content" role="region" aria-label="Detalle de novedades">
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">🧾 Colilla de Nómina</h4>
+                    <h4 class="news-banner__section-title">Colilla de nómina</h4>
                     <ul class="news-banner__list">
                         <li>Detalle reorganizado como colilla real con conceptos, devengados, deducciones, base, saldo y horas</li>
                         <li>Filas por tipo de hora, EXC, festivos, subsidio y deducciones</li>
@@ -97,14 +107,14 @@
                     </ul>
                 </div>
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">⚡ Autocompletar Turnos</h4>
+                    <h4 class="news-banner__section-title">Autocompletar turnos</h4>
                     <ul class="news-banner__list">
                         <li>Nueva secuencia semanal para completar hora inicio y hora salida según el día</li>
                         <li>Aplicación automática sobre la tabla sin cambiar fechas ni incapacidades</li>
                     </ul>
                 </div>
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">🧮 Cálculos Mejorados</h4>
+                    <h4 class="news-banner__section-title">Cálculos mejorados</h4>
                     <ul class="news-banner__list">
                         <li>Recargo dominical y festivo actualizado al 90% según Ley 2466 de 2025</li>
                         <li>Jornada máxima semanal alineada a 42 horas desde el 15 de julio de 2026</li>
@@ -113,7 +123,7 @@
                     </ul>
                 </div>
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">🧪 Diagnóstico Experimental</h4>
+                    <h4 class="news-banner__section-title">Diagnóstico experimental</h4>
                     <ul class="news-banner__list">
                         <li>Nuevo comparativo de total devengado, deducciones y neto estimado con EXC diagnóstico</li>
                         <li>Detalle visible de horas y valores para EXC diurna, EXC nocturna y extras festivas</li>
@@ -121,13 +131,13 @@
                     </ul>
                 </div>
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">📥 Exportación</h4>
+                    <h4 class="news-banner__section-title">Exportación</h4>
                     <ul class="news-banner__list">
                         <li>Excel con resumen, deducciones, detalle por turno y desglose por tramo</li>
                     </ul>
                 </div>
                 <div class="news-banner__section">
-                    <h4 class="news-banner__section-title">✨ Diseño</h4>
+                    <h4 class="news-banner__section-title">Diseño</h4>
                     <ul class="news-banner__list">
                         <li>Botón Limpiar para resetear todos los campos</li>
                         <li>Estética mejorada</li>
@@ -143,7 +153,7 @@
         <!-- Sección de Turnos -->
         <section class="section section--turnos" aria-labelledby="turnos-heading">
             <div class="section__header">
-                <h2 id="turnos-heading" class="section__title">📅 Turnos</h2>
+                <h2 id="turnos-heading" class="section__title">Turnos</h2>
                 <div class="section__actions">
                     <button id="btn-agregar" class="btn btn--add" aria-label="Agregar turno">
                         + <span id="turno-contador">0</span>
@@ -210,7 +220,7 @@
 
         <!-- Sección de Deducciones -->
         <section class="section section--deducciones" aria-labelledby="deducciones-heading">
-            <h2 id="deducciones-heading" class="section__title">📉 Deducciones</h2>
+            <h2 id="deducciones-heading" class="section__title">Deducciones</h2>
             
             <div class="grid grid--deducciones">
                 <div class="input-group">
@@ -238,37 +248,45 @@
 
         <!-- Sección de Resultados Detallados -->
         <section class="section section--resultados" aria-labelledby="resultados-heading">
-            <h2 id="resultados-heading" class="section__title">📊 Detalle de Nómina</h2>
+            <h2 id="resultados-heading" class="section__title">Detalle de nómina</h2>
+            <p class="section__lede">La colilla estimada queda primero. El diagnóstico experimental se mantiene disponible, pero con menor protagonismo visual.</p>
             
             <div class="resultados-grid">
                 <article class="payslip-panel" aria-label="Colilla de pago estimada">
+                    <header class="payslip-panel__header">
+                        <div>
+                            <p class="payslip-panel__eyebrow">Resumen oficial</p>
+                            <h3 class="payslip-panel__title">Colilla estimada</h3>
+                            <p class="payslip-panel__subtitle">Usá este bloque como referencia principal para revisar conceptos, deducciones y neto a pagar.</p>
+                        </div>
+                    </header>
                     <div class="table-container payslip-table-container">
                         <table class="table table--payslip" aria-label="Detalle de nómina tipo colilla">
                             <thead>
                                 <tr>
-                                    <th scope="col">Concepto</th>
-                                    <th scope="col">Devengados</th>
-                                    <th scope="col">Deducciones</th>
-                                    <th scope="col">Base</th>
-                                    <th scope="col">Saldo</th>
-                                    <th scope="col">Nro. Horas</th>
+                                    <th id="payslip-col-concepto" scope="col">Concepto</th>
+                                    <th id="payslip-col-devengados" scope="col">Devengados</th>
+                                    <th id="payslip-col-deducciones" scope="col">Deducciones</th>
+                                    <th id="payslip-col-base" scope="col">Base</th>
+                                    <th id="payslip-col-saldo" scope="col">Saldo</th>
+                                    <th id="payslip-col-horas" scope="col">Nro. Horas</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><th scope="row">HORA ORD.DIU.PARAMEDICO</th><td id="segment-ord-diu-devengado">$0</td><td id="segment-ord-diu-deduccion"></td><td id="segment-ord-diu-base"></td><td id="segment-ord-diu-saldo"></td><td id="segment-ord-diu-horas">0.00 h</td></tr>
-                                <tr><th scope="row">HORA ORD.NOC.PARAMEDICO</th><td id="segment-ord-noc-devengado">$0</td><td id="segment-ord-noc-deduccion"></td><td id="segment-ord-noc-base"></td><td id="segment-ord-noc-saldo"></td><td id="segment-ord-noc-horas">0.00 h</td></tr>
-                                <tr><th scope="row">HORA FES.DIU.PARAMEDICO</th><td id="segment-fes-diu-devengado">$0</td><td id="segment-fes-diu-deduccion"></td><td id="segment-fes-diu-base"></td><td id="segment-fes-diu-saldo"></td><td id="segment-fes-diu-horas">0.00 h</td></tr>
-                                <tr><th scope="row">HORA FES.NOC.PARAMEDICO</th><td id="segment-fes-noc-devengado">$0</td><td id="segment-fes-noc-deduccion"></td><td id="segment-fes-noc-base"></td><td id="segment-fes-noc-saldo"></td><td id="segment-fes-noc-horas">0.00 h</td></tr>
-                                <tr><th id="segment-ord-diu-exc-label" scope="row">HORA EXC.DIU DIAGNÓSTICO</th><td id="segment-ord-diu-exc-devengado">$0</td><td id="segment-ord-diu-exc-deduccion"></td><td id="segment-ord-diu-exc-base"></td><td id="segment-ord-diu-exc-saldo"></td><td id="segment-ord-diu-exc-horas">0.00 h</td></tr>
-                                <tr><th id="segment-ord-noc-exc-label" scope="row">HORA EXC.NOC DIAGNÓSTICO</th><td id="segment-ord-noc-exc-devengado">$0</td><td id="segment-ord-noc-exc-deduccion"></td><td id="segment-ord-noc-exc-base"></td><td id="segment-ord-noc-exc-saldo"></td><td id="segment-ord-noc-exc-horas">0.00 h</td></tr>
-                                <tr><th scope="row">HORA FES.DIU EXTRA</th><td id="segment-fes-diu-exc-devengado">$0</td><td id="segment-fes-diu-exc-deduccion"></td><td id="segment-fes-diu-exc-base"></td><td id="segment-fes-diu-exc-saldo"></td><td id="segment-fes-diu-exc-horas">0.00 h</td></tr>
-                                <tr><th scope="row">HORA FES.NOC EXTRA</th><td id="segment-fes-noc-exc-devengado">$0</td><td id="segment-fes-noc-exc-deduccion"></td><td id="segment-fes-noc-exc-base"></td><td id="segment-fes-noc-exc-saldo"></td><td id="segment-fes-noc-exc-horas">0.00 h</td></tr>
-                                <tr><th scope="row">Subsidio de transporte</th><td id="subsidio-transporte">$0</td><td id="subsidio-transporte-deduccion"></td><td id="payslip-subsidy-base">$0</td><td id="payslip-subsidy-balance"></td><td id="subsidio-transporte-hours"></td></tr>
-                                <tr><th scope="row">Salud empleado</th><td></td><td id="payslip-salud-deduction">$0</td><td id="payslip-salud-base">$0</td><td id="payslip-salud-balance"></td><td></td></tr>
-                                <tr><th scope="row">Pensión empleado</th><td></td><td id="payslip-pension-deduction">$0</td><td id="payslip-pension-base">$0</td><td id="payslip-pension-balance"></td><td></td></tr>
-                                <tr><th scope="row">Deducción por nómina</th><td></td><td id="payslip-deduccion-nomina">$0</td><td></td><td id="payslip-deduccion-nomina-balance"></td><td></td></tr>
-                                <tr><th scope="row">EMI Familiares</th><td></td><td id="payslip-deduccion-emi">$0</td><td></td><td id="payslip-deduccion-emi-balance"></td><td></td></tr>
-                                <tr><th scope="row">Otras deducciones</th><td></td><td id="payslip-otras-deducciones">$0</td><td></td><td id="payslip-otras-deducciones-balance"></td><td></td></tr>
+                                <tr><th id="payslip-row-ord-diu" scope="row">HORA ORD.DIU.PARAMEDICO</th><td id="segment-ord-diu-devengado" headers="payslip-row-ord-diu payslip-col-devengados">$0</td><td id="segment-ord-diu-deduccion" headers="payslip-row-ord-diu payslip-col-deducciones"></td><td id="segment-ord-diu-base" headers="payslip-row-ord-diu payslip-col-base"></td><td id="segment-ord-diu-saldo" headers="payslip-row-ord-diu payslip-col-saldo"></td><td id="segment-ord-diu-horas" headers="payslip-row-ord-diu payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-ord-noc" scope="row">HORA ORD.NOC.PARAMEDICO</th><td id="segment-ord-noc-devengado" headers="payslip-row-ord-noc payslip-col-devengados">$0</td><td id="segment-ord-noc-deduccion" headers="payslip-row-ord-noc payslip-col-deducciones"></td><td id="segment-ord-noc-base" headers="payslip-row-ord-noc payslip-col-base"></td><td id="segment-ord-noc-saldo" headers="payslip-row-ord-noc payslip-col-saldo"></td><td id="segment-ord-noc-horas" headers="payslip-row-ord-noc payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-fes-diu" scope="row">HORA FES.DIU.PARAMEDICO</th><td id="segment-fes-diu-devengado" headers="payslip-row-fes-diu payslip-col-devengados">$0</td><td id="segment-fes-diu-deduccion" headers="payslip-row-fes-diu payslip-col-deducciones"></td><td id="segment-fes-diu-base" headers="payslip-row-fes-diu payslip-col-base"></td><td id="segment-fes-diu-saldo" headers="payslip-row-fes-diu payslip-col-saldo"></td><td id="segment-fes-diu-horas" headers="payslip-row-fes-diu payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-fes-noc" scope="row">HORA FES.NOC.PARAMEDICO</th><td id="segment-fes-noc-devengado" headers="payslip-row-fes-noc payslip-col-devengados">$0</td><td id="segment-fes-noc-deduccion" headers="payslip-row-fes-noc payslip-col-deducciones"></td><td id="segment-fes-noc-base" headers="payslip-row-fes-noc payslip-col-base"></td><td id="segment-fes-noc-saldo" headers="payslip-row-fes-noc payslip-col-saldo"></td><td id="segment-fes-noc-horas" headers="payslip-row-fes-noc payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="segment-ord-diu-exc-label" scope="row">HORA EXC.DIU DIAGNÓSTICO</th><td id="segment-ord-diu-exc-devengado" headers="segment-ord-diu-exc-label payslip-col-devengados">$0</td><td id="segment-ord-diu-exc-deduccion" headers="segment-ord-diu-exc-label payslip-col-deducciones"></td><td id="segment-ord-diu-exc-base" headers="segment-ord-diu-exc-label payslip-col-base"></td><td id="segment-ord-diu-exc-saldo" headers="segment-ord-diu-exc-label payslip-col-saldo"></td><td id="segment-ord-diu-exc-horas" headers="segment-ord-diu-exc-label payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="segment-ord-noc-exc-label" scope="row">HORA EXC.NOC DIAGNÓSTICO</th><td id="segment-ord-noc-exc-devengado" headers="segment-ord-noc-exc-label payslip-col-devengados">$0</td><td id="segment-ord-noc-exc-deduccion" headers="segment-ord-noc-exc-label payslip-col-deducciones"></td><td id="segment-ord-noc-exc-base" headers="segment-ord-noc-exc-label payslip-col-base"></td><td id="segment-ord-noc-exc-saldo" headers="segment-ord-noc-exc-label payslip-col-saldo"></td><td id="segment-ord-noc-exc-horas" headers="segment-ord-noc-exc-label payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-fes-diu-exc" scope="row">HORA FES.DIU EXTRA</th><td id="segment-fes-diu-exc-devengado" headers="payslip-row-fes-diu-exc payslip-col-devengados">$0</td><td id="segment-fes-diu-exc-deduccion" headers="payslip-row-fes-diu-exc payslip-col-deducciones"></td><td id="segment-fes-diu-exc-base" headers="payslip-row-fes-diu-exc payslip-col-base"></td><td id="segment-fes-diu-exc-saldo" headers="payslip-row-fes-diu-exc payslip-col-saldo"></td><td id="segment-fes-diu-exc-horas" headers="payslip-row-fes-diu-exc payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-fes-noc-exc" scope="row">HORA FES.NOC EXTRA</th><td id="segment-fes-noc-exc-devengado" headers="payslip-row-fes-noc-exc payslip-col-devengados">$0</td><td id="segment-fes-noc-exc-deduccion" headers="payslip-row-fes-noc-exc payslip-col-deducciones"></td><td id="segment-fes-noc-exc-base" headers="payslip-row-fes-noc-exc payslip-col-base"></td><td id="segment-fes-noc-exc-saldo" headers="payslip-row-fes-noc-exc payslip-col-saldo"></td><td id="segment-fes-noc-exc-horas" headers="payslip-row-fes-noc-exc payslip-col-horas">0.00 h</td></tr>
+                                <tr><th id="payslip-row-subsidio" scope="row">Subsidio de transporte</th><td id="subsidio-transporte" headers="payslip-row-subsidio payslip-col-devengados">$0</td><td id="subsidio-transporte-deduccion" headers="payslip-row-subsidio payslip-col-deducciones"></td><td id="payslip-subsidy-base" headers="payslip-row-subsidio payslip-col-base">$0</td><td id="payslip-subsidy-balance" headers="payslip-row-subsidio payslip-col-saldo"></td><td id="subsidio-transporte-hours" headers="payslip-row-subsidio payslip-col-horas"></td></tr>
+                                <tr><th id="payslip-row-salud" scope="row">Salud empleado</th><td headers="payslip-row-salud payslip-col-devengados"></td><td id="payslip-salud-deduction" headers="payslip-row-salud payslip-col-deducciones">$0</td><td id="payslip-salud-base" headers="payslip-row-salud payslip-col-base">$0</td><td id="payslip-salud-balance" headers="payslip-row-salud payslip-col-saldo"></td><td headers="payslip-row-salud payslip-col-horas"></td></tr>
+                                <tr><th id="payslip-row-pension" scope="row">Pensión empleado</th><td headers="payslip-row-pension payslip-col-devengados"></td><td id="payslip-pension-deduction" headers="payslip-row-pension payslip-col-deducciones">$0</td><td id="payslip-pension-base" headers="payslip-row-pension payslip-col-base">$0</td><td id="payslip-pension-balance" headers="payslip-row-pension payslip-col-saldo"></td><td headers="payslip-row-pension payslip-col-horas"></td></tr>
+                                <tr><th id="payslip-row-deduccion-nomina" scope="row">Deducción por nómina</th><td headers="payslip-row-deduccion-nomina payslip-col-devengados"></td><td id="payslip-deduccion-nomina" headers="payslip-row-deduccion-nomina payslip-col-deducciones">$0</td><td headers="payslip-row-deduccion-nomina payslip-col-base"></td><td id="payslip-deduccion-nomina-balance" headers="payslip-row-deduccion-nomina payslip-col-saldo"></td><td headers="payslip-row-deduccion-nomina payslip-col-horas"></td></tr>
+                                <tr><th id="payslip-row-deduccion-emi" scope="row">EMI Familiares</th><td headers="payslip-row-deduccion-emi payslip-col-devengados"></td><td id="payslip-deduccion-emi" headers="payslip-row-deduccion-emi payslip-col-deducciones">$0</td><td headers="payslip-row-deduccion-emi payslip-col-base"></td><td id="payslip-deduccion-emi-balance" headers="payslip-row-deduccion-emi payslip-col-saldo"></td><td headers="payslip-row-deduccion-emi payslip-col-horas"></td></tr>
+                                <tr><th id="payslip-row-otras-deducciones" scope="row">Otras deducciones</th><td headers="payslip-row-otras-deducciones payslip-col-devengados"></td><td id="payslip-otras-deducciones" headers="payslip-row-otras-deducciones payslip-col-deducciones">$0</td><td headers="payslip-row-otras-deducciones payslip-col-base"></td><td id="payslip-otras-deducciones-balance" headers="payslip-row-otras-deducciones payslip-col-saldo"></td><td headers="payslip-row-otras-deducciones payslip-col-horas"></td></tr>
                             </tbody>
                             <tfoot>
                                 <tr class="payslip-totals-row">
@@ -291,6 +309,7 @@
 
                     <section class="payslip-diagnostic" aria-labelledby="diagnostic-heading">
                         <div class="payslip-diagnostic__header">
+                            <p class="payslip-diagnostic__eyebrow">Diagnóstico</p>
                             <h4 id="diagnostic-heading" class="payslip-diagnostic__title">Diagnóstico PTS / EXC experimental</h4>
                             <p class="payslip-diagnostic__note">Solo informativo. No altera los totales oficiales; las horas festivas extra ya están incluidas en el devengado base.</p>
                         </div>
@@ -314,11 +333,6 @@
                     </section>
                 </article>
 
-                <!-- <div class="external-link">
-                    <a href="https://kiosko.grupoemi.com/kioskoj/" target="_blank" rel="noopener noreferrer">
-                        📰 Link Kiosko
-                    </a>
-                </div> -->
             </div>
         </section>
     </main>
@@ -356,18 +370,16 @@
                 <span class="footer__divider" aria-hidden="true">·</span>
                 <span class="footer__credit">by Fabio Ortega</span>
             </div>
+            <div class="whatsapp-float-wrapper">
+                <a href="https://wa.me/573502018487?text=Hola%20querido%20compañero%20Fabio,%20tengo%20una%20valiosa%20sugerencia%20para%20nuestra%20Calculadora%20de%20Nomina." target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Enviar sugerencias por WhatsApp" title="Enviar sugerencias por WhatsApp">
+                    <svg class="whatsapp-float__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                    </svg>
+                    <span class="whatsapp-float__label">Sugerencias por WhatsApp</span>
+                </a>
+            </div>
         </div>
     </footer>
-
-    <!-- Botón flotante de WhatsApp -->
-    <div class="whatsapp-float-wrapper">
-        <a href="https://wa.me/573502018487?text=Hola%20querido%20compañero%20Fabio,%20tengo%20una%20valiosa%20sugerencia%20para%20nuestra%20Calculadora%20de%20Nomina." target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Enviar sugerencias por WhatsApp" title="Enviar sugerencias">
-            <svg class="whatsapp-float__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-            </svg>
-        </a>
-        <span class="whatsapp-float__label">Sugerencias</span>
-    </div>
 
     <!-- SheetJS para exportación Excel (sin build) -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
